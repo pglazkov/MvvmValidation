@@ -2,9 +2,8 @@
 using System.Reactive.Linq;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MvvmValidation;
 
-namespace ZyLAB.EDiscovery.Common.Presentation.Test.Validation.V2
+namespace MvvmValidation.Tests
 {
 	public static class TestUtils
 	{

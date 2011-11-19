@@ -1,9 +1,8 @@
 using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
-using MvvmValidation;
 
-namespace ZyLAB.EDiscovery.Common.Presentation.Test.Validation.V2
+namespace MvvmValidation.Tests
 {
 	public class ViewModelBase : INotifyPropertyChanged
 	{

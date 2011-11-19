@@ -1,4 +1,6 @@
-﻿namespace ZyLAB.EDiscovery.Common.Presentation.Test.Validation.V2
+﻿using System;
+
+namespace MvvmValidation.Tests
 {
 	public class DummyViewModel : ViewModelBase
 	{

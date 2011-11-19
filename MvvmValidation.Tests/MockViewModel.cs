@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using MvvmValidation;
 
-namespace ZyLAB.EDiscovery.Common.Presentation.Test.Validation.V2
+namespace MvvmValidation.Tests
 {
 	public class MockViewModel : ViewModelBase, IDataErrorInfo
 	{

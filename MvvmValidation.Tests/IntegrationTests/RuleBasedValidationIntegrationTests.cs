@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MvvmValidation;
-namespace ZyLAB.EDiscovery.Common.Presentation.Test.Validation.V2.IntegrationTests
+
+namespace MvvmValidation.Tests.IntegrationTests
 {
 	[TestClass]
 	public class RuleBasedValidationIntegrationTests
