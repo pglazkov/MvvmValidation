@@ -15,7 +15,7 @@ namespace MvvmValidation
 				if (currentDispatcher == null)
 				{
 #if !SILVERLIGHT
-					currentDispatcher = Application.Current.Dispatcher;
+					currentDispatcher = Application.Current != null ? Application.Current.Dispatcher : Dispatcher.CurrentDispatcher;
 #else
 					currentDispatcher = Application.Current.RootVisual.Dispatcher;
 #endif
