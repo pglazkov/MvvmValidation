@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using MvvmValidation.Internal;
 
-namespace MvvmValidation.Tests
+namespace MvvmValidation.Tests.Fakes
 {
 	public class ViewModelBase : INotifyPropertyChanged
 	{

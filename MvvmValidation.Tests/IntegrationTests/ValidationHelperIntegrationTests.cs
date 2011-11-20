@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmValidation.Tests.Fakes;
+using MvvmValidation.Tests.Helpers;
 
 namespace MvvmValidation.Tests.IntegrationTests
 {

@@ -4,7 +4,7 @@ using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmValidation.Internal;
 
-namespace MvvmValidation.Tests
+namespace MvvmValidation.Tests.Helpers
 {
 	public static class TestUtils
 	{

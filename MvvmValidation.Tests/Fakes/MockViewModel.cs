@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace MvvmValidation.Tests
+namespace MvvmValidation.Tests.Fakes
 {
 	public class MockViewModel : ViewModelBase, IDataErrorInfo
 	{
