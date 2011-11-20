@@ -84,55 +84,55 @@ namespace MvvmValidation
 			AddRuleCore(target, validateDelegate, null);
 		}
 
-		public void AddAsyncRule(object target, AsyncRuleValidateDelegate validateDelegate)
+		public void AddAsyncRule(object target, AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(target != null);
-			Contract.Requires(validateDelegate != null);
+			Contract.Requires(validateCallback != null);
 
-			AddRuleCore(new GenericValidationTarget(target), null, validateDelegate);
+			AddRuleCore(new GenericValidationTarget(target), null, validateCallback);
 		}
 
-		public void AddAsyncRule(AsyncRuleValidateDelegate validateDelegate)
+		public void AddAsyncRule(AsyncRuleValidateCallback validateCallback)
 		{
-			Contract.Requires(validateDelegate != null);
+			Contract.Requires(validateCallback != null);
 
-			AddRuleCore(new UndefinedValidationTarget(), null, validateDelegate);
+			AddRuleCore(new UndefinedValidationTarget(), null, validateCallback);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateDelegate validateDelegate)
+		public void AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(propertyExpression != null);
-			Contract.Requires(validateDelegate != null);
+			Contract.Requires(validateCallback != null);
 
-			AddAsyncRule(new [] {propertyExpression}, validateDelegate);
+			AddAsyncRule(new [] {propertyExpression}, validateCallback);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression, AsyncRuleValidateDelegate validateDelegate)
+		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression, AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
-			Contract.Requires(validateDelegate != null);
+			Contract.Requires(validateCallback != null);
 
-			AddAsyncRule(new[] { property1Expression, property2Expression }, validateDelegate);
+			AddAsyncRule(new[] { property1Expression, property2Expression }, validateCallback);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateDelegate validateDelegate)
+		public void AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(properties != null);
 			Contract.Requires(properties.Count() > 0);
-			Contract.Requires(validateDelegate != null);
+			Contract.Requires(validateCallback != null);
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
 
-			AddRuleCore(target, null, validateDelegate);
+			AddRuleCore(target, null, validateCallback);
 		}
 
-		private void AddRuleCore(IValidationTarget target, Func<RuleValidationResult> validateDelegate, AsyncRuleValidateDelegate asyncValidateDelegate)
+		private void AddRuleCore(IValidationTarget target, Func<RuleValidationResult> validateDelegate, AsyncRuleValidateCallback asyncValidateCallback)
 		{
-			var rule = new ValidationRule(target, validateDelegate, asyncValidateDelegate);
+			var rule = new ValidationRule(target, validateDelegate, asyncValidateCallback);
 
 			RegisterValidationRule(rule);
 
@@ -163,13 +163,18 @@ namespace MvvmValidation
 
 		#region Getting Validation Results
 
-		public ValidationResult GetLastValidationResult(object target = null)
+		public ValidationResult GetLastValidationResult()
+		{
+			return GetLastValidationResult(null);
+		}
+
+		public ValidationResult GetLastValidationResult(object target)
 		{
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
 
 			ValidationResult result;
 
-			var returnAllResults = target == null || (target is string && string.IsNullOrEmpty(target as string));
+			var returnAllResults = target == null || (string.IsNullOrEmpty(target as string));
 
 			if (returnAllResults)
 			{
@@ -255,21 +260,37 @@ namespace MvvmValidation
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void ValidateAsync(Expression<Func<object>> propertyPathExpression, Action<ValidationResult> onCompleted = null)
+		public void ValidateAsync(Expression<Func<object>> propertyPathExpression)
+		{
+			ValidateAsync(propertyPathExpression, null);
+		}
+
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public void ValidateAsync(Expression<Func<object>> propertyPathExpression, Action<ValidationResult> onCompleted)
 		{
 			Contract.Requires(propertyPathExpression != null);
 
 			ValidateAsync(PropertyName.For(propertyPathExpression), onCompleted);
 		}
 
-		public void ValidateAsync(object target, Action<ValidationResult> onCompleted = null)
+		public void ValidateAsync(object target)
+		{
+			ValidateAsync(target, null);
+		}
+
+		public void ValidateAsync(object target, Action<ValidationResult> onCompleted)
 		{
 			Contract.Requires(target != null);
 
 			ValidateInternalAsync(target, onCompleted);
 		}
 
-		public void ValidateAllAsync(Action<ValidationResult> onCompleted = null)
+		public void ValidateAllAsync()
+		{
+			ValidateAllAsync(null);
+		}
+
+		public void ValidateAllAsync(Action<ValidationResult> onCompleted)
 		{
 			ValidateInternalAsync(null, onCompleted);
 		}
@@ -291,6 +312,7 @@ namespace MvvmValidation
 			}));
 		}
 
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
 		private ValidationResult ExecuteValidationRules(object target = null)
 		{
 			Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
@@ -303,7 +325,7 @@ namespace MvvmValidation
 			if (rulesToExecute.Any(r => !r.SupportsSyncValidation))
 			{
 				throw new InvalidOperationException(
-					"There are asyncronious validation rules for this target that cannot be executed synchronously. Please call ValidateAsync instead.");
+					"There are asynchronous validation rules for this target that cannot be executed synchronously. Please call ValidateAsync instead.");
 			}
 
 			foreach (ValidationRule validationRule in rulesToExecute)

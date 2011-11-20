@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -8,6 +9,7 @@ namespace MvvmValidation.Internal
 	{
 		private static Dispatcher currentDispatcher;
 
+		[SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
 		public static Dispatcher Instance
 		{
 			get

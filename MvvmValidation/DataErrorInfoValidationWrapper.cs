@@ -6,11 +6,11 @@ namespace MvvmValidation
 {
 	public class DataErrorInfoValidationWrapper : IDataErrorInfo
 	{
-		public DataErrorInfoValidationWrapper(ValidationHelper validatator)
+		public DataErrorInfoValidationWrapper(ValidationHelper validator)
 		{
-			Contract.Requires(validatator != null);
+			Contract.Requires(validator != null);
 
-			Validation = validatator;
+			Validation = validator;
 		}
 
 		private ValidationHelper Validation { get; set; }

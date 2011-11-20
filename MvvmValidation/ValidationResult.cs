@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -67,6 +68,7 @@ namespace MvvmValidation
 			AddError(new ValidationError(error, target));
 		}
 
+		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public string Format(IValidationResultFormatter formatter)
 		{
 			Contract.Requires(formatter != null);
@@ -85,8 +87,11 @@ namespace MvvmValidation
 			return !string.IsNullOrEmpty(result) ? result : "Valid";
 		}
 
+		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public ValidationResult MergeWith(ValidationResult validationResult)
 		{
+			Contract.Requires(validationResult != null);
+
 			var result = new ValidationResult();
 			result.Target = Target;
 

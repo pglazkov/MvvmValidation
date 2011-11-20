@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace MvvmValidation.Silverlight
+namespace MvvmValidation
 {
 	public class NotifyDataErrorInfoValidationWrapper : INotifyDataErrorInfo
 	{

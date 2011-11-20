@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -19,6 +21,8 @@ using System.Runtime.InteropServices;
 // COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
 
+[assembly: CLSCompliant(true)]
+
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("c6d48b86-aa52-41a4-b4e0-8e046d13708b")]
 
@@ -33,3 +37,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+
+[assembly: NeutralResourcesLanguage("en")]

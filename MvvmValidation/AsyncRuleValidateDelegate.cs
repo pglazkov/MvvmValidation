@@ -2,5 +2,5 @@ using System;
 
 namespace MvvmValidation
 {
-	public delegate void AsyncRuleValidateDelegate(Action<RuleValidationResult> resultCallback);
+	public delegate void AsyncRuleValidateCallback(Action<RuleValidationResult> resultCallback);
 }

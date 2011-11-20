@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -36,7 +37,7 @@ namespace MvvmValidation
 			
 			foreach (var error in distinctErrors)
 			{
-				result.AppendFormat("{0}. {1}", counter, error);
+				result.AppendFormat(CultureInfo.InvariantCulture, "{0}. {1}", counter, error);
 				result.AppendLine();
 				counter++;
 			}

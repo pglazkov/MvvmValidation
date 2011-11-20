@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Threading;
 using MvvmValidation.Internal;
@@ -8,22 +9,22 @@ namespace MvvmValidation
 	internal class ValidationRule
 	{
 		public ValidationRule(IValidationTarget target, Func<RuleValidationResult> validateDelegate,
-		                        AsyncRuleValidateDelegate asyncValidateDelegate)
+		                        AsyncRuleValidateCallback asyncValidateCallback)
 		{
 			Contract.Requires(target != null);
-			Contract.Requires(validateDelegate != null || asyncValidateDelegate != null);
+			Contract.Requires(validateDelegate != null || asyncValidateCallback != null);
 
 			Target = target;
 			ValidateDelegate = validateDelegate;
-			AsyncValidateDelegate = asyncValidateDelegate ?? (completed => completed(ValidateDelegate()));
+			AsyncValidateCallback = asyncValidateCallback ?? (completed => completed(ValidateDelegate()));
 		}
 
-		private AsyncRuleValidateDelegate AsyncValidateDelegate { get; set; }
+		private AsyncRuleValidateCallback AsyncValidateCallback { get; set; }
 		private Func<RuleValidationResult> ValidateDelegate { get; set; }
 
 		public bool SupportsAsyncValidation
 		{
-			get { return AsyncValidateDelegate != null || AsyncValidateDelegate != null; }
+			get { return AsyncValidateCallback != null || AsyncValidateCallback != null; }
 		}
 
 		public bool SupportsSyncValidation
@@ -33,12 +34,13 @@ namespace MvvmValidation
 
 		public IValidationTarget Target { get; private set; }
 
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EvaluateAsync")]
 		public RuleValidationResult Evaluate()
 		{
 			if (!SupportsSyncValidation)
 			{
 				throw new NotSupportedException(
-					"Synchronous validation is not supported by this rule. EvaluateAsync must be called instead.");
+					"Synchronous validation is not supported by this rule. Method EvaluateAsync must be called instead.");
 			}
 
 			RuleValidationResult result = ValidateDelegate();
@@ -50,9 +52,9 @@ namespace MvvmValidation
 		{
 			Contract.Requires(completed != null);
 
-			if (AsyncValidateDelegate != null)
+			if (AsyncValidateCallback != null)
 			{
-				AsyncValidateDelegate(completed);
+				AsyncValidateCallback(completed);
 			}
 			else
 			{
