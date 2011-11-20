@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MvvmValidation.Tests.IntegrationTests
 {
 	[TestClass]
-	public class RuleBasedValidationIntegrationTests
+	public class ValidationHelperIntegrationTests
 	{
 		[TestMethod]
 		public void AsyncValidation_GeneralSmokeTest()

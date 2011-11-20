@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace MvvmValidation.Tests
 {
 	[TestClass]
-	public class RuleBasedValidationTests
+	public class ValidationHelperTests
 	{
 		[TestMethod]
 		public void StringProperty_InvalidValue_HasValidationError()

@@ -52,10 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DummyViewModel.cs" />
-    <Compile Include="IntegrationTests\RuleBasedValidationIntegrationTests.cs" />
+    <Compile Include="IntegrationTests\ValidationHelperIntegrationTests.cs" />
     <Compile Include="MockViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuleBasedValidationTests.cs" />
+    <Compile Include="ValidationHelperTests.cs" />
     <Compile Include="TestUtil.cs" />
     <Compile Include="ViewModelBase.cs" />
   </ItemGroup>
