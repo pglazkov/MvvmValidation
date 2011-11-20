@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
 	internal class GenericValidationTarget : IValidationTarget, IEquatable<GenericValidationTarget>
 	{

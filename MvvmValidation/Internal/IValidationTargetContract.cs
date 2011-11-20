@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
 	[ContractClassFor(typeof(IValidationTarget))]
 // ReSharper disable InconsistentNaming

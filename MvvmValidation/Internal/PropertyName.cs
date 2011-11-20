@@ -2,12 +2,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
 	/// <summary>
 	/// Gets property name using lambda expressions.
 	/// </summary>
-	public static class PropertyName
+	internal static class PropertyName
 	{
 		/// <summary>
 		/// Returns the property name by given expression.

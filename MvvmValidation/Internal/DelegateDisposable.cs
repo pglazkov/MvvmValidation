@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
-	public sealed class DelegateDisposable : IDisposable
+	internal sealed class DelegateDisposable : IDisposable
 	{
 		public DelegateDisposable(Action restoreStateDelegate)
 		{

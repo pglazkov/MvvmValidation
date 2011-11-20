@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
 	internal class PropertyCollectionValidationTarget : IValidationTarget
 	{

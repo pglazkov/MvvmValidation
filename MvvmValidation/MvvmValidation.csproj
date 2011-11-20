@@ -112,12 +112,12 @@
   <ItemGroup>
     <Compile Include="AsyncRuleValidateDelegate.cs" />
     <Compile Include="DataErrorInfoValidationWrapper.cs" />
-    <Compile Include="CurrentDispatcher.cs" />
-    <Compile Include="DelegateDisposable.cs" />
-    <Compile Include="GenericValidationTarget.cs" />
+    <Compile Include="Internal\CurrentDispatcher.cs" />
+    <Compile Include="Internal\DelegateDisposable.cs" />
+    <Compile Include="Internal\GenericValidationTarget.cs" />
     <Compile Include="IValidationResultFormatter.cs" />
-    <Compile Include="IValidationTarget.cs" />
-    <Compile Include="IValidationTargetContract.cs" />
+    <Compile Include="Internal\IValidationTarget.cs" />
+    <Compile Include="Internal\IValidationTargetContract.cs" />
     <Compile Include="NumberedListValidationResultFormatter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -132,13 +132,13 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="PropertyCollectionValidationTarget.cs" />
-    <Compile Include="PropertyName.cs" />
-    <Compile Include="PropertyValidationTarget.cs" />
+    <Compile Include="Internal\PropertyCollectionValidationTarget.cs" />
+    <Compile Include="Internal\PropertyName.cs" />
+    <Compile Include="Internal\PropertyValidationTarget.cs" />
     <Compile Include="RuleValidationResult.cs" />
     <Compile Include="RuleValidationResultExtensions.cs" />
-    <Compile Include="ThreadingUtils.cs" />
-    <Compile Include="UndefinedValidationTarget.cs" />
+    <Compile Include="Internal\ThreadingUtils.cs" />
+    <Compile Include="Internal\UndefinedValidationTarget.cs" />
     <Compile Include="ValidationCompletedEventArgs.cs" />
     <Compile Include="ValidationError.cs" />
     <Compile Include="ValidationErrorCollection.cs" />
@@ -157,6 +157,7 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

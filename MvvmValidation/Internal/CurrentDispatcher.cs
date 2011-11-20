@@ -2,9 +2,9 @@
 using System.Windows;
 using System.Windows.Threading;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
-	public static class CurrentDispatcher
+	internal static class CurrentDispatcher
 	{
 		private static Dispatcher currentDispatcher;
 

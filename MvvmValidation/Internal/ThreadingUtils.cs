@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
-	public static class ThreadingUtils
+	internal static class ThreadingUtils
 	{
 		public static void RunOnUI(Action action)
 		{

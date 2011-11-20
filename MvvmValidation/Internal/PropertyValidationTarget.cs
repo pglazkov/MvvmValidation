@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
 	internal class PropertyValidationTarget : IValidationTarget, IEquatable<PropertyValidationTarget>
 	{
 		private string PropertyName { get; set; }
 
 		public PropertyValidationTarget(Expression<Func<object>> propertyNameExpression)
-			: this(MvvmValidation.PropertyName.For(propertyNameExpression))
+			: this((string)Internal.PropertyName.For(propertyNameExpression))
 		{
 		}
 

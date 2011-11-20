@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Threading;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MvvmValidation
+namespace MvvmValidation.Internal
 {
 	internal class UndefinedValidationTarget : IValidationTarget
 	{

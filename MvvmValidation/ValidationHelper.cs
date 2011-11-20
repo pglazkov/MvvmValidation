@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {

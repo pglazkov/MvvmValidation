@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation.Tests
 {
