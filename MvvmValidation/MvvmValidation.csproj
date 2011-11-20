@@ -118,7 +118,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncRuleValidateDelegate.cs" />
+    <Compile Include="AsyncRuleValidateCallback.cs" />
     <Compile Include="DataErrorInfoValidationWrapper.cs" />
     <Compile Include="Internal\CurrentDispatcher.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />

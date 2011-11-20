@@ -19,7 +19,7 @@ namespace MvvmValidation
 				{
 					if (e.ValidationResult.ErrorList.Any())
 					{
-						foreach (var error in e.ValidationResult.ErrorList)
+						foreach (ValidationError error in e.ValidationResult.ErrorList)
 						{
 							OnErrorsChanged(new DataErrorsChangedEventArgs(error.Target as string));
 						}
@@ -33,6 +33,8 @@ namespace MvvmValidation
 
 		private ValidationHelper Validator { get; set; }
 
+		#region INotifyDataErrorInfo Members
+
 		public IEnumerable GetErrors(string propertyName)
 		{
 			return Validator.GetLastValidationResult(propertyName).ErrorList.Select(er => er.ToString());
@@ -44,6 +46,8 @@ namespace MvvmValidation
 		}
 
 		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+
+		#endregion
 
 		private void OnErrorsChanged(DataErrorsChangedEventArgs e)
 		{

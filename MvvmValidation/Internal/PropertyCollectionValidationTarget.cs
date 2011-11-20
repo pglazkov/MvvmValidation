@@ -7,8 +7,6 @@ namespace MvvmValidation.Internal
 {
 	internal class PropertyCollectionValidationTarget : IValidationTarget
 	{
-		private IEnumerable<string> Properties { get; set; }
-
 		public PropertyCollectionValidationTarget(IEnumerable<string> properties)
 		{
 			Contract.Requires(properties != null);
@@ -16,6 +14,10 @@ namespace MvvmValidation.Internal
 
 			Properties = properties;
 		}
+
+		private IEnumerable<string> Properties { get; set; }
+
+		#region IValidationTarget Members
 
 		public IEnumerable<object> UnwrapTargets()
 		{
@@ -26,5 +28,7 @@ namespace MvvmValidation.Internal
 		{
 			return Properties.Any(p => Equals(p, target));
 		}
+
+		#endregion
 	}
 }

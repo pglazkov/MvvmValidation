@@ -5,12 +5,12 @@ namespace MvvmValidation
 {
 	public class ValidationCompletedEventArgs : EventArgs
 	{
-		public ValidationResult ValidationResult { get; private set; }
-
 		public ValidationCompletedEventArgs(ValidationResult validationResult)
 		{
 			Contract.Requires(validationResult != null);
 			ValidationResult = validationResult;
 		}
+
+		public ValidationResult ValidationResult { get; private set; }
 	}
 }

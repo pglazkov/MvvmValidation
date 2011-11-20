@@ -17,7 +17,7 @@ namespace MvvmValidation
 		public string ErrorText { get; private set; }
 		public object Target { get; private set; }
 
-		#region Equality Members
+		#region IEquatable<ValidationError> Members
 
 		public bool Equals(ValidationError other)
 		{
@@ -31,6 +31,8 @@ namespace MvvmValidation
 			}
 			return Equals(other.ErrorText, ErrorText) && Equals(other.Target, Target);
 		}
+
+		#endregion
 
 		public override bool Equals(object obj)
 		{
@@ -59,8 +61,6 @@ namespace MvvmValidation
 				return result;
 			}
 		}
-
-		#endregion
 
 		public override string ToString()
 		{

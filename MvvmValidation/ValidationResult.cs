@@ -8,14 +8,6 @@ namespace MvvmValidation
 {
 	public class ValidationResult
 	{
-		internal static ValidationResult Valid
-		{
-			get { return new ValidationResult(); }
-		}
-
-		public object Target { get; private set; }
-		public ValidationErrorCollection ErrorList { get; private set; }
-
 		private ValidationResult() : this(null, new ValidationErrorCollection())
 		{
 		}
@@ -36,6 +28,14 @@ namespace MvvmValidation
 			ErrorList = errors;
 		}
 
+		internal static ValidationResult Valid
+		{
+			get { return new ValidationResult(); }
+		}
+
+		public object Target { get; private set; }
+		public ValidationErrorCollection ErrorList { get; private set; }
+
 		public bool IsValid
 		{
 			get { return !ErrorList.Any(); }
@@ -45,7 +45,7 @@ namespace MvvmValidation
 		{
 			get
 			{
-				var firstErrorForTarget = ErrorList.Where(e => e.Target == target).FirstOrDefault();
+				ValidationError firstErrorForTarget = ErrorList.Where(e => e.Target == target).FirstOrDefault();
 
 				if (firstErrorForTarget != null)
 				{
@@ -73,7 +73,7 @@ namespace MvvmValidation
 		{
 			Contract.Requires(formatter != null);
 
-			var result = formatter.Format(this);
+			string result = formatter.Format(this);
 
 			return result;
 		}
@@ -82,7 +82,7 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			var result = Format(new NumberedListValidationResultFormatter());
+			string result = Format(new NumberedListValidationResultFormatter());
 
 			return !string.IsNullOrEmpty(result) ? result : "Valid";
 		}
@@ -95,12 +95,12 @@ namespace MvvmValidation
 			var result = new ValidationResult();
 			result.Target = Target;
 
-			foreach (var error in ErrorList)
+			foreach (ValidationError error in ErrorList)
 			{
 				result.AddError(error.Target, error.ErrorText);
 			}
 
-			foreach (var error in validationResult.ErrorList)
+			foreach (ValidationError error in validationResult.ErrorList)
 			{
 				if (result.ErrorList.Contains(error))
 				{

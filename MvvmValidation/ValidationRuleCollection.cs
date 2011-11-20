@@ -5,6 +5,5 @@ namespace MvvmValidation
 {
 	internal class ValidationRuleCollection : List<ValidationRule>
 	{
-		 
 	}
 }

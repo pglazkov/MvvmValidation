@@ -6,26 +6,6 @@ namespace MvvmValidation
 {
 	public class RuleValidationResult
 	{
-		public static RuleValidationResult Invalid(string error)
-		{
-			return new RuleValidationResult(error);
-		}
-
-		public static RuleValidationResult Valid()
-		{
-			return new RuleValidationResult();
-		}
-
-		public static RuleValidationResult Assert(bool condition, string errorMessage)
-		{
-			if (!condition)
-			{
-				return Invalid(errorMessage);
-			}
-
-			return Valid();
-		}
-
 		private readonly IList<string> errors;
 
 		public RuleValidationResult()
@@ -53,6 +33,26 @@ namespace MvvmValidation
 		public IEnumerable<string> Errors
 		{
 			get { return errors; }
+		}
+
+		public static RuleValidationResult Invalid(string error)
+		{
+			return new RuleValidationResult(error);
+		}
+
+		public static RuleValidationResult Valid()
+		{
+			return new RuleValidationResult();
+		}
+
+		public static RuleValidationResult Assert(bool condition, string errorMessage)
+		{
+			if (!condition)
+			{
+				return Invalid(errorMessage);
+			}
+
+			return Valid();
 		}
 
 		public void AddError(string error)

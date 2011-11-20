@@ -54,13 +54,14 @@ namespace MvvmValidation
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression, Func<RuleValidationResult> validateDelegate)
+		public void AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
+		                    Func<RuleValidationResult> validateDelegate)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new [] { property1Expression, property2Expression }, validateDelegate);
+			AddRule(new[] {property1Expression, property2Expression}, validateDelegate);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
@@ -69,14 +70,14 @@ namespace MvvmValidation
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new [] { propertyExpression }, validateDelegate);
+			AddRule(new[] {propertyExpression}, validateDelegate);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddRule(IEnumerable<Expression<Func<object>>> properties, Func<RuleValidationResult> validateDelegate)
 		{
 			Contract.Requires(properties != null);
-			Contract.Requires(properties.Count() > 0);
+			Contract.Requires(properties.Any());
 			Contract.Requires(validateDelegate != null);
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
@@ -105,24 +106,25 @@ namespace MvvmValidation
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateCallback != null);
 
-			AddAsyncRule(new [] {propertyExpression}, validateCallback);
+			AddAsyncRule(new[] {propertyExpression}, validateCallback);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression, AsyncRuleValidateCallback validateCallback)
+		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
+		                         AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateCallback != null);
 
-			AddAsyncRule(new[] { property1Expression, property2Expression }, validateCallback);
+			AddAsyncRule(new[] {property1Expression, property2Expression}, validateCallback);
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(properties != null);
-			Contract.Requires(properties.Count() > 0);
+			Contract.Requires(properties.Any());
 			Contract.Requires(validateCallback != null);
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
@@ -130,7 +132,8 @@ namespace MvvmValidation
 			AddRuleCore(target, null, validateCallback);
 		}
 
-		private void AddRuleCore(IValidationTarget target, Func<RuleValidationResult> validateDelegate, AsyncRuleValidateCallback asyncValidateCallback)
+		private void AddRuleCore(IValidationTarget target, Func<RuleValidationResult> validateDelegate,
+		                         AsyncRuleValidateCallback asyncValidateCallback)
 		{
 			var rule = new ValidationRule(target, validateDelegate, asyncValidateCallback);
 
@@ -142,6 +145,9 @@ namespace MvvmValidation
 		private static IValidationTarget CreatePropertyValidationTarget(IEnumerable<Expression<Func<object>>> properties)
 		{
 			IValidationTarget target;
+
+			// Getting rid of thw "Possible multiple enumerations of IEnumerable" warning
+			properties = properties.ToArray();
 
 			if (properties.Count() == 1)
 			{
@@ -174,16 +180,9 @@ namespace MvvmValidation
 
 			ValidationResult result;
 
-			var returnAllResults = target == null || (string.IsNullOrEmpty(target as string));
+			bool returnAllResults = target == null || (string.IsNullOrEmpty(target as string));
 
-			if (returnAllResults)
-			{
-				result = GetAllValidationResults();
-			}
-			else
-			{
-				result = GetValidationResultFor(target);
-			}
+			result = returnAllResults ? GetAllValidationResults() : GetValidationResultFor(target);
 
 			return result;
 		}
@@ -419,7 +418,7 @@ namespace MvvmValidation
 					IDictionary<ValidationRule, ValidationResult> targetRuleMap = GetRuleMapForTarget(ruleTarget);
 
 					ValidationResult currentRuleResult = GetCurrentValidationResultForRule(targetRuleMap, rule);
-					
+
 					if (currentRuleResult.IsValid != ruleValidationResult.IsValid)
 					{
 						targetRuleMap[rule] = ruleValidationResult.IsValid

@@ -7,10 +7,8 @@ namespace MvvmValidation.Internal
 {
 	internal class PropertyValidationTarget : IValidationTarget, IEquatable<PropertyValidationTarget>
 	{
-		private string PropertyName { get; set; }
-
 		public PropertyValidationTarget(Expression<Func<object>> propertyNameExpression)
-			: this((string)Internal.PropertyName.For(propertyNameExpression))
+			: this(Internal.PropertyName.For(propertyNameExpression))
 		{
 		}
 
@@ -21,17 +19,9 @@ namespace MvvmValidation.Internal
 			PropertyName = propertyName;
 		}
 
-		public IEnumerable<object> UnwrapTargets()
-		{
-			return new[] { PropertyName };
-		}
+		private string PropertyName { get; set; }
 
-		public bool IsMatch(object target)
-		{
-			return Equals(PropertyName, target);
-		}
-
-		#region Equality Members
+		#region IEquatable<PropertyValidationTarget> Members
 
 		public bool Equals(PropertyValidationTarget other)
 		{
@@ -45,6 +35,22 @@ namespace MvvmValidation.Internal
 			}
 			return Equals(other.PropertyName, PropertyName);
 		}
+
+		#endregion
+
+		#region IValidationTarget Members
+
+		public IEnumerable<object> UnwrapTargets()
+		{
+			return new[] {PropertyName};
+		}
+
+		public bool IsMatch(object target)
+		{
+			return Equals(PropertyName, target);
+		}
+
+		#endregion
 
 		public override bool Equals(object obj)
 		{
@@ -70,7 +76,5 @@ namespace MvvmValidation.Internal
 				return (PropertyName != null ? PropertyName.GetHashCode() : 0);
 			}
 		}
-
-		#endregion
 	}
 }

@@ -25,7 +25,7 @@ namespace MvvmValidation
 
 		public override string ToString()
 		{
-			var distinctErrors = this.Distinct(e => e.ErrorText).ToArray();
+			ValidationError[] distinctErrors = this.Distinct(e => e.ErrorText).ToArray();
 
 			if (distinctErrors.Length == 1)
 			{
@@ -34,8 +34,8 @@ namespace MvvmValidation
 
 			var result = new StringBuilder();
 			int counter = 1;
-			
-			foreach (var error in distinctErrors)
+
+			foreach (ValidationError error in distinctErrors)
 			{
 				result.AppendFormat(CultureInfo.InvariantCulture, "{0}. {1}", counter, error);
 				result.AppendLine();

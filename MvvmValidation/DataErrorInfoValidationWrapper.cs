@@ -15,6 +15,8 @@ namespace MvvmValidation
 
 		private ValidationHelper Validation { get; set; }
 
+		#region IDataErrorInfo Members
+
 		public string this[string columnName]
 		{
 			get { return Validation.GetLastValidationResult(columnName).ErrorList.ToString(); }
@@ -24,5 +26,7 @@ namespace MvvmValidation
 		{
 			get { return Validation.GetLastValidationResult().ErrorList.ToString(); }
 		}
+
+		#endregion
 	}
 }

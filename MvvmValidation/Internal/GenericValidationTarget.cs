@@ -15,15 +15,7 @@ namespace MvvmValidation.Internal
 
 		public object TargetId { get; set; }
 
-		public IEnumerable<object> UnwrapTargets()
-		{
-			return new[] {TargetId};
-		}
-
-		public bool IsMatch(object target)
-		{
-			return Equals(target, TargetId);
-		}
+		#region IEquatable<GenericValidationTarget> Members
 
 		public bool Equals(GenericValidationTarget other)
 		{
@@ -37,6 +29,22 @@ namespace MvvmValidation.Internal
 			}
 			return Equals(other.TargetId, TargetId);
 		}
+
+		#endregion
+
+		#region IValidationTarget Members
+
+		public IEnumerable<object> UnwrapTargets()
+		{
+			return new[] {TargetId};
+		}
+
+		public bool IsMatch(object target)
+		{
+			return Equals(target, TargetId);
+		}
+
+		#endregion
 
 		public override bool Equals(object obj)
 		{

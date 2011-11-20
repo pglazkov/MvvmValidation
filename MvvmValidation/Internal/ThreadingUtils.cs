@@ -14,6 +14,6 @@ namespace MvvmValidation.Internal
 			{
 				action();
 			}
-		} 
+		}
 	}
 }

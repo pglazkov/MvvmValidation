@@ -5,16 +5,11 @@ using System.Diagnostics.Contracts;
 namespace MvvmValidation.Internal
 {
 	[ContractClassFor(typeof(IValidationTarget))]
-// ReSharper disable InconsistentNaming
+	// ReSharper disable InconsistentNaming
 	internal abstract class IValidationTargetContract : IValidationTarget
-// ReSharper restore InconsistentNaming
+		// ReSharper restore InconsistentNaming
 	{
-		public void NotifyValidtionCompleted(ValidationResult validationResult)
-		{
-			Contract.Requires(validationResult != null);
-
-			throw new NotImplementedException();
-		}
+		#region IValidationTarget Members
 
 		public IEnumerable<object> UnwrapTargets()
 		{
@@ -26,6 +21,15 @@ namespace MvvmValidation.Internal
 		public bool IsMatch(object target)
 		{
 			Contract.Requires(target != null);
+
+			throw new NotImplementedException();
+		}
+
+		#endregion
+
+		public void NotifyValidtionCompleted(ValidationResult validationResult)
+		{
+			Contract.Requires(validationResult != null);
 
 			throw new NotImplementedException();
 		}

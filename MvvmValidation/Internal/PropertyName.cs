@@ -54,13 +54,15 @@ namespace MvvmValidation.Internal
 			{
 				if (unaryExpression.NodeType != ExpressionType.Convert)
 				{
-					throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Cannot interpret member from {0}", expression));
+					throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Cannot interpret member from {0}",
+					                                                  expression));
 				}
 
 				return GetMemberName(unaryExpression.Operand);
 			}
 
-			throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Could not determine member from {0}", expression));
+			throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Could not determine member from {0}",
+			                                                  expression));
 		}
 	}
 }

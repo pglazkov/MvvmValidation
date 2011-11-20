@@ -7,6 +7,8 @@ namespace MvvmValidation.Internal
 	{
 		private static readonly object FakeTarget = new object();
 
+		#region IValidationTarget Members
+
 		public IEnumerable<object> UnwrapTargets()
 		{
 			return new[] {FakeTarget};
@@ -16,6 +18,8 @@ namespace MvvmValidation.Internal
 		{
 			return ReferenceEquals(target, null);
 		}
+
+		#endregion
 
 		public override bool Equals(object obj)
 		{

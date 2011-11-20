@@ -9,7 +9,7 @@ namespace MvvmValidation
 	internal class ValidationRule
 	{
 		public ValidationRule(IValidationTarget target, Func<RuleValidationResult> validateDelegate,
-		                        AsyncRuleValidateCallback asyncValidateCallback)
+		                      AsyncRuleValidateCallback asyncValidateCallback)
 		{
 			Contract.Requires(target != null);
 			Contract.Requires(validateDelegate != null || asyncValidateCallback != null);

@@ -11,9 +11,13 @@ namespace MvvmValidation.Internal
 
 		private Action RestoreStateDelegate { get; set; }
 
+		#region IDisposable Members
+
 		public void Dispose()
 		{
 			RestoreStateDelegate();
 		}
+
+		#endregion
 	}
 }

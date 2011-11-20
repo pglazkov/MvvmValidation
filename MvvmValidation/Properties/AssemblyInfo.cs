@@ -8,6 +8,7 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
+
 [assembly: AssemblyTitle("MvvmValidation")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
@@ -20,8 +21,8 @@ using System.Windows;
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
 
+[assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 
 //In order to begin building localizable applications, set 
@@ -33,7 +34,6 @@ using System.Windows;
 
 //[assembly: NeutralResourcesLanguage("en-US", UltimateResourceFallbackLocation.Satellite)]
 
-
 [assembly: ThemeInfo(
 	ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
 	//(used if a resource is not found in the page, 
@@ -41,8 +41,7 @@ using System.Windows;
 	ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
 	//(used if a resource is not found in the page, 
 	// app, or any theme specific resource dictionaries)
-)]
-
+	)]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -54,9 +53,11 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
+
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-[assembly: InternalsVisibleTo("MvvmValidation.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b327736861cacd9185731a01213c996a5479534e1befabbaa2c971d2f9256065a628750e8bad4e281a6231b7db1e602e516fcd3ad4c2670fa6a32d308fa8770da1d57373794408e74872fc4b0b2e84d7fb707968b64464472bd10ce4f040c9a5ab02960eacda10f2545bae415386570e4df18bd7d38929ad698f3952ffcfcaeb")]
-
+[assembly:
+	InternalsVisibleTo(
+		"MvvmValidation.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b327736861cacd9185731a01213c996a5479534e1befabbaa2c971d2f9256065a628750e8bad4e281a6231b7db1e602e516fcd3ad4c2670fa6a32d308fa8770da1d57373794408e74872fc4b0b2e84d7fb707968b64464472bd10ce4f040c9a5ab02960eacda10f2545bae415386570e4df18bd7d38929ad698f3952ffcfcaeb"
+		)]
 [assembly: NeutralResourcesLanguage("en")]
