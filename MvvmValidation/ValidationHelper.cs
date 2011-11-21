@@ -138,8 +138,6 @@ namespace MvvmValidation
 			var rule = new ValidationRule(target, validateDelegate, asyncValidateCallback);
 
 			RegisterValidationRule(rule);
-
-			return;
 		}
 
 		private static IValidationTarget CreatePropertyValidationTarget(IEnumerable<Expression<Func<object>>> properties)
@@ -178,11 +176,9 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
 
-			ValidationResult result;
-
 			bool returnAllResults = target == null || (string.IsNullOrEmpty(target as string));
 
-			result = returnAllResults ? GetAllValidationResults() : GetValidationResultFor(target);
+			ValidationResult result = returnAllResults ? GetAllValidationResults() : GetValidationResultFor(target);
 
 			return result;
 		}
