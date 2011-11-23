@@ -37,12 +37,12 @@ namespace MvvmValidation
 
 		public IEnumerable GetErrors(string propertyName)
 		{
-			return Validator.GetLastValidationResult(propertyName).ErrorList.Select(er => er.ToString());
+			return Validator.GetResult(propertyName).ErrorList.Select(er => er.ToString());
 		}
 
 		public bool HasErrors
 		{
-			get { return !Validator.GetLastValidationResult().IsValid; }
+			get { return !Validator.GetResult().IsValid; }
 		}
 
 		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;

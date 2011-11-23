@@ -19,12 +19,12 @@ namespace MvvmValidation
 
 		public string this[string columnName]
 		{
-			get { return Validation.GetLastValidationResult(columnName).ErrorList.ToString(); }
+			get { return Validation.GetResult(columnName).ErrorList.ToString(); }
 		}
 
 		public string Error
 		{
-			get { return Validation.GetLastValidationResult().ErrorList.ToString(); }
+			get { return Validation.GetResult().ErrorList.ToString(); }
 		}
 
 		#endregion

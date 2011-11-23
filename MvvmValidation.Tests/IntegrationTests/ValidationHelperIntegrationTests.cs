@@ -60,7 +60,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					Assert.IsTrue(isUiThread, "Validation callback must be executed on UI thread");
 
 					Assert.IsFalse(r.IsValid, "Validation must fail according to the validaton rule");
-					Assert.IsFalse(validation.GetLastValidationResult().IsValid, "Validation must fail according to the validaton rule");
+					Assert.IsFalse(validation.GetResult().IsValid, "Validation must fail according to the validaton rule");
 
 					Assert.IsTrue(ruleExecuted, "Rule must be executed before validation completed callback is executed.");
 

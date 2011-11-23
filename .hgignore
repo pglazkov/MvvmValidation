@@ -8,3 +8,4 @@ MvvmValidation.Silverlight/obj/*
 MvvmValidation.Tests/bin/*
 MvvmValidation.Tests/obj/*
 *.user
+*.crunchsolution.cache

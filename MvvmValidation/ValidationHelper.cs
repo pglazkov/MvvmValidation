@@ -9,6 +9,10 @@ using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
+	/// <summary>
+	/// Main helper class that contains the functionality of managing validation rules, 
+	/// executing validation using those rules and keeping validation results.
+	/// </summary>
 	public class ValidationHelper
 	{
 		#region Fields
@@ -23,6 +27,9 @@ namespace MvvmValidation
 
 		#region Construction
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ValidationHelper"/> class.
+		/// </summary>
 		public ValidationHelper()
 		{
 			ValidationRules = new ValidationRuleCollection();
@@ -38,6 +45,15 @@ namespace MvvmValidation
 
 		#region Rules Construction
 
+		/// <summary>
+		/// Adds a validation rule that validates the <paramref name="target"/> object.
+		/// </summary>
+		/// <param name="target">The validation target (object that is being validated by <paramref name="validateDelegate"/>).</param>
+		/// <param name="validateDelegate">
+		/// The validation delegate - a function that returns an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
 		public void AddRule(object target, Func<RuleValidationResult> validateDelegate)
 		{
 			Contract.Requires(target != null);
@@ -46,6 +62,14 @@ namespace MvvmValidation
 			AddRuleCore(new GenericValidationTarget(target), validateDelegate, null);
 		}
 
+		/// <summary>
+		/// Adds a simple validation rule.
+		/// </summary>
+		/// <param name="validateDelegate">
+		/// The validation delegate - a function that returns an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
 		public void AddRule(Func<RuleValidationResult> validateDelegate)
 		{
 			Contract.Requires(validateDelegate != null);
@@ -53,6 +77,44 @@ namespace MvvmValidation
 			AddRuleCore(new UndefinedValidationTarget(), validateDelegate, null);
 		}
 
+		/// <summary>
+		/// Adds a validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
+		/// </summary>
+		/// <param name="propertyExpression">The target property expression.</param>
+		/// <param name="validateDelegate">
+		/// The validation delegate - a function that returns an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
+		/// <example>
+		/// <code>
+		/// AddRule(() => Foo, , () => RuleValidationResult.Assert(Foo > 10, "Foo must be greater than 10"))
+		/// </code>
+		/// </example>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public void AddRule(Expression<Func<object>> propertyExpression, Func<RuleValidationResult> validateDelegate)
+		{
+			Contract.Requires(propertyExpression != null);
+			Contract.Requires(validateDelegate != null);
+
+			AddRule(new[] {propertyExpression}, validateDelegate);
+		}
+
+		/// <summary>
+		/// Adds a validation rule that validates two dependent properties.
+		/// </summary>
+		/// <param name="property1Expression">The first target property expression.</param>
+		/// <param name="property2Expression">The second target property expression.</param>
+		/// <param name="validateDelegate">
+		/// The validation delegate - a function that returns an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
+		/// <example>
+		/// <code>
+		/// AddRule(() => Foo, () => Bar, () => RuleValidationResult.Assert(Foo > Bar, "Foo must be greater than bar"))
+		/// </code>
+		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
 		                    Func<RuleValidationResult> validateDelegate)
@@ -64,15 +126,15 @@ namespace MvvmValidation
 			AddRule(new[] {property1Expression, property2Expression}, validateDelegate);
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddRule(Expression<Func<object>> propertyExpression, Func<RuleValidationResult> validateDelegate)
-		{
-			Contract.Requires(propertyExpression != null);
-			Contract.Requires(validateDelegate != null);
-
-			AddRule(new[] {propertyExpression}, validateDelegate);
-		}
-
+		/// <summary>
+		/// Adds a validation rule that validates a collection of dependent properties.
+		/// </summary>
+		/// <param name="properties">The collection of target property expressions. </param>
+		/// <param name="validateDelegate">
+		/// The validation delegate - a function that returns an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddRule(IEnumerable<Expression<Func<object>>> properties, Func<RuleValidationResult> validateDelegate)
 		{
@@ -85,6 +147,15 @@ namespace MvvmValidation
 			AddRuleCore(target, validateDelegate, null);
 		}
 
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates the <paramref name="target"/> object.
+		/// </summary>
+		/// <param name="target">The validation target (object that is being validated by <paramref name="validateCallback"/>).</param>
+		/// <param name="validateCallback">
+		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
 		public void AddAsyncRule(object target, AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(target != null);
@@ -93,6 +164,14 @@ namespace MvvmValidation
 			AddRuleCore(new GenericValidationTarget(target), null, validateCallback);
 		}
 
+		/// <summary>
+		/// Adds an asynchronious validation rule.
+		/// </summary>
+		/// <param name="validateCallback">
+		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
 		public void AddAsyncRule(AsyncRuleValidateCallback validateCallback)
 		{
 			Contract.Requires(validateCallback != null);
@@ -100,6 +179,24 @@ namespace MvvmValidation
 			AddRuleCore(new UndefinedValidationTarget(), null, validateCallback);
 		}
 
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
+		/// </summary>
+		/// <param name="propertyExpression">The target property expression.</param>
+		/// <param name="validateCallback">
+		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
+		/// <example>
+		/// <code>
+		/// AddRule(() => Foo, 
+		///			(onCompleted) => 
+		///         {
+		///				ValidationServiceFacade.ValidateFoo(Foo, result => onCompleted(RuleValidationResult.Assert(result.IsValid, "Foo must be greater than 10")));
+		///			})
+		/// </code>
+		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateCallback validateCallback)
 		{
@@ -109,6 +206,25 @@ namespace MvvmValidation
 			AddAsyncRule(new[] {propertyExpression}, validateCallback);
 		}
 
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates two dependent properties.
+		/// </summary>
+		/// <param name="property1Expression">The first target property expression.</param>
+		/// <param name="property2Expression">The second target property expression.</param>
+		/// <param name="validateCallback">
+		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
+		/// <example>
+		/// <code>
+		/// AddRule(() => Foo, () => Bar
+		///			(onCompleted) => 
+		///         {
+		///				ValidationServiceFacade.ValidateFooAndBar(Foo, Bar, result => onCompleted(RuleValidationResult.Assert(result.IsValid, "Foo must be greater than 10")));
+		///			})
+		/// </code>
+		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
 		                         AsyncRuleValidateCallback validateCallback)
@@ -120,6 +236,15 @@ namespace MvvmValidation
 			AddAsyncRule(new[] {property1Expression, property2Expression}, validateCallback);
 		}
 
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates a collection of dependent properties.
+		/// </summary>
+		/// <param name="properties">The collection of target property expressions. </param>
+		/// <param name="validateCallback">
+		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
+		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateCallback validateCallback)
 		{
@@ -167,23 +292,32 @@ namespace MvvmValidation
 
 		#region Getting Validation Results
 
-		public ValidationResult GetLastValidationResult()
+		/// <summary>
+		/// Returns the current validation state (all errors tracked by this instance of <see cref="ValidationHelper"/>).
+		/// </summary>
+		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
+		public ValidationResult GetResult()
 		{
-			return GetLastValidationResult(null);
+			return GetResult(null);
 		}
 
-		public ValidationResult GetLastValidationResult(object target)
+		/// <summary>
+		/// Returns the current validation state for the given <paramref name="target"/> (all errors tracked by this instance of <see cref="ValidationHelper"/>).
+		/// </summary>
+		/// <param name="target">The validation target for which to retrieve the validation state.</param>
+		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
+		public ValidationResult GetResult(object target)
 		{
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
 
 			bool returnAllResults = target == null || (string.IsNullOrEmpty(target as string));
 
-			ValidationResult result = returnAllResults ? GetAllValidationResults() : GetValidationResultFor(target);
+			ValidationResult result = returnAllResults ? GetResultInternal() : GetResultInternal(target);
 
 			return result;
 		}
 
-		private ValidationResult GetValidationResultFor(object target)
+		private ValidationResult GetResultInternal(object target)
 		{
 			ValidationResult result = ValidationResult.Valid;
 
@@ -199,7 +333,7 @@ namespace MvvmValidation
 			return result;
 		}
 
-		private ValidationResult GetAllValidationResults()
+		private ValidationResult GetResultInternal()
 		{
 			ValidationResult result = ValidationResult.Valid;
 
