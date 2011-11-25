@@ -383,8 +383,6 @@ namespace MvvmValidation
 
 			ValidationResult validationResult = ExecuteValidationRules(target);
 
-			NotifyValidationCompleted(validationResult);
-
 			return validationResult;
 		}
 
@@ -434,11 +432,7 @@ namespace MvvmValidation
 				return;
 			}
 
-			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() =>
-			{
-				onCompleted(r);
-				NotifyValidationCompleted(r);
-			}));
+			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)));
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
@@ -556,7 +550,7 @@ namespace MvvmValidation
 						                      	: new ValidationResult(ruleTarget, ruleValidationResult.Errors);
 
 						// Notify that validation result for the target has changed
-						OnValidationResultChanged(new ValidationResultChangedEventArgs(ruleTarget, GetResult(ruleTarget)));
+						NotifyValidationResultChanged(ruleTarget, GetResult(ruleTarget));
 					}
 				}
 			}
@@ -593,35 +587,20 @@ namespace MvvmValidation
 
 		#endregion
 
-		#region ValidationCompleted Event
-
-		public event EventHandler<ValidationCompletedEventArgs> ValidationCompleted;
-
-		private void NotifyValidationCompleted(ValidationResult result)
-		{
-			ThreadingUtils.RunOnUI(() =>
-			{
-				EventHandler<ValidationCompletedEventArgs> handler = ValidationCompleted;
-				if (handler != null)
-				{
-					handler(this, new ValidationCompletedEventArgs(result));
-				}
-			});
-		}
-
-		#endregion
-
 		#region ValidationResultChanged
 
 		public event EventHandler<ValidationResultChangedEventArgs> ValidationResultChanged;
 
-		private void OnValidationResultChanged(ValidationResultChangedEventArgs e)
+		private void NotifyValidationResultChanged(object target, ValidationResult newResult)
 		{
-			EventHandler<ValidationResultChangedEventArgs> handler = ValidationResultChanged;
-			if (handler != null)
+			ThreadingUtils.RunOnUI(() =>
 			{
-				handler(this, e);
-			}
+				EventHandler<ValidationResultChangedEventArgs> handler = ValidationResultChanged;
+				if (handler != null)
+				{
+					handler(this, new ValidationResultChangedEventArgs(target, newResult));
+				}
+			});
 		}
 
 		#endregion

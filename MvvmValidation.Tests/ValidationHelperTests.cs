@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
 
 namespace MvvmValidation.Tests
@@ -8,6 +10,13 @@ namespace MvvmValidation.Tests
 	[TestClass]
 	public class ValidationHelperTests
 	{
+		[TestInitialize]
+		public void TestInitialize()
+		{
+			var uiThreadDispatcher = Dispatcher.CurrentDispatcher;
+			CurrentDispatcher.Instance = uiThreadDispatcher;
+		}
+
 		[TestMethod]
 		public void StringProperty_InvalidValue_HasValidationError()
 		{
@@ -158,21 +167,15 @@ namespace MvvmValidation.Tests
 			                   	return RuleValidationResult.Invalid("Error");
 			                   });
 
-			validation.ValidationCompleted += (o, e) =>
-			{
-				// Assert
-
-				Assert.IsFalse(e.ValidationResult.IsValid);
-
-				Assert.IsTrue(e.ValidationResult.ErrorList.Count == 2, "There must be two errors: one for each property target");
-				Assert.IsTrue(Equals(e.ValidationResult.ErrorList[0].Target, "dummy.Foo"),
-				              "Target for the first error must be dummy.Foo");
-				Assert.IsTrue(Equals(e.ValidationResult.ErrorList[1].Target, "dummy.Bar"),
-				              "Target for the second error must be dummy.Bar");
-			};
-
 			// Act
-			validation.ValidateAll();
+			var result = validation.ValidateAll();
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+
+			Assert.IsTrue(result.ErrorList.Count == 2, "There must be two errors: one for each property target");
+			Assert.IsTrue(Equals(result.ErrorList[0].Target, "dummy.Foo"), "Target for the first error must be dummy.Foo");
+			Assert.IsTrue(Equals(result.ErrorList[1].Target, "dummy.Bar"), "Target for the second error must be dummy.Bar");
 		}
 
 		[TestMethod]

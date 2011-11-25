@@ -44,13 +44,13 @@ namespace MvvmValidation.Tests.IntegrationTests
 					});
 				});
 
-				validation.ValidationCompleted += (o, e) =>
+				validation.ValidationResultChanged += (o, e) =>
 				{
 					Assert.IsTrue(ruleExecuted, "Validation rule must be executed before ValidationCompleted event is fired.");
 
 					var isUiThread = dispatcher.Thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
 
-					Assert.IsTrue(isUiThread, "ValidationCompleted must be executed on UI thread");
+					Assert.IsTrue(isUiThread, "ValidationResultChanged must be executed on UI thread");
 				};
 
 				validation.ValidateAllAsync(r =>
@@ -293,7 +293,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[TestMethod]
-		public void AsyncValidation_InvalidValue_CallsValidationRuleInBackgroundTreadAndReportsInvalidOnUIThread()
+		public void AsyncValidation_InvalidValue_CallsValidationRuleInBackgroundThreadAndReportsInvalidOnUIThread()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
 			{
@@ -322,7 +322,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					vm.StringProperty2 = "Valid value";
 				}
 
-				vm.Validation.ValidationCompleted += (o, e) =>
+				vm.Validation.ValidationResultChanged += (o, e) =>
 				{
 					// VERIFY
 
@@ -343,7 +343,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 						Assert.Fail("Validation execution thread must be a different thread than validation completed thread");
 					}
 
-					Assert.IsFalse(e.ValidationResult.IsValid, "Validation must fail");
+					Assert.IsFalse(e.NewResult.IsValid, "Validation must fail");
 
 					completedAction();
 				};
