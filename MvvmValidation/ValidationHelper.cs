@@ -461,7 +461,7 @@ namespace MvvmValidation
 			{
 				RuleValidationResult ruleResult = validationRule.Evaluate();
 
-				SaveRuleValidationResult(validationRule, ruleResult);
+				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult);
 
 				AddErrorsFromRuleResult(result, validationRule, ruleResult);
 			}
@@ -491,7 +491,7 @@ namespace MvvmValidation
 
 					validationRule.EvaluateAsync(ruleResult =>
 					{
-						SaveRuleValidationResult(rule, ruleResult);
+						SaveRuleValidationResultAndNotifyIfNeeded(rule, ruleResult);
 
 						AddErrorsFromRuleResult(result, rule, ruleResult);
 
@@ -537,7 +537,7 @@ namespace MvvmValidation
 			return ruleFilter;
 		}
 
-		private void SaveRuleValidationResult(ValidationRule rule, RuleValidationResult ruleValidationResult)
+		private void SaveRuleValidationResultAndNotifyIfNeeded(ValidationRule rule, RuleValidationResult ruleValidationResult)
 		{
 			lock (syncRoot)
 			{
@@ -554,6 +554,9 @@ namespace MvvmValidation
 						targetRuleMap[rule] = ruleValidationResult.IsValid
 						                      	? ValidationResult.Valid
 						                      	: new ValidationResult(ruleTarget, ruleValidationResult.Errors);
+
+						// Notify that validation result for the target has changed
+						OnValidationResultChanged(new ValidationResultChangedEventArgs(ruleTarget, GetResult(ruleTarget)));
 					}
 				}
 			}
@@ -604,6 +607,21 @@ namespace MvvmValidation
 					handler(this, new ValidationCompletedEventArgs(result));
 				}
 			});
+		}
+
+		#endregion
+
+		#region ValidationResultChanged
+
+		public event EventHandler<ValidationResultChangedEventArgs> ValidationResultChanged;
+
+		private void OnValidationResultChanged(ValidationResultChangedEventArgs e)
+		{
+			EventHandler<ValidationResultChangedEventArgs> handler = ValidationResultChanged;
+			if (handler != null)
+			{
+				handler(this, e);
+			}
 		}
 
 		#endregion

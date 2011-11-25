@@ -152,6 +152,7 @@
     <Compile Include="ValidationErrorCollection.cs" />
     <Compile Include="ValidationHelper.cs" />
     <Compile Include="ValidationResult.cs" />
+    <Compile Include="ValidationResultChangedEventArgs.cs" />
     <Compile Include="ValidationRule.cs" />
     <Compile Include="ValidationRuleCollection.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">

@@ -174,5 +174,59 @@ namespace MvvmValidation.Tests
 			// Act
 			validation.ValidateAll();
 		}
+
+		[TestMethod]
+		public void ValidationResultChanged_ValidateExecutedForOneRule_FiresOneTime()
+		{
+			// Arrange
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			validation.AddRule(() => dummy.Foo,
+			                   () => RuleValidationResult.Invalid("Error"));
+
+			var eventFiredTimes = 0;
+
+			validation.ValidationResultChanged += (o, e) =>
+			{
+				eventFiredTimes++;
+			};
+
+			// Act
+			validation.ValidateAll();
+
+			// Verity
+			Assert.AreEqual(1, eventFiredTimes, "Event should have been fired");
+		}
+
+		[TestMethod]
+		public void ValidationResultChanged_ValidateExecutedForSeveralRules_FiresForEachTarget()
+		{
+			// Arrange
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			validation.AddRule(() => dummy.Foo,
+							   () => RuleValidationResult.Invalid("Error"));
+			validation.AddRule(() => dummy.Foo,
+			                   RuleValidationResult.Valid);
+			validation.AddRule(() => dummy.Bar,
+								RuleValidationResult.Valid);
+			validation.AddRule(() => RuleValidationResult.Invalid("Error"));
+
+			const int expectedTimesToFire = 0 + 1 /*Invalid Foo*/+ 1 /* Invalid general target */;
+			var eventFiredTimes = 0;
+
+			validation.ValidationResultChanged += (o, e) =>
+			{
+				eventFiredTimes++;
+			};
+
+			// Act
+			validation.ValidateAll();
+
+			// Verify
+			Assert.AreEqual(expectedTimesToFire, eventFiredTimes);
+		}
 	}
 }
