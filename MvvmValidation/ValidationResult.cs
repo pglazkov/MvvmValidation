@@ -45,7 +45,7 @@ namespace MvvmValidation
 		{
 			get
 			{
-				ValidationError firstErrorForTarget = ErrorList.Where(e => e.Target == target).FirstOrDefault();
+				ValidationError firstErrorForTarget = ErrorList.FirstOrDefault(e => e.Target == target);
 
 				if (firstErrorForTarget != null)
 				{
@@ -69,7 +69,7 @@ namespace MvvmValidation
 		}
 
 		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		public string Format(IValidationResultFormatter formatter)
+		public string ToString(IValidationResultFormatter formatter)
 		{
 			Contract.Requires(formatter != null);
 
@@ -82,7 +82,7 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			string result = Format(new NumberedListValidationResultFormatter());
+			string result = ToString(new NumberedListValidationResultFormatter());
 
 			return !string.IsNullOrEmpty(result) ? result : "Valid";
 		}
