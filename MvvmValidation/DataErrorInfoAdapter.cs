@@ -4,9 +4,9 @@ using System.Diagnostics.Contracts;
 
 namespace MvvmValidation
 {
-	public class DataErrorInfoValidationWrapper : IDataErrorInfo
+	public class DataErrorInfoAdapter : IDataErrorInfo
 	{
-		public DataErrorInfoValidationWrapper(ValidationHelper validator)
+		public DataErrorInfoAdapter(ValidationHelper validator)
 		{
 			Contract.Requires(validator != null);
 

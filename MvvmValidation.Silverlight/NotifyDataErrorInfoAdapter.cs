@@ -6,9 +6,9 @@ using System.Linq;
 
 namespace MvvmValidation
 {
-	public class NotifyDataErrorInfoValidationWrapper : INotifyDataErrorInfo
+	public class NotifyDataErrorInfoAdapter : INotifyDataErrorInfo
 	{
-		public NotifyDataErrorInfoValidationWrapper(ValidationHelper validator)
+		public NotifyDataErrorInfoAdapter(ValidationHelper validator)
 		{
 			Contract.Requires(validator != null);
 

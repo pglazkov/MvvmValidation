@@ -20,7 +20,7 @@ namespace MvvmValidation.Tests.Fakes
 		}
 
 		public ValidationHelper Validation { get; set; }
-		private DataErrorInfoValidationWrapper DataErrorInfoValidationAdapter { get; set; }
+		private DataErrorInfoAdapter DataErrorInfoValidationAdapter { get; set; }
 
 		public string StringProperty
 		{
@@ -162,7 +162,7 @@ namespace MvvmValidation.Tests.Fakes
 				});
 
 			Validation = validationRules;
-			DataErrorInfoValidationAdapter = new DataErrorInfoValidationWrapper(Validation);
+			DataErrorInfoValidationAdapter = new DataErrorInfoAdapter(Validation);
 		}
 	}
 }

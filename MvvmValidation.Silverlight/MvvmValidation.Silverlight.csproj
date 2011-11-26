@@ -124,8 +124,8 @@
     <Compile Include="..\MvvmValidation\AsyncRuleValidateAction.cs">
       <Link>AsyncRuleValidateAction.cs</Link>
     </Compile>
-    <Compile Include="..\MvvmValidation\DataErrorInfoValidationWrapper.cs">
-      <Link>DataErrorInfoValidationWrapper.cs</Link>
+    <Compile Include="..\MvvmValidation\DataErrorInfoAdapter.cs">
+      <Link>DataErrorInfoAdapter.cs</Link>
     </Compile>
     <Compile Include="..\MvvmValidation\Internal\CurrentDispatcher.cs">
       <Link>Internal\CurrentDispatcher.cs</Link>
@@ -190,7 +190,7 @@
     <Compile Include="..\MvvmValidation\ValidationRuleCollection.cs">
       <Link>ValidationRuleCollection.cs</Link>
     </Compile>
-    <Compile Include="NotifyDataErrorInfoValidationWrapper.cs" />
+    <Compile Include="NotifyDataErrorInfoAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
