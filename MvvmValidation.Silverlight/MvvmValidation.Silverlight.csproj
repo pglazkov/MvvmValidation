@@ -121,8 +121,8 @@
     <Reference Include="System.Windows.Browser" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\MvvmValidation\AsyncRuleValidateCallback.cs">
-      <Link>AsyncRuleValidateCallback.cs</Link>
+    <Compile Include="..\MvvmValidation\AsyncRuleValidateAction.cs">
+      <Link>AsyncRuleValidateAction.cs</Link>
     </Compile>
     <Compile Include="..\MvvmValidation\DataErrorInfoValidationWrapper.cs">
       <Link>DataErrorInfoValidationWrapper.cs</Link>

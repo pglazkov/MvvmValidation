@@ -150,40 +150,40 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates the <paramref name="target"/> object.
 		/// </summary>
-		/// <param name="target">The validation target (object that is being validated by <paramref name="validateCallback"/>).</param>
-		/// <param name="validateCallback">
+		/// <param name="target">The validation target (object that is being validated by <paramref name="validateAction"/>).</param>
+		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddAsyncRule(object target, AsyncRuleValidateCallback validateCallback)
+		public void AddAsyncRule(object target, AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(target != null);
-			Contract.Requires(validateCallback != null);
+			Contract.Requires(validateAction != null);
 
-			AddRuleCore(new GenericValidationTarget(target), null, validateCallback);
+			AddRuleCore(new GenericValidationTarget(target), null, validateAction);
 		}
 
 		/// <summary>
 		/// Adds an asynchronious validation rule.
 		/// </summary>
-		/// <param name="validateCallback">
+		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddAsyncRule(AsyncRuleValidateCallback validateCallback)
+		public void AddAsyncRule(AsyncRuleValidateAction validateAction)
 		{
-			Contract.Requires(validateCallback != null);
+			Contract.Requires(validateAction != null);
 
-			AddRuleCore(new UndefinedValidationTarget(), null, validateCallback);
+			AddRuleCore(new UndefinedValidationTarget(), null, validateAction);
 		}
 
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
 		/// </summary>
 		/// <param name="propertyExpression">The target property expression.</param>
-		/// <param name="validateCallback">
+		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
@@ -198,12 +198,12 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateCallback validateCallback)
+		public void AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(propertyExpression != null);
-			Contract.Requires(validateCallback != null);
+			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] {propertyExpression}, validateCallback);
+			AddAsyncRule(new[] {propertyExpression}, validateAction);
 		}
 
 		/// <summary>
@@ -211,7 +211,7 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="property1Expression">The first target property expression.</param>
 		/// <param name="property2Expression">The second target property expression.</param>
-		/// <param name="validateCallback">
+		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
@@ -227,40 +227,40 @@ namespace MvvmValidation
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-		                         AsyncRuleValidateCallback validateCallback)
+		                         AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
-			Contract.Requires(validateCallback != null);
+			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] {property1Expression, property2Expression}, validateCallback);
+			AddAsyncRule(new[] {property1Expression, property2Expression}, validateAction);
 		}
 
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates a collection of dependent properties.
 		/// </summary>
 		/// <param name="properties">The collection of target property expressions. </param>
-		/// <param name="validateCallback">
+		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateCallback validateCallback)
+		public void AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(properties != null);
 			Contract.Requires(properties.Any());
-			Contract.Requires(validateCallback != null);
+			Contract.Requires(validateAction != null);
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
 
-			AddRuleCore(target, null, validateCallback);
+			AddRuleCore(target, null, validateAction);
 		}
 
 		private void AddRuleCore(IValidationTarget target, Func<RuleValidationResult> validateDelegate,
-		                         AsyncRuleValidateCallback asyncValidateCallback)
+		                         AsyncRuleValidateAction asyncValidateAction)
 		{
-			var rule = new ValidationRule(target, validateDelegate, asyncValidateCallback);
+			var rule = new ValidationRule(target, validateDelegate, asyncValidateAction);
 
 			RegisterValidationRule(rule);
 		}

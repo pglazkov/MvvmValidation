@@ -9,22 +9,22 @@ namespace MvvmValidation
 	internal class ValidationRule
 	{
 		public ValidationRule(IValidationTarget target, Func<RuleValidationResult> validateDelegate,
-		                      AsyncRuleValidateCallback asyncValidateCallback)
+		                      AsyncRuleValidateAction asyncValidateAction)
 		{
 			Contract.Requires(target != null);
-			Contract.Requires(validateDelegate != null || asyncValidateCallback != null);
+			Contract.Requires(validateDelegate != null || asyncValidateAction != null);
 
 			Target = target;
 			ValidateDelegate = validateDelegate;
-			AsyncValidateCallback = asyncValidateCallback ?? (completed => completed(ValidateDelegate()));
+			AsyncValidateAction = asyncValidateAction ?? (completed => completed(ValidateDelegate()));
 		}
 
-		private AsyncRuleValidateCallback AsyncValidateCallback { get; set; }
+		private AsyncRuleValidateAction AsyncValidateAction { get; set; }
 		private Func<RuleValidationResult> ValidateDelegate { get; set; }
 
 		public bool SupportsAsyncValidation
 		{
-			get { return AsyncValidateCallback != null || AsyncValidateCallback != null; }
+			get { return AsyncValidateAction != null || AsyncValidateAction != null; }
 		}
 
 		public bool SupportsSyncValidation
@@ -52,9 +52,9 @@ namespace MvvmValidation
 		{
 			Contract.Requires(completed != null);
 
-			if (AsyncValidateCallback != null)
+			if (AsyncValidateAction != null)
 			{
-				AsyncValidateCallback(completed);
+				AsyncValidateAction(completed);
 			}
 			else
 			{
