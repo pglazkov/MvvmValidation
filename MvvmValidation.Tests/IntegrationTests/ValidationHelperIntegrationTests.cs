@@ -27,22 +27,12 @@ namespace MvvmValidation.Tests.IntegrationTests
 				Action<RuleValidationResult> dummy = null;
 				Assert.IsNull(dummy); // Getting rid of the "unused variable" warning.
 
-				validation.AddAsyncRule(setResult =>
+				validation.AddAsyncRule(setResult => ThreadPool.QueueUserWorkItem(_ =>
 				{
-					ThreadPool.QueueUserWorkItem(_ =>
-					{
-						ruleExecuted = true;
+					ruleExecuted = true;
 
-						if (string.IsNullOrEmpty(vm.Foo))
-						{
-							setResult(RuleValidationResult.Invalid("Foo cannot be empty string."));
-						}
-						else
-						{
-							setResult(RuleValidationResult.Valid());
-						}
-					});
-				});
+					setResult(RuleValidationResult.Invalid("Foo cannot be empty string."));
+				}));
 
 				validation.ResultChanged += (o, e) =>
 				{
@@ -117,36 +107,27 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				bool rule1Executed = false;
 
-				validation.AddAsyncRule(setResultDelegate =>
+				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
-					ThreadPool.QueueUserWorkItem(_ =>
-					{
-						rule1Executed = true;
-						setResultDelegate(RuleValidationResult.Valid());
-					});
-				});
+					rule1Executed = true;
+					setResultDelegate(RuleValidationResult.Valid());
+				}));
 
 				bool rule2Executed = false;
 
-				validation.AddAsyncRule(setResultDelegate =>
+				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
-					ThreadPool.QueueUserWorkItem(_ =>
-					{
-						rule2Executed = true;
-						setResultDelegate(RuleValidationResult.Invalid("Rule 2 failed"));
-					});
-				});
+					rule2Executed = true;
+					setResultDelegate(RuleValidationResult.Invalid("Rule 2 failed"));
+				}));
 
 				bool rule3Executed = false;
 
-				validation.AddAsyncRule(setResultDelegate =>
+				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
-					ThreadPool.QueueUserWorkItem(_ =>
-					{
-						rule3Executed = true;
-						setResultDelegate(RuleValidationResult.Valid());
-					});
-				});
+					rule3Executed = true;
+					setResultDelegate(RuleValidationResult.Valid());
+				}));
 
 				validation.ValidateAllAsync(r =>
 				{
@@ -171,14 +152,11 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				bool rule1Executed = false;
 
-				validation.AddAsyncRule(vm, setResultDelegate =>
+				validation.AddAsyncRule(vm, setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
-					ThreadPool.QueueUserWorkItem(_ =>
-					{
-						rule1Executed = true;
-						setResultDelegate(RuleValidationResult.Valid());
-					});
-				});
+					rule1Executed = true;
+					setResultDelegate(RuleValidationResult.Valid());
+				}));
 
 				bool rule2Executed = false;
 
@@ -190,14 +168,11 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				bool rule3Executed = false;
 
-				validation.AddAsyncRule(vm, setResultDelegate =>
+				validation.AddAsyncRule(vm, setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
-					ThreadPool.QueueUserWorkItem(_ =>
-					{
-						rule3Executed = true;
-						setResultDelegate(RuleValidationResult.Valid());
-					});
-				});
+					rule3Executed = true;
+					setResultDelegate(RuleValidationResult.Valid());
+				}));
 
 				validation.ValidateAllAsync(r =>
 				{
@@ -221,13 +196,10 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				var validation = new ValidationHelper();
 
-				validation.AddAsyncRule(vm, setResultDelegate =>
-				{
-					ThreadPool.QueueUserWorkItem(_ =>
-					{
-						setResultDelegate(RuleValidationResult.Valid());
-					});
-				});
+				validation.AddAsyncRule(vm,
+				                        setResultDelegate =>
+				                        ThreadPool.QueueUserWorkItem(_ =>
+				                                                     setResultDelegate(RuleValidationResult.Valid())));
 
 				validation.AddRule(vm, () =>
 				{
@@ -285,10 +257,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				});
 
-				validation.ValidateAllAsync(r =>
-				{
-					completedAction();
-				});
+				validation.ValidateAllAsync(r => completedAction());
 			});
 		}
 
