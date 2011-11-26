@@ -231,5 +231,50 @@ namespace MvvmValidation.Tests
 			// Verify
 			Assert.AreEqual(expectedTimesToFire, eventFiredTimes);
 		}
+
+		[TestMethod]
+		public void ResultChanged_CorrectingValidationError_EventIsFiredForWithValidResultAfterCorrection()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			var fooResult = RuleValidationResult.Valid();
+
+// ReSharper disable AccessToModifiedClosure // Intended
+			validation.AddRule(() => dummy.Foo, () => fooResult);
+// ReSharper restore AccessToModifiedClosure
+
+			var onResultChanged = new Action<ValidationResultChangedEventArgs>(r => { });
+
+// ReSharper disable AccessToModifiedClosure // Intended
+			validation.ResultChanged += (o, e) => onResultChanged(e);
+// ReSharper restore AccessToModifiedClosure
+
+
+			// ACT & VERIFY
+
+			// First, verify that the event is fired with invalid result 
+
+			fooResult = RuleValidationResult.Invalid("Error");
+
+			onResultChanged = r =>
+			{
+				Assert.IsFalse(r.NewResult.IsValid, "ResultChanged must be fired with invalid result first.");
+			};
+			validation.ValidateAll();
+
+
+			// Second, verify that after second validation when error was corrected, the event fires with the valid result
+
+			fooResult = RuleValidationResult.Valid();
+
+			onResultChanged = r =>
+			{
+				Assert.IsTrue(r.NewResult.IsValid, "ResultChanged must be fired with valid result after succesfull validation.");
+			};
+
+			validation.ValidateAll();
+		}
 	}
 }
