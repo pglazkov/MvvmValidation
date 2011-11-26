@@ -190,7 +190,7 @@ namespace MvvmValidation.Tests
 
 			var eventFiredTimes = 0;
 
-			validation.ValidationResultChanged += (o, e) =>
+			validation.ResultChanged += (o, e) =>
 			{
 				eventFiredTimes++;
 			};
@@ -203,7 +203,7 @@ namespace MvvmValidation.Tests
 		}
 
 		[TestMethod]
-		public void ValidationResultChanged_ValidateExecutedForSeveralRules_FiresForEachTarget()
+		public void ResultChanged_ValidateExecutedForSeveralRules_FiresForEachTarget()
 		{
 			// Arrange
 			var validation = new ValidationHelper();
@@ -220,7 +220,7 @@ namespace MvvmValidation.Tests
 			const int expectedTimesToFire = 0 + 1 /*Invalid Foo*/+ 1 /* Invalid general target */;
 			var eventFiredTimes = 0;
 
-			validation.ValidationResultChanged += (o, e) =>
+			validation.ResultChanged += (o, e) =>
 			{
 				eventFiredTimes++;
 			};

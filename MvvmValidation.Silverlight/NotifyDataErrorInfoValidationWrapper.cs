@@ -14,7 +14,7 @@ namespace MvvmValidation
 
 			Validator = validator;
 
-			Validator.ValidationResultChanged +=
+			Validator.ResultChanged +=
 				(o, e) => OnErrorsChanged(new DataErrorsChangedEventArgs(e.Target as string));
 		}
 

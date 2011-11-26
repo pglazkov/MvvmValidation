@@ -169,9 +169,6 @@
     <Compile Include="..\MvvmValidation\RuleValidationResultExtensions.cs">
       <Link>RuleValidationResultExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\MvvmValidation\ValidationCompletedEventArgs.cs">
-      <Link>ValidationCompletedEventArgs.cs</Link>
-    </Compile>
     <Compile Include="..\MvvmValidation\ValidationError.cs">
       <Link>ValidationError.cs</Link>
     </Compile>

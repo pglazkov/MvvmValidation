@@ -147,7 +147,6 @@
     <Compile Include="RuleValidationResultExtensions.cs" />
     <Compile Include="Internal\ThreadingUtils.cs" />
     <Compile Include="Internal\UndefinedValidationTarget.cs" />
-    <Compile Include="ValidationCompletedEventArgs.cs" />
     <Compile Include="ValidationError.cs" />
     <Compile Include="ValidationErrorCollection.cs" />
     <Compile Include="ValidationHelper.cs" />

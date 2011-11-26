@@ -550,7 +550,7 @@ namespace MvvmValidation
 						                      	: new ValidationResult(ruleTarget, ruleValidationResult.Errors);
 
 						// Notify that validation result for the target has changed
-						NotifyValidationResultChanged(ruleTarget, GetResult(ruleTarget));
+						NotifyResultChanged(ruleTarget, GetResult(ruleTarget));
 					}
 				}
 			}
@@ -587,15 +587,15 @@ namespace MvvmValidation
 
 		#endregion
 
-		#region ValidationResultChanged
+		#region ResultChanged
 
-		public event EventHandler<ValidationResultChangedEventArgs> ValidationResultChanged;
+		public event EventHandler<ValidationResultChangedEventArgs> ResultChanged;
 
-		private void NotifyValidationResultChanged(object target, ValidationResult newResult)
+		private void NotifyResultChanged(object target, ValidationResult newResult)
 		{
 			ThreadingUtils.RunOnUI(() =>
 			{
-				EventHandler<ValidationResultChangedEventArgs> handler = ValidationResultChanged;
+				EventHandler<ValidationResultChangedEventArgs> handler = ResultChanged;
 				if (handler != null)
 				{
 					handler(this, new ValidationResultChangedEventArgs(target, newResult));

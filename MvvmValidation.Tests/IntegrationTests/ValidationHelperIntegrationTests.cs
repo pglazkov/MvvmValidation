@@ -22,11 +22,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 				
 				bool ruleExecuted = false;
 
-				// OK, this is really strange, but if Action<bool> is not mentioned anywhere in the project, then ReSharter would fail to build and run the test... 
-				// So including the following line to fix it.
-				Action<RuleValidationResult> dummy = null;
-				Assert.IsNull(dummy); // Getting rid of the "unused variable" warning.
-
 				validation.AddAsyncRule(setResult =>
 				{
 					ThreadPool.QueueUserWorkItem(_ =>
@@ -44,7 +39,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					});
 				});
 
-				validation.ValidationResultChanged += (o, e) =>
+				validation.ResultChanged += (o, e) =>
 				{
 					Assert.IsTrue(ruleExecuted, "Validation rule must be executed before ValidationCompleted event is fired.");
 
@@ -322,7 +317,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					vm.StringProperty2 = "Valid value";
 				}
 
-				vm.Validation.ValidationResultChanged += (o, e) =>
+				vm.Validation.ResultChanged += (o, e) =>
 				{
 					// VERIFY
 
