@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
 
 namespace MvvmValidation.Tests
@@ -8,6 +10,13 @@ namespace MvvmValidation.Tests
 	[TestClass]
 	public class ValidationHelperTests
 	{
+		[TestInitialize]
+		public void TestInitialize()
+		{
+			var uiThreadDispatcher = Dispatcher.CurrentDispatcher;
+			CurrentDispatcher.Instance = uiThreadDispatcher;
+		}
+
 		[TestMethod]
 		public void StringProperty_InvalidValue_HasValidationError()
 		{
@@ -158,20 +167,113 @@ namespace MvvmValidation.Tests
 			                   	return RuleValidationResult.Invalid("Error");
 			                   });
 
-			validation.ValidationCompleted += (o, e) =>
+			// Act
+			var result = validation.ValidateAll();
+
+			// Assert
+			Assert.IsFalse(result.IsValid);
+
+			Assert.IsTrue(result.ErrorList.Count == 2, "There must be two errors: one for each property target");
+			Assert.IsTrue(Equals(result.ErrorList[0].Target, "dummy.Foo"), "Target for the first error must be dummy.Foo");
+			Assert.IsTrue(Equals(result.ErrorList[1].Target, "dummy.Bar"), "Target for the second error must be dummy.Bar");
+		}
+
+		[TestMethod]
+		public void ValidationResultChanged_ValidateExecutedForOneRule_FiresOneTime()
+		{
+			// Arrange
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			validation.AddRule(() => dummy.Foo,
+			                   () => RuleValidationResult.Invalid("Error"));
+
+			var eventFiredTimes = 0;
+
+			validation.ResultChanged += (o, e) =>
 			{
-				// Assert
-
-				Assert.IsFalse(e.ValidationResult.IsValid);
-
-				Assert.IsTrue(e.ValidationResult.ErrorList.Count == 2, "There must be two errors: one for each property target");
-				Assert.IsTrue(Equals(e.ValidationResult.ErrorList[0].Target, "dummy.Foo"),
-				              "Target for the first error must be dummy.Foo");
-				Assert.IsTrue(Equals(e.ValidationResult.ErrorList[1].Target, "dummy.Bar"),
-				              "Target for the second error must be dummy.Bar");
+				eventFiredTimes++;
 			};
 
 			// Act
+			validation.ValidateAll();
+
+			// Verity
+			Assert.AreEqual(1, eventFiredTimes, "Event should have been fired");
+		}
+
+		[TestMethod]
+		public void ResultChanged_ValidateExecutedForSeveralRules_FiresForEachTarget()
+		{
+			// Arrange
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			validation.AddRule(() => dummy.Foo,
+							   () => RuleValidationResult.Invalid("Error"));
+			validation.AddRule(() => dummy.Foo,
+			                   RuleValidationResult.Valid);
+			validation.AddRule(() => dummy.Bar,
+								RuleValidationResult.Valid);
+			validation.AddRule(() => RuleValidationResult.Invalid("Error"));
+
+			const int expectedTimesToFire = 0 + 1 /*Invalid Foo*/+ 1 /* Invalid general target */;
+			var eventFiredTimes = 0;
+
+			validation.ResultChanged += (o, e) =>
+			{
+				eventFiredTimes++;
+			};
+
+			// Act
+			validation.ValidateAll();
+
+			// Verify
+			Assert.AreEqual(expectedTimesToFire, eventFiredTimes);
+		}
+
+		[TestMethod]
+		public void ResultChanged_CorrectingValidationError_EventIsFiredForWithValidResultAfterCorrection()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			var fooResult = RuleValidationResult.Valid();
+
+// ReSharper disable AccessToModifiedClosure // Intended
+			validation.AddRule(() => dummy.Foo, () => fooResult);
+// ReSharper restore AccessToModifiedClosure
+
+			var onResultChanged = new Action<ValidationResultChangedEventArgs>(r => { });
+
+// ReSharper disable AccessToModifiedClosure // Intended
+			validation.ResultChanged += (o, e) => onResultChanged(e);
+// ReSharper restore AccessToModifiedClosure
+
+
+			// ACT & VERIFY
+
+			// First, verify that the event is fired with invalid result 
+
+			fooResult = RuleValidationResult.Invalid("Error");
+
+			onResultChanged = r =>
+			{
+				Assert.IsFalse(r.NewResult.IsValid, "ResultChanged must be fired with invalid result first.");
+			};
+			validation.ValidateAll();
+
+
+			// Second, verify that after second validation when error was corrected, the event fires with the valid result
+
+			fooResult = RuleValidationResult.Valid();
+
+			onResultChanged = r =>
+			{
+				Assert.IsTrue(r.NewResult.IsValid, "ResultChanged must be fired with valid result after succesfull validation.");
+			};
+
 			validation.ValidateAll();
 		}
 	}

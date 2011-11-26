@@ -22,11 +22,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 				
 				bool ruleExecuted = false;
 
-				// OK, this is really strange, but if Action<bool> is not mentioned anywhere in the project, then ReSharter would fail to build and run the test... 
-				// So including the following line to fix it.
-				Action<RuleValidationResult> dummy = null;
-				Assert.IsNull(dummy); // Getting rid of the "unused variable" warning.
-
 				validation.AddAsyncRule(setResult =>
 				{
 					ThreadPool.QueueUserWorkItem(_ =>
@@ -44,13 +39,13 @@ namespace MvvmValidation.Tests.IntegrationTests
 					});
 				});
 
-				validation.ValidationCompleted += (o, e) =>
+				validation.ResultChanged += (o, e) =>
 				{
 					Assert.IsTrue(ruleExecuted, "Validation rule must be executed before ValidationCompleted event is fired.");
 
 					var isUiThread = dispatcher.Thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
 
-					Assert.IsTrue(isUiThread, "ValidationCompleted must be executed on UI thread");
+					Assert.IsTrue(isUiThread, "ValidationResultChanged must be executed on UI thread");
 				};
 
 				validation.ValidateAllAsync(r =>
@@ -293,7 +288,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[TestMethod]
-		public void AsyncValidation_InvalidValue_CallsValidationRuleInBackgroundTreadAndReportsInvalidOnUIThread()
+		public void AsyncValidation_InvalidValue_CallsValidationRuleInBackgroundThreadAndReportsInvalidOnUIThread()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
 			{
@@ -322,7 +317,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					vm.StringProperty2 = "Valid value";
 				}
 
-				vm.Validation.ValidationCompleted += (o, e) =>
+				vm.Validation.ResultChanged += (o, e) =>
 				{
 					// VERIFY
 
@@ -343,7 +338,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 						Assert.Fail("Validation execution thread must be a different thread than validation completed thread");
 					}
 
-					Assert.IsFalse(e.ValidationResult.IsValid, "Validation must fail");
+					Assert.IsFalse(e.NewResult.IsValid, "Validation must fail");
 
 					completedAction();
 				};

@@ -383,8 +383,6 @@ namespace MvvmValidation
 
 			ValidationResult validationResult = ExecuteValidationRules(target);
 
-			NotifyValidationCompleted(validationResult);
-
 			return validationResult;
 		}
 
@@ -434,11 +432,7 @@ namespace MvvmValidation
 				return;
 			}
 
-			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() =>
-			{
-				onCompleted(r);
-				NotifyValidationCompleted(r);
-			}));
+			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)));
 		}
 
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
@@ -461,7 +455,7 @@ namespace MvvmValidation
 			{
 				RuleValidationResult ruleResult = validationRule.Evaluate();
 
-				SaveRuleValidationResult(validationRule, ruleResult);
+				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult);
 
 				AddErrorsFromRuleResult(result, validationRule, ruleResult);
 			}
@@ -491,7 +485,7 @@ namespace MvvmValidation
 
 					validationRule.EvaluateAsync(ruleResult =>
 					{
-						SaveRuleValidationResult(rule, ruleResult);
+						SaveRuleValidationResultAndNotifyIfNeeded(rule, ruleResult);
 
 						AddErrorsFromRuleResult(result, rule, ruleResult);
 
@@ -537,7 +531,7 @@ namespace MvvmValidation
 			return ruleFilter;
 		}
 
-		private void SaveRuleValidationResult(ValidationRule rule, RuleValidationResult ruleValidationResult)
+		private void SaveRuleValidationResultAndNotifyIfNeeded(ValidationRule rule, RuleValidationResult ruleValidationResult)
 		{
 			lock (syncRoot)
 			{
@@ -554,6 +548,9 @@ namespace MvvmValidation
 						targetRuleMap[rule] = ruleValidationResult.IsValid
 						                      	? ValidationResult.Valid
 						                      	: new ValidationResult(ruleTarget, ruleValidationResult.Errors);
+
+						// Notify that validation result for the target has changed
+						NotifyResultChanged(ruleTarget, GetResult(ruleTarget));
 					}
 				}
 			}
@@ -590,18 +587,18 @@ namespace MvvmValidation
 
 		#endregion
 
-		#region ValidationCompleted Event
+		#region ResultChanged
 
-		public event EventHandler<ValidationCompletedEventArgs> ValidationCompleted;
+		public event EventHandler<ValidationResultChangedEventArgs> ResultChanged;
 
-		private void NotifyValidationCompleted(ValidationResult result)
+		private void NotifyResultChanged(object target, ValidationResult newResult)
 		{
 			ThreadingUtils.RunOnUI(() =>
 			{
-				EventHandler<ValidationCompletedEventArgs> handler = ValidationCompleted;
+				EventHandler<ValidationResultChangedEventArgs> handler = ResultChanged;
 				if (handler != null)
 				{
-					handler(this, new ValidationCompletedEventArgs(result));
+					handler(this, new ValidationResultChangedEventArgs(target, newResult));
 				}
 			});
 		}

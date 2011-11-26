@@ -14,21 +14,8 @@ namespace MvvmValidation
 
 			Validator = validator;
 
-			Validator.ValidationCompleted +=
-				(o, e) =>
-				{
-					if (e.ValidationResult.ErrorList.Any())
-					{
-						foreach (ValidationError error in e.ValidationResult.ErrorList)
-						{
-							OnErrorsChanged(new DataErrorsChangedEventArgs(error.Target as string));
-						}
-					}
-					else
-					{
-						OnErrorsChanged(new DataErrorsChangedEventArgs(e.ValidationResult.Target as string));
-					}
-				};
+			Validator.ResultChanged +=
+				(o, e) => OnErrorsChanged(new DataErrorsChangedEventArgs(e.Target as string));
 		}
 
 		private ValidationHelper Validator { get; set; }
