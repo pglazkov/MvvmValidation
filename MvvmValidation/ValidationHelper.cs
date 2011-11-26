@@ -351,6 +351,11 @@ namespace MvvmValidation
 
 		#region Validation Execution
 
+		/// <summary>
+		/// Validates (executes validation rules) the property specified in the <paramref name="propertyPathExpression"/> parameter.
+		/// </summary>
+		/// <param name="propertyPathExpression">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
+		/// <returns>Result that indicates whether the given property is valid and a collection of errors, if not valid.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public ValidationResult Validate(Expression<Func<object>> propertyPathExpression)
 		{
@@ -360,6 +365,11 @@ namespace MvvmValidation
 			return ValidateInternal(PropertyName.For(propertyPathExpression));
 		}
 
+		/// <summary>
+		/// Validates (executes validation rules) the specified target object.
+		/// </summary>
+		/// <param name="target">The target object to validate.</param>
+		/// <returns>Result that indicates whether the given target object is valid and a collection of errors, if not valid.</returns>
 		public ValidationResult Validate(object target)
 		{
 			Contract.Requires(target != null);
@@ -367,6 +377,10 @@ namespace MvvmValidation
 			return ValidateInternal(target);
 		}
 
+		/// <summary>
+		/// Executes validation using all validation rules. 
+		/// </summary>
+		/// <returns>Result that indicates whether the validation was succesfull and a collection of errors, if it wasn't.</returns>
 		public ValidationResult ValidateAll()
 		{
 			return ValidateInternal(null);
@@ -386,12 +400,23 @@ namespace MvvmValidation
 			return validationResult;
 		}
 
+		/// <summary>
+		/// Executes validation for the given property asynchronously. 
+		/// Executes all (normal and async) validation rules for the property specified in the <paramref name="propertyPathExpression"/>.
+		/// </summary>
+		/// <param name="propertyPathExpression">Expression for the property to validate. Example: ValidateAsync(() => MyProperty).</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void ValidateAsync(Expression<Func<object>> propertyPathExpression)
 		{
 			ValidateAsync(propertyPathExpression, null);
 		}
 
+		/// <summary>
+		/// Executes validation for the given property asynchronously. 
+		/// Executes all (normal and async) validation rules for the property specified in the <paramref name="propertyPathExpression"/>.
+		/// </summary>
+		/// <param name="propertyPathExpression">Expression for the property to validate. Example: ValidateAsync(() => MyProperty, ...).</param>
+		/// <param name="onCompleted">Callback to execute when the asynchronous validation is completed. The callback will be executed on the UI thread.</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void ValidateAsync(Expression<Func<object>> propertyPathExpression, Action<ValidationResult> onCompleted)
 		{
@@ -400,11 +425,22 @@ namespace MvvmValidation
 			ValidateAsync(PropertyName.For(propertyPathExpression), onCompleted);
 		}
 
+		/// <summary>
+		/// Executes validation for the given target asynchronously. 
+		/// Executes all (normal and async) validation rules for the target object specified in the <paramref name="target"/>.
+		/// </summary>
+		/// <param name="target">The target object to validate.</param>
 		public void ValidateAsync(object target)
 		{
 			ValidateAsync(target, null);
 		}
 
+		/// <summary>
+		/// Executes validation for the given target asynchronously. 
+		/// Executes all (normal and async) validation rules for the target object specified in the <paramref name="target"/>.
+		/// </summary>
+		/// <param name="target">The target object to validate.</param>
+		/// <param name="onCompleted">Callback to execute when the asynchronous validation is completed. The callback will be executed on the UI thread.</param>
 		public void ValidateAsync(object target, Action<ValidationResult> onCompleted)
 		{
 			Contract.Requires(target != null);
@@ -412,11 +448,18 @@ namespace MvvmValidation
 			ValidateInternalAsync(target, onCompleted);
 		}
 
+		/// <summary>
+		/// Executes validation using all validation rules asynchronously.
+		/// </summary>
 		public void ValidateAllAsync()
 		{
 			ValidateAllAsync(null);
 		}
 
+		/// <summary>
+		/// Executes validation using all validation rules asynchronously.
+		/// </summary>
+		/// <param name="onCompleted">Callback to execute when the asynchronous validation is completed. The callback will be executed on the UI thread.</param>
 		public void ValidateAllAsync(Action<ValidationResult> onCompleted)
 		{
 			ValidateInternalAsync(null, onCompleted);
@@ -589,6 +632,9 @@ namespace MvvmValidation
 
 		#region ResultChanged
 
+		/// <summary>
+		/// Occurs when the validation result have changed for a property or for the entire entity (the result that is returned by the <see cref="GetResult()"/> method).
+		/// </summary>
 		public event EventHandler<ValidationResultChangedEventArgs> ResultChanged;
 
 		private void NotifyResultChanged(object target, ValidationResult newResult)
@@ -607,6 +653,21 @@ namespace MvvmValidation
 
 		#region Misc
 
+		/// <summary>
+		/// Suppresses all the calls to the Validate* methods until the returned <see cref="IDisposable"/> is disposed
+		/// by calling <see cref="IDisposable.Dispose"/>. 
+		/// </summary>
+		/// <remarks>
+		/// This method is convenient to use when you want to suppress validation when setting initial value to a property. In this case you would
+		/// wrap the code that sets the property into a <c>using</c> block. Like this:
+		/// <code>
+		/// using (Validation.SuppressValidation()) 
+		/// {
+		///     MyProperty = "Initial Value";
+		/// }
+		/// </code>
+		/// </remarks>
+		/// <returns>An instance of <see cref="IDisposable"/> that serves as a handle that you can call <see cref="IDisposable.Dispose"/> on to resume validation. The value can also be used in a <c>using</c> block.</returns>
 		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		public IDisposable SuppressValidation()
 		{
