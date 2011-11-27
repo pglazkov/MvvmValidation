@@ -184,6 +184,9 @@
     <Compile Include="..\MvvmValidation\ValidationResultChangedEventArgs.cs">
       <Link>ValidationResultChangedEventArgs.cs</Link>
     </Compile>
+    <Compile Include="..\MvvmValidation\ValidationResultExtensions.cs">
+      <Link>ValidationResultExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\MvvmValidation\ValidationRule.cs">
       <Link>ValidationRule.cs</Link>
     </Compile>

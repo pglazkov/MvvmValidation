@@ -327,7 +327,7 @@ namespace MvvmValidation
 			{
 				foreach (ValidationResult ruleValidationResult in ruleResultMap.Values)
 				{
-					result = result.MergeWith(ruleValidationResult);
+					result = result.Combine(ruleValidationResult);
 				}
 			}
 			return result;
@@ -341,7 +341,7 @@ namespace MvvmValidation
 			{
 				foreach (ValidationResult validationResult in ruleResultsMap.Values)
 				{
-					result = result.MergeWith(validationResult);
+					result = result.Combine(validationResult);
 				}
 			}
 			return result;

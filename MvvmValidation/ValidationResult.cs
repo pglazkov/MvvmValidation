@@ -104,36 +104,5 @@ namespace MvvmValidation
 
 			return !string.IsNullOrEmpty(result) ? result : "Valid";
 		}
-
-		/// <summary>
-		/// Merges this validation result with given <paramref name="validationResult"/> and returns a new instance of <see cref="ValidationResult"/>
-		/// that represents the merged result (the result that contains errors from both results whithout duplicates).
-		/// </summary>
-		/// <param name="validationResult">The validation result to merge with.</param>
-		/// <returns>A new instance of <see cref="ValidationResult"/> that represents the merged result (the result that contains errors from both results whithout duplicates).</returns>
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
-		public ValidationResult MergeWith(ValidationResult validationResult)
-		{
-			Contract.Requires(validationResult != null);
-
-			var result = new ValidationResult();
-
-			foreach (ValidationError error in ErrorList)
-			{
-				result.AddError(error.Target, error.ErrorText);
-			}
-
-			foreach (ValidationError error in validationResult.ErrorList)
-			{
-				if (result.ErrorList.Contains(error))
-				{
-					continue;
-				}
-
-				result.AddError(error.Target, error.ErrorText);
-			}
-
-			return result;
-		}
 	}
 }
