@@ -51,10 +51,10 @@ namespace MvvmValidation
 		/// <param name="target">The validation target (object that is being validated by <paramref name="validateDelegate"/>).</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddRule(object target, Func<RuleValidationResult> validateDelegate)
+		public void AddRule(object target, Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(target != null);
 			Contract.Requires(validateDelegate != null);
@@ -67,10 +67,10 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddRule(Func<RuleValidationResult> validateDelegate)
+		public void AddRule(Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(validateDelegate != null);
 
@@ -83,16 +83,16 @@ namespace MvvmValidation
 		/// <param name="propertyExpression">The target property expression.</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		/// <example>
 		/// <code>
-		/// AddRule(() => Foo, , () => RuleValidationResult.Assert(Foo > 10, "Foo must be greater than 10"))
+		/// AddRule(() => Foo, , () => RuleResult.Assert(Foo > 10, "Foo must be greater than 10"))
 		/// </code>
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddRule(Expression<Func<object>> propertyExpression, Func<RuleValidationResult> validateDelegate)
+		public void AddRule(Expression<Func<object>> propertyExpression, Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateDelegate != null);
@@ -107,17 +107,17 @@ namespace MvvmValidation
 		/// <param name="property2Expression">The second target property expression.</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		/// <example>
 		/// <code>
-		/// AddRule(() => Foo, () => Bar, () => RuleValidationResult.Assert(Foo > Bar, "Foo must be greater than bar"))
+		/// AddRule(() => Foo, () => Bar, () => RuleResult.Assert(Foo > Bar, "Foo must be greater than bar"))
 		/// </code>
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-		                    Func<RuleValidationResult> validateDelegate)
+		                    Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
@@ -132,11 +132,11 @@ namespace MvvmValidation
 		/// <param name="properties">The collection of target property expressions. </param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddRule(IEnumerable<Expression<Func<object>>> properties, Func<RuleValidationResult> validateDelegate)
+		public void AddRule(IEnumerable<Expression<Func<object>>> properties, Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(properties != null);
 			Contract.Requires(properties.Any());
@@ -153,7 +153,7 @@ namespace MvvmValidation
 		/// <param name="target">The validation target (object that is being validated by <paramref name="validateAction"/>).</param>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		public void AddAsyncRule(object target, AsyncRuleValidateAction validateAction)
@@ -169,7 +169,7 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		public void AddAsyncRule(AsyncRuleValidateAction validateAction)
@@ -185,7 +185,7 @@ namespace MvvmValidation
 		/// <param name="propertyExpression">The target property expression.</param>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		/// <example>
@@ -193,7 +193,7 @@ namespace MvvmValidation
 		/// AddRule(() => Foo, 
 		///			(onCompleted) => 
 		///         {
-		///				ValidationServiceFacade.ValidateFoo(Foo, result => onCompleted(RuleValidationResult.Assert(result.IsValid, "Foo must be greater than 10")));
+		///				ValidationServiceFacade.ValidateFoo(Foo, result => onCompleted(RuleResult.Assert(result.IsValid, "Foo must be greater than 10")));
 		///			})
 		/// </code>
 		/// </example>
@@ -213,7 +213,7 @@ namespace MvvmValidation
 		/// <param name="property2Expression">The second target property expression.</param>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		/// <example>
@@ -221,7 +221,7 @@ namespace MvvmValidation
 		/// AddRule(() => Foo, () => Bar
 		///			(onCompleted) => 
 		///         {
-		///				ValidationServiceFacade.ValidateFooAndBar(Foo, Bar, result => onCompleted(RuleValidationResult.Assert(result.IsValid, "Foo must be greater than 10")));
+		///				ValidationServiceFacade.ValidateFooAndBar(Foo, Bar, result => onCompleted(RuleResult.Assert(result.IsValid, "Foo must be greater than 10")));
 		///			})
 		/// </code>
 		/// </example>
@@ -242,7 +242,7 @@ namespace MvvmValidation
 		/// <param name="properties">The collection of target property expressions. </param>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
-		/// of <see cref="RuleValidationResult"/> that indicated whether the rule has passed and 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
@@ -257,7 +257,7 @@ namespace MvvmValidation
 			AddRuleCore(target, null, validateAction);
 		}
 
-		private void AddRuleCore(IValidationTarget target, Func<RuleValidationResult> validateDelegate,
+		private void AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
 		                         AsyncRuleValidateAction asyncValidateAction)
 		{
 			var rule = new ValidationRule(target, validateDelegate, asyncValidateAction);
@@ -496,7 +496,7 @@ namespace MvvmValidation
 
 			foreach (ValidationRule validationRule in rulesToExecute)
 			{
-				RuleValidationResult ruleResult = validationRule.Evaluate();
+				RuleResult ruleResult = validationRule.Evaluate();
 
 				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult);
 
@@ -546,7 +546,7 @@ namespace MvvmValidation
 		}
 
 		private static void AddErrorsFromRuleResult(ValidationResult resultToAddTo, ValidationRule validationRule,
-		                                            RuleValidationResult ruleResult)
+		                                            RuleResult ruleResult)
 		{
 			if (!ruleResult.IsValid)
 			{
@@ -574,7 +574,7 @@ namespace MvvmValidation
 			return ruleFilter;
 		}
 
-		private void SaveRuleValidationResultAndNotifyIfNeeded(ValidationRule rule, RuleValidationResult ruleValidationResult)
+		private void SaveRuleValidationResultAndNotifyIfNeeded(ValidationRule rule, RuleResult ruleResult)
 		{
 			lock (syncRoot)
 			{
@@ -586,11 +586,11 @@ namespace MvvmValidation
 
 					ValidationResult currentRuleResult = GetCurrentValidationResultForRule(targetRuleMap, rule);
 
-					if (currentRuleResult.IsValid != ruleValidationResult.IsValid)
+					if (currentRuleResult.IsValid != ruleResult.IsValid)
 					{
-						targetRuleMap[rule] = ruleValidationResult.IsValid
+						targetRuleMap[rule] = ruleResult.IsValid
 						                      	? ValidationResult.Valid
-						                      	: new ValidationResult(ruleTarget, ruleValidationResult.Errors);
+						                      	: new ValidationResult(ruleTarget, ruleResult.Errors);
 
 						// Notify that validation result for the target has changed
 						NotifyResultChanged(ruleTarget, GetResult(ruleTarget));

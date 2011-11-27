@@ -24,14 +24,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				// OK, this is really strange, but if Action<bool> is not mentioned anywhere in the project, then ReSharter would fail to build and run the test... 
 				// So including the following line to fix it.
-				Action<RuleValidationResult> dummy = null;
+				Action<RuleResult> dummy = null;
 				Assert.IsNull(dummy); // Getting rid of the "unused variable" warning.
 
 				validation.AddAsyncRule(setResult => ThreadPool.QueueUserWorkItem(_ =>
 				{
 					ruleExecuted = true;
 
-					setResult(RuleValidationResult.Invalid("Foo cannot be empty string."));
+					setResult(RuleResult.Invalid("Foo cannot be empty string."));
 				}));
 
 				validation.ResultChanged += (o, e) =>
@@ -81,7 +81,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					{
 						ThreadPool.QueueUserWorkItem(_ =>
 						{
-							setResult(RuleValidationResult.Assert(validCondition(), "Foo must be different than bar"));
+							setResult(RuleResult.Assert(validCondition(), "Foo must be different than bar"));
 						});
 					});
 
@@ -110,7 +110,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
 					rule1Executed = true;
-					setResultDelegate(RuleValidationResult.Valid());
+					setResultDelegate(RuleResult.Valid());
 				}));
 
 				bool rule2Executed = false;
@@ -118,7 +118,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
 					rule2Executed = true;
-					setResultDelegate(RuleValidationResult.Invalid("Rule 2 failed"));
+					setResultDelegate(RuleResult.Invalid("Rule 2 failed"));
 				}));
 
 				bool rule3Executed = false;
@@ -126,7 +126,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
 					rule3Executed = true;
-					setResultDelegate(RuleValidationResult.Valid());
+					setResultDelegate(RuleResult.Valid());
 				}));
 
 				validation.ValidateAllAsync(r =>
@@ -155,7 +155,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(vm, setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
 					rule1Executed = true;
-					setResultDelegate(RuleValidationResult.Valid());
+					setResultDelegate(RuleResult.Valid());
 				}));
 
 				bool rule2Executed = false;
@@ -163,7 +163,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddRule(vm, () =>
 				{
 					rule2Executed = true;
-					return RuleValidationResult.Invalid("Rule 2 failed");
+					return RuleResult.Invalid("Rule 2 failed");
 				});
 
 				bool rule3Executed = false;
@@ -171,7 +171,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(vm, setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
 					rule3Executed = true;
-					setResultDelegate(RuleValidationResult.Valid());
+					setResultDelegate(RuleResult.Valid());
 				}));
 
 				validation.ValidateAllAsync(r =>
@@ -199,11 +199,11 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(vm,
 				                        setResultDelegate =>
 				                        ThreadPool.QueueUserWorkItem(_ =>
-				                                                     setResultDelegate(RuleValidationResult.Valid())));
+				                                                     setResultDelegate(RuleResult.Valid())));
 
 				validation.AddRule(vm, () =>
 				{
-					return RuleValidationResult.Invalid("Rule 2 failed");
+					return RuleResult.Invalid("Rule 2 failed");
 				});
 
 				validation.ValidateAll();
@@ -219,14 +219,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 			var validation = new ValidationHelper();
 
-			validation.AddRule(vm, RuleValidationResult.Valid);
+			validation.AddRule(vm, RuleResult.Valid);
 
 			validation.AddRule(vm, () =>
 			{
-				return RuleValidationResult.Invalid("Rule 2 failed");
+				return RuleResult.Invalid("Rule 2 failed");
 			});
 
-			validation.AddRule(vm, RuleValidationResult.Valid);
+			validation.AddRule(vm, RuleResult.Valid);
 
 			var r = validation.Validate(vm);
 
@@ -250,10 +250,10 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 					if (string.IsNullOrEmpty(vm.Foo))
 					{
-						return RuleValidationResult.Invalid("Foo cannot be empty string.");
+						return RuleResult.Invalid("Foo cannot be empty string.");
 					}
 
-					return RuleValidationResult.Valid();
+					return RuleResult.Valid();
 
 				});
 

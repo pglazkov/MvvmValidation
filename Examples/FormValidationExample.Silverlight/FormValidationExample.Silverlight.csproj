@@ -128,8 +128,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
         <SilverlightProjectProperties />
-      </FlavorProperties>
-      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="be1cbb49-b796-4a61-b79f-da7bcc6c9c5d" />
+      </FlavorProperties>      
     </VisualStudio>
   </ProjectExtensions>
 </Project>

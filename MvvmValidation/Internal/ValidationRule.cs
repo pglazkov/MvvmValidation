@@ -7,7 +7,7 @@ namespace MvvmValidation.Internal
 {
 	internal class ValidationRule
 	{
-		public ValidationRule(IValidationTarget target, Func<RuleValidationResult> validateDelegate,
+		public ValidationRule(IValidationTarget target, Func<RuleResult> validateDelegate,
 		                      AsyncRuleValidateAction asyncValidateAction)
 		{
 			Contract.Requires(target != null);
@@ -19,7 +19,7 @@ namespace MvvmValidation.Internal
 		}
 
 		private AsyncRuleValidateAction AsyncValidateAction { get; set; }
-		private Func<RuleValidationResult> ValidateDelegate { get; set; }
+		private Func<RuleResult> ValidateDelegate { get; set; }
 
 		public bool SupportsAsyncValidation
 		{
@@ -34,7 +34,7 @@ namespace MvvmValidation.Internal
 		public IValidationTarget Target { get; private set; }
 
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EvaluateAsync")]
-		public RuleValidationResult Evaluate()
+		public RuleResult Evaluate()
 		{
 			if (!SupportsSyncValidation)
 			{
@@ -42,12 +42,12 @@ namespace MvvmValidation.Internal
 					"Synchronous validation is not supported by this rule. Method EvaluateAsync must be called instead.");
 			}
 
-			RuleValidationResult result = ValidateDelegate();
+			RuleResult result = ValidateDelegate();
 
 			return result;
 		}
 
-		public void EvaluateAsync(Action<RuleValidationResult> completed)
+		public void EvaluateAsync(Action<RuleResult> completed)
 		{
 			Contract.Requires(completed != null);
 
@@ -59,7 +59,7 @@ namespace MvvmValidation.Internal
 			{
 				ThreadPool.QueueUserWorkItem(_ =>
 				{
-					RuleValidationResult result = Evaluate();
+					RuleResult result = Evaluate();
 					completed(result);
 				});
 			}
