@@ -14,16 +14,23 @@
 				CornerRadius="5"
 				VerticalAlignment="Center"
 				HorizontalAlignment="Center"
-				Padding="10">
+				Padding="20">
 			<Grid>
 				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
 					<RowDefinition Height="*" />
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
 
-				<l:FormView Grid.Row="0" />
+				<TextBlock Grid.Row="0"
+						   Text="Registration Form - Validation Example"
+						   FontSize="20"
+						   Foreground="Gray" />
 
-				<Grid Grid.Row="1">
+				<l:FormView Grid.Row="1"
+							Margin="0,20,0,0"/>
+
+				<Grid Grid.Row="2">
 					<Border>
 						<Button Content="Submit (Validate)"
 								Command="{Binding SubmitCommant}"
