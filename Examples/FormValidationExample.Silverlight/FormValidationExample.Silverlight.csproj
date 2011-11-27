@@ -81,26 +81,26 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FormView.xaml.cs">
+    <Compile Include="View\FormView.xaml.cs">
       <DependentUpon>FormView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainView.xaml.cs">
+    <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MainViewModel.cs" />
+    <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValidatableViewModelBase.cs" />
+    <Compile Include="Infrastructure\ValidatableViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="FormView.xaml">
+    <Page Include="View\FormView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainView.xaml">
+    <Page Include="View\MainView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -108,7 +108,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Properties\AppManifest.xml" />
-    <Compile Include="ValidatableViewModelBase.Silverlight.cs" />
+    <Compile Include="Infrastructure\ValidatableViewModelBase.Silverlight.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\MvvmValidation.Silverlight\MvvmValidation.Silverlight.csproj">
@@ -116,6 +116,7 @@
       <Name>MvvmValidation.Silverlight</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -128,7 +129,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
         <SilverlightProjectProperties />
-      </FlavorProperties>      
+      </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
 </Project>
