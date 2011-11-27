@@ -64,6 +64,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="..\FormValidationExample.Silverlight\MainViewModel.cs">
+      <Link>MainViewModel.cs</Link>
+    </Compile>
     <Compile Include="ValidatableViewModelBase.Desktop.cs" />
     <Page Include="..\FormValidationExample.Silverlight\MainView.xaml">
       <Link>MainView.xaml</Link>
@@ -122,6 +125,11 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties ProjectLinkReference="be1cbb49-b796-4a61-b79f-da7bcc6c9c5d" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+    </VisualStudio>
+  </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -1,17 +1,18 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System.ComponentModel;
+using GalaSoft.MvvmLight;
 using MvvmValidation;
 
 namespace FormValidationExample
 {
-	public partial class ValidatableViewModelBase : ViewModelBase
+	public partial class ValidatableViewModelBase : ViewModelBase, IDataErrorInfo
 	{
 		protected ValidationHelper Validator { get; private set; }
 
 #if SILVERLIGHT 
 		private NotifyDataErrorInfoAdapter NotifyDataErrorInfoAdapter { get; set; }
-#else
-		private DataErrorInfoAdapter DataErrorInfoAdapter { get; set; }
 #endif
+		private DataErrorInfoAdapter DataErrorInfoAdapter { get; set; }
+
 
 		public ValidatableViewModelBase()
 		{
@@ -19,9 +20,21 @@ namespace FormValidationExample
 
 #if SILVERLIGHT
 			NotifyDataErrorInfoAdapter = new NotifyDataErrorInfoAdapter(Validator);
-#else
-			DataErrorInfoAdapter = new DataErrorInfoAdapter(Validator);
 #endif
+			DataErrorInfoAdapter = new DataErrorInfoAdapter(Validator);
+			OnCreated();
+		}
+
+		partial void OnCreated();
+
+		public string this[string columnName]
+		{
+			get { return DataErrorInfoAdapter[columnName]; }
+		}
+
+		public string Error
+		{
+			get { return DataErrorInfoAdapter.Error; }
 		}
 	}
 }

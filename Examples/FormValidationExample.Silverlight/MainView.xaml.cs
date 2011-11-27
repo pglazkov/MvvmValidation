@@ -8,6 +8,8 @@ namespace FormValidationExample
 		public MainView()
 		{
 			InitializeComponent();
+
+			DataContext = new MainViewModel();
 		}
 	}
 }
