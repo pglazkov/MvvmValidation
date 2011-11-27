@@ -3,23 +3,10 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:FormValidationExample="clr-namespace:FormValidationExample"
+             xmlns:l="clr-namespace:FormValidationExample"
              mc:Ignorable="d"
-			 d:DataContext="{d:DesignInstance FormValidationExample:MainViewModel}">
-
-	<UserControl.Resources>
-		<Style x:Key="LabelTextBlockStyle"
-			   TargetType="TextBlock">
-			<Setter Property="FontWeight"
-					Value="Bold" />
-			<Setter Property="HorizontalAlignment"
-					Value="Right" />
-			<Setter Property="Margin"
-					Value="0,0,5,0" />
-			<Setter Property="VerticalAlignment"
-					Value="Center" />
-		</Style>
-	</UserControl.Resources>
+			 d:DataContext="{d:DesignInstance l:MainViewModel}">
+	
 	<Grid Background="Gray">
 		<Border MinWidth="500"
 				MinHeight="600"
@@ -33,29 +20,9 @@
 					<RowDefinition Height="*" />
 					<RowDefinition Height="Auto" />
 				</Grid.RowDefinitions>
-				
-				<Grid Grid.Row="0">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto" />
-						<ColumnDefinition Width="*" />
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
-					</Grid.RowDefinitions>
 
-					<TextBlock Grid.Column="0"
-							   Text="First Name"
-							   Style="{StaticResource LabelTextBlockStyle}" />
+				<l:FormView Grid.Row="0" />
 
-					<TextBox Grid.Column="1"
-							 Text="{Binding FirstName, Mode=TwoWay, ValidatesOnDataErrors=True}" />
-				</Grid>
-				
 				<Grid Grid.Row="1">
 					<Border>
 						<Button Content="Submit (Validate)"
