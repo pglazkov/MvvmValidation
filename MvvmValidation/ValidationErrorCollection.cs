@@ -16,11 +16,6 @@ namespace MvvmValidation
 		{
 		}
 
-		internal ValidationErrorCollection(IEnumerable<string> errors)
-			: this(errors.Select(e => new ValidationError(e, null)).ToList())
-		{
-		}
-
 		internal ValidationErrorCollection(IList<ValidationError> list)
 			: base(list)
 		{

@@ -8,6 +8,7 @@
 // "In Project Suppression File".
 // You do not need to add suppressions to this file manually.
 
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", Scope = "member")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Scope = "member", Target = "MvvmValidation.RuleValidationResultExtensions.#Combine(MvvmValidation.RuleValidationResult,MvvmValidation.RuleValidationResult)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "1", Scope = "member", Target = "MvvmValidation.RuleValidationResultExtensions.#Combine(MvvmValidation.RuleValidationResult,MvvmValidation.RuleValidationResult)")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0", Scope = "member", Target = "MvvmValidation.ValidationResult.#ToString(MvvmValidation.IValidationResultFormatter)")]

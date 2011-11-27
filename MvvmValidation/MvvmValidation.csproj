@@ -120,8 +120,15 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\VersionInfo.cs">
+      <Link>Properties\VersionInfo.cs</Link>
+    </Compile>
     <Compile Include="AsyncRuleValidateAction.cs" />
     <Compile Include="DataErrorInfoAdapter.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ValidationResultExtensions.cs" />
     <Compile Include="Internal\CurrentDispatcher.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />

@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Windows;
-
-// General Information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-
-[assembly: AssemblyTitle("MvvmValidation")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("CtrlSoft")]
-[assembly: AssemblyProduct("MvvmValidation")]
-[assembly: AssemblyCopyright("Copyright © CtrlSoft 2011")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -43,19 +29,6 @@ using System.Windows;
 	// app, or any theme specific resource dictionaries)
 	)]
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
-
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly:
 	InternalsVisibleTo(
 		"MvvmValidation.Tests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100b327736861cacd9185731a01213c996a5479534e1befabbaa2c971d2f9256065a628750e8bad4e281a6231b7db1e602e516fcd3ad4c2670fa6a32d308fa8770da1d57373794408e74872fc4b0b2e84d7fb707968b64464472bd10ce4f040c9a5ab02960eacda10f2545bae415386570e4df18bd7d38929ad698f3952ffcfcaeb"
