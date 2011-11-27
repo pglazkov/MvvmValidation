@@ -11,3 +11,8 @@ MvvmValidation.Tests/obj/*
 *.crunchsolution.cache
 Output/Desktop/*
 Output/Silverlight/*
+obj/*
+Bin/*
+bin/*
+*.crunchproject.local.xml
+*.xap
