@@ -67,9 +67,16 @@
     <Compile Include="..\FormValidationExample.Silverlight\MainViewModel.cs">
       <Link>MainViewModel.cs</Link>
     </Compile>
+    <Compile Include="FormView.xaml.cs">
+      <DependentUpon>FormView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ValidatableViewModelBase.Desktop.cs" />
     <Page Include="..\FormValidationExample.Silverlight\MainView.xaml">
       <Link>MainView.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FormView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
