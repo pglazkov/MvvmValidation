@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+using FormValidationExample.Infrastructure;
 using GalaSoft.MvvmLight.Command;
 using MvvmValidation;
 

@@ -1,4 +1,4 @@
-﻿namespace FormValidationExample
+﻿namespace FormValidationExample.Infrastructure
 {
 	public partial class ValidatableViewModelBase
 	{

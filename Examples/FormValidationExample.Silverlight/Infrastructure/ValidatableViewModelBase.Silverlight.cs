@@ -2,7 +2,7 @@
 using System.Collections;
 using System.ComponentModel;
 
-namespace FormValidationExample
+namespace FormValidationExample.Infrastructure
 {
 	public partial class ValidatableViewModelBase : INotifyDataErrorInfo
 	{

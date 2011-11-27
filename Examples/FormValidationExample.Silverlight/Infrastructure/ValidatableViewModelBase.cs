@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using GalaSoft.MvvmLight;
 using MvvmValidation;
 
-namespace FormValidationExample
+namespace FormValidationExample.Infrastructure
 {
 	public partial class ValidatableViewModelBase : ViewModelBase, IDataErrorInfo
 	{

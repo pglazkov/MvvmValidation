@@ -64,19 +64,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="..\FormValidationExample.Silverlight\MainViewModel.cs">
-      <Link>MainViewModel.cs</Link>
+    <Compile Include="..\FormValidationExample.Silverlight\Infrastructure\ValidatableViewModelBase.cs">
+      <Link>Infrastructure\ValidatableViewModelBase.cs</Link>
     </Compile>
-    <Compile Include="FormView.xaml.cs">
+    <Compile Include="..\FormValidationExample.Silverlight\ViewModel\MainViewModel.cs">
+      <Link>ViewModel\MainViewModel.cs</Link>
+    </Compile>
+    <Compile Include="..\FormValidationExample.Silverlight\View\MainView.xaml.cs">
+      <Link>View\MainView.xaml.cs</Link>
+      <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\FormView.xaml.cs">
       <DependentUpon>FormView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ValidatableViewModelBase.Desktop.cs" />
-    <Page Include="..\FormValidationExample.Silverlight\MainView.xaml">
-      <Link>MainView.xaml</Link>
+    <Compile Include="Infrastructure\ValidatableViewModelBase.Desktop.cs" />
+    <Page Include="..\FormValidationExample.Silverlight\View\MainView.xaml">
+      <Link>View\MainView.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="FormView.xaml">
+    <Page Include="View\FormView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -84,13 +91,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="..\FormValidationExample.Silverlight\MainView.xaml.cs">
-      <Link>MainView.xaml.cs</Link>
-      <DependentUpon>MainView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="..\FormValidationExample.Silverlight\ValidatableViewModelBase.cs">
-      <Link>ValidatableViewModelBase.cs</Link>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -131,10 +131,11 @@
       <Name>MvvmValidation</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties ProjectLinkReference="3870eb67-7ef0-4645-b3c8-8d04477a82a5" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="3870eb67-7ef0-4645-b3c8-8d04477a82a5" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
