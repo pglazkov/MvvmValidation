@@ -34,7 +34,7 @@ namespace FormValidationExample
 
 		private void ConfigureValidationRules()
 		{
-			Validator.AddRule(() => FirstName, () => RuleValidationResult.Assert(!string.IsNullOrEmpty(FirstName), "First Name is required"));
+			Validator.AddRule(() => FirstName, () => RuleResult.Assert(!string.IsNullOrEmpty(FirstName), "First Name is required"));
 		}
 
 		private void Submit()

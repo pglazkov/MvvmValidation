@@ -7,7 +7,7 @@ namespace MvvmValidation
 	/// <summary>
 	/// Represents the outcome of a validation rule when executed.
 	/// </summary>
-	public class RuleValidationResult
+	public class RuleResult
 	{
 		private readonly IList<string> errors;
 
@@ -17,19 +17,19 @@ namespace MvvmValidation
 		/// Creates an "Invalid" result with the given error <paramref name="error"/>.
 		/// </summary>
 		/// <param name="error">The error text that describes why this rule is invalid.</param>
-		/// <returns>An instance of <see cref="RuleValidationResult"/> that represents an invalid result.</returns>
-		public static RuleValidationResult Invalid(string error)
+		/// <returns>An instance of <see cref="RuleResult"/> that represents an invalid result.</returns>
+		public static RuleResult Invalid(string error)
 		{
-			return new RuleValidationResult(error);
+			return new RuleResult(error);
 		}
 
 		/// <summary>
 		/// Creates a "Valid" result.
 		/// </summary>
-		/// <returns>An instance of <see cref="RuleValidationResult"/> that represents a valid outcome of the rule.</returns>
-		public static RuleValidationResult Valid()
+		/// <returns>An instance of <see cref="RuleResult"/> that represents a valid outcome of the rule.</returns>
+		public static RuleResult Valid()
 		{
-			return new RuleValidationResult();
+			return new RuleResult();
 		}
 
 		/// <summary>
@@ -38,8 +38,8 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="condition">The assertion.</param>
 		/// <param name="errorMessage">The error message in case if the <paramref name="condition"/> is not <c>true</c>.</param>
-		/// <returns>An instance of <see cref="RuleValidationResult"/> that represents the result of the assertion.</returns>
-		public static RuleValidationResult Assert(bool condition, string errorMessage)
+		/// <returns>An instance of <see cref="RuleResult"/> that represents the result of the assertion.</returns>
+		public static RuleResult Assert(bool condition, string errorMessage)
 		{
 			if (!condition)
 			{
@@ -52,21 +52,21 @@ namespace MvvmValidation
 		#endregion
 
 		/// <summary>
-		/// Creates an empty (valid) instance of <see cref="RuleValidationResult"/>. 
+		/// Creates an empty (valid) instance of <see cref="RuleResult"/>. 
 		/// The <see cref="AddError"/> method can be used to add errors to the result later.
 		/// </summary>
-		public RuleValidationResult()
+		public RuleResult()
 			: this(true, new string[] {})
 		{
 		}
 
-		private RuleValidationResult(string error)
+		private RuleResult(string error)
 			: this(false, new[] {error})
 		{
 			Contract.Requires(!string.IsNullOrEmpty(error));
 		}
 
-		private RuleValidationResult(bool isValid, IEnumerable<string> errors)
+		private RuleResult(bool isValid, IEnumerable<string> errors)
 		{
 			Contract.Requires(errors != null);
 
