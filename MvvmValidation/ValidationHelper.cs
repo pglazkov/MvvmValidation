@@ -483,7 +483,7 @@ namespace MvvmValidation
 		{
 			Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
 
-			var result = new ValidationResult(target);
+			var result = new ValidationResult();
 
 			ValidationRule[] rulesToExecute = ValidationRules.Where(ruleFilter).ToArray();
 
@@ -512,7 +512,7 @@ namespace MvvmValidation
 			{
 				Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
 
-				var result = new ValidationResult(target);
+				var result = new ValidationResult();
 
 				IEnumerable<ValidationRule> rulesToExecute =
 					ValidationRules.Where(ruleFilter).Where(r => r.SupportsAsyncValidation);

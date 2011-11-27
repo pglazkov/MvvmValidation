@@ -6,25 +6,23 @@ using System.Linq;
 
 namespace MvvmValidation
 {
+	/// <summary>
+	/// Encapsulates result of a validation. Contains a boolean <see cref="IsValid"/> and a collection of errors <see cref="ErrorList"/>.
+	/// </summary>
 	public class ValidationResult
 	{
-		private ValidationResult() : this(null, new ValidationErrorCollection())
-		{
-		}
-
-		internal ValidationResult(object target)
-			: this(target, new ValidationErrorCollection())
+		internal ValidationResult()
+			: this(new ValidationErrorCollection())
 		{
 		}
 
 		internal ValidationResult(object target, IEnumerable<string> errors)
-			: this(target, new ValidationErrorCollection(errors.Select(e => new ValidationError(e, target)).ToList()))
+			: this(new ValidationErrorCollection(errors.Select(e => new ValidationError(e, target)).ToList()))
 		{
 		}
 
-		private ValidationResult(object target, ValidationErrorCollection errors)
+		private ValidationResult(ValidationErrorCollection errors)
 		{
-			Target = target;
 			ErrorList = errors;
 		}
 
@@ -33,14 +31,22 @@ namespace MvvmValidation
 			get { return new ValidationResult(); }
 		}
 
-		public object Target { get; private set; }
+		/// <summary>
+		/// Gets the list of errors if any. If valid, returns an empty collection.
+		/// </summary>
 		public ValidationErrorCollection ErrorList { get; private set; }
 
+		/// <summary>
+		/// Gets a value indicating whether the validation was sucessful. If not, see <see cref="ErrorList"/> for the list of errors.
+		/// </summary>
 		public bool IsValid
 		{
 			get { return !ErrorList.Any(); }
 		}
 
+		/// <summary>
+		/// Gets an error by <paramref name="target"/>, or <c>null</c> if valid.
+		/// </summary>
 		public string this[object target]
 		{
 			get
@@ -68,7 +74,13 @@ namespace MvvmValidation
 			AddError(new ValidationError(error, target));
 		}
 
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+		/// <summary>
+		/// Formats this instance to a string using given <see cref="IValidationResultFormatter"/>.
+		/// </summary>
+		/// <param name="formatter">The formatter that can format the validation result.</param>
+		/// <returns>
+		/// A string that represents this validation result.
+		/// </returns>
 		public string ToString(IValidationResultFormatter formatter)
 		{
 			Contract.Requires(formatter != null);
@@ -78,6 +90,12 @@ namespace MvvmValidation
 			return result;
 		}
 
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
 		public override string ToString()
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
@@ -87,13 +105,18 @@ namespace MvvmValidation
 			return !string.IsNullOrEmpty(result) ? result : "Valid";
 		}
 
+		/// <summary>
+		/// Merges this validation result with given <paramref name="validationResult"/> and returns a new instance of <see cref="ValidationResult"/>
+		/// that represents the merged result (the result that contains errors from both results whithout duplicates).
+		/// </summary>
+		/// <param name="validationResult">The validation result to merge with.</param>
+		/// <returns>A new instance of <see cref="ValidationResult"/> that represents the merged result (the result that contains errors from both results whithout duplicates).</returns>
 		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public ValidationResult MergeWith(ValidationResult validationResult)
 		{
 			Contract.Requires(validationResult != null);
 
 			var result = new ValidationResult();
-			result.Target = Target;
 
 			foreach (ValidationError error in ErrorList)
 			{
