@@ -9,3 +9,5 @@ MvvmValidation.Tests/bin/*
 MvvmValidation.Tests/obj/*
 *.user
 *.crunchsolution.cache
+Output/Desktop/*
+Output/Silverlight/*
