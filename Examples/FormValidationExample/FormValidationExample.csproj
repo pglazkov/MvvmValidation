@@ -64,6 +64,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ValidatableViewModelBase.Desktop.cs" />
     <Page Include="..\FormValidationExample.Silverlight\MainView.xaml">
       <Link>MainView.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
@@ -76,6 +77,9 @@
     <Compile Include="..\FormValidationExample.Silverlight\MainView.xaml.cs">
       <Link>MainView.xaml.cs</Link>
       <DependentUpon>MainView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\FormValidationExample.Silverlight\ValidatableViewModelBase.cs">
+      <Link>ValidatableViewModelBase.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -110,6 +114,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MvvmValidation\MvvmValidation.csproj">
+      <Project>{56D2052D-459D-402A-8938-174DACDC66C5}</Project>
+      <Name>MvvmValidation</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
