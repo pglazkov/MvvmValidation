@@ -7,22 +7,31 @@ using System.Text;
 
 namespace MvvmValidation
 {
+	/// <summary>
+	/// Represents a collection of <see cref="ValidationError"/> instances.
+	/// </summary>
 	public class ValidationErrorCollection : Collection<ValidationError>
 	{
-		public ValidationErrorCollection()
+		internal ValidationErrorCollection()
 		{
 		}
 
-		public ValidationErrorCollection(IEnumerable<string> errors)
+		internal ValidationErrorCollection(IEnumerable<string> errors)
 			: this(errors.Select(e => new ValidationError(e, null)).ToList())
 		{
 		}
 
-		public ValidationErrorCollection(IList<ValidationError> list)
+		internal ValidationErrorCollection(IList<ValidationError> list)
 			: base(list)
 		{
 		}
 
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents this instance.
+		/// </summary>
+		/// <returns>
+		/// A <see cref="System.String"/> that represents this instance.
+		/// </returns>
 		public override string ToString()
 		{
 			ValidationError[] distinctErrors = this.Distinct(e => e.ErrorText).ToArray();

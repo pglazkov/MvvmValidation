@@ -157,6 +157,12 @@
     <Compile Include="..\MvvmValidation\Internal\UndefinedValidationTarget.cs">
       <Link>Internal\UndefinedValidationTarget.cs</Link>
     </Compile>
+    <Compile Include="..\MvvmValidation\Internal\ValidationRule.cs">
+      <Link>Internal\ValidationRule.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation\Internal\ValidationRuleCollection.cs">
+      <Link>Internal\ValidationRuleCollection.cs</Link>
+    </Compile>
     <Compile Include="..\MvvmValidation\IValidationResultFormatter.cs">
       <Link>IValidationResultFormatter.cs</Link>
     </Compile>
@@ -186,12 +192,6 @@
     </Compile>
     <Compile Include="..\MvvmValidation\ValidationResultExtensions.cs">
       <Link>ValidationResultExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationRule.cs">
-      <Link>ValidationRule.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationRuleCollection.cs">
-      <Link>ValidationRuleCollection.cs</Link>
     </Compile>
     <Compile Include="NotifyDataErrorInfoAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

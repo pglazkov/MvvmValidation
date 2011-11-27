@@ -3,9 +3,12 @@ using System.Diagnostics.Contracts;
 
 namespace MvvmValidation
 {
+	/// <summary>
+	/// Contains arguments for the <see cref="ValidationHelper.ResultChanged"/> event.
+	/// </summary>
 	public class ValidationResultChangedEventArgs : EventArgs
 	{
-		public ValidationResultChangedEventArgs(object target, ValidationResult newResult)
+		internal ValidationResultChangedEventArgs(object target, ValidationResult newResult)
 		{
 			Contract.Requires(newResult != null);
 
@@ -13,7 +16,14 @@ namespace MvvmValidation
 			NewResult = newResult;
 		}
 
+		/// <summary>
+		/// Gets the target, for which the validation result has changed.
+		/// </summary>
 		public object Target { get; private set; }
+
+		/// <summary>
+		/// Gets the new validation result.
+		/// </summary>
 		public ValidationResult NewResult { get; private set; }
 	}
 }
