@@ -276,5 +276,59 @@ namespace MvvmValidation.Tests
 
 			validation.ValidateAll();
 		}
+
+		[TestMethod]
+		public void ResultChanged_RuleErrorsChangedButRuleValidityDidNotChange_EventStillFires()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			validation.AddRule(() => dummy.Foo,
+				() =>
+				{
+					if (string.IsNullOrEmpty(dummy.Foo))
+					{
+						return RuleResult.Invalid("Foo should not be empty");
+					}
+
+					return
+						RuleResult.Assert(dummy.Foo.Length > 5, "Length must be greater than 5").Combine(
+							RuleResult.Assert(dummy.Foo.Any(Char.IsDigit), "Must contain digit"));
+				});
+
+			var resultChangedCalledTimes = 0;
+			const int expectedResultChangedCalls = 1 /* First invalid value */+ 1 /* Second invalid value */+ 1 /* Third invalid value */ + 1 /* Valid value */;
+
+			validation.ResultChanged += (o, e) =>
+			{
+				resultChangedCalledTimes++;
+			};
+
+			// ACT
+
+			dummy.Foo = null;
+
+			// Should generage "Foo should not be empty" error
+			validation.ValidateAll();
+
+			dummy.Foo = "123";
+
+			// Should generate the "Length must be greater than 5" error
+			validation.ValidateAll();
+
+			dummy.Foo = "sdfldlssd";
+
+			// Should generate the "Must contain digit" error
+			validation.ValidateAll();
+
+			dummy.Foo = "lsdklfjsld2342";
+
+			// Now should be valid
+			validation.ValidateAll();
+
+			// VERIFY
+			Assert.AreEqual(expectedResultChangedCalls, resultChangedCalledTimes, "ResultChanged event must be fired for every change of result");
+		}
 	}
 }

@@ -39,5 +39,10 @@ namespace MvvmValidation
 
 			return result;
 		}
+
+		internal static RuleResult ToRuleResult(this ValidationResult validationResult)
+		{
+			return new RuleResult(validationResult);
+		}
 	}
 }
