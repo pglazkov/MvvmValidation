@@ -81,6 +81,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\PasswordBoxAssistant.cs" />
     <Compile Include="View\FormView.xaml.cs">
       <DependentUpon>FormView.xaml</DependentUpon>
     </Compile>

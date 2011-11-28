@@ -89,5 +89,9 @@
 			<Setter Property="Validation.ErrorTemplate"
 					Value="{StaticResource DefaultErrorTemplate}" />
 		</Style>
+		<Style TargetType="{x:Type PasswordBox}">
+			<Setter Property="Validation.ErrorTemplate"
+					Value="{StaticResource DefaultErrorTemplate}" />
+		</Style>
 	</Application.Resources>
 </Application>
