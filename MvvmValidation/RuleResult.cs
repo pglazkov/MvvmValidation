@@ -33,7 +33,7 @@ namespace MvvmValidation
 		}
 
 		/// <summary>
-		/// Asseses the specified assertion and if <c>false</c> then creates and invalid result with the given <paramref name="errorMessage"/>. 
+		/// Asserts the specified condition and if <c>false</c> then creates and invalid result with the given <paramref name="errorMessage"/>. 
 		/// If <c>true</c>, returns a valid result.
 		/// </summary>
 		/// <param name="condition">The assertion.</param>
