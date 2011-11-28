@@ -129,6 +129,7 @@
     <Compile Include="AsyncRuleValidateAction.cs" />
     <Compile Include="DataErrorInfoAdapter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Internal\CollectionUtils.cs" />
     <Compile Include="ValidationResultExtensions.cs" />
     <Compile Include="Internal\CurrentDispatcher.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />

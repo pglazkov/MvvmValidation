@@ -586,7 +586,7 @@ namespace MvvmValidation
 
 					ValidationResult currentRuleResult = GetCurrentValidationResultForRule(targetRuleMap, rule);
 
-					if (currentRuleResult.IsValid != ruleResult.IsValid)
+					if (!Equals(currentRuleResult.ToRuleResult(), ruleResult))
 					{
 						targetRuleMap[rule] = ruleResult.IsValid
 						                      	? ValidationResult.Valid
