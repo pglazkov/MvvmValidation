@@ -38,7 +38,10 @@ namespace MvvmValidation
 		/// </returns>
 		public IEnumerable GetErrors(string propertyName)
 		{
-			return Validator.GetResult(propertyName).ErrorList.Select(er => er.ToString());
+			var validationResult = Validator.GetResult(propertyName);
+
+			// Return all the errors as a single string because most UI implementations display only first error
+			return validationResult.IsValid ? null : new[] { validationResult.ToString() };
 		}
 
 		/// <summary>

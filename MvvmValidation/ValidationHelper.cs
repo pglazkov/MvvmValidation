@@ -17,8 +17,8 @@ namespace MvvmValidation
 	{
 		#region Fields
 
-		private readonly IDictionary<object, IDictionary<ValidationRule, ValidationResult>> ruleValidationResultMap =
-			new Dictionary<object, IDictionary<ValidationRule, ValidationResult>>();
+		private readonly IDictionary<object, IDictionary<ValidationRule, RuleResult>> ruleValidationResultMap =
+			new Dictionary<object, IDictionary<ValidationRule, RuleResult>>();
 
 		private readonly object syncRoot = new object();
 		private bool isValidationSuspanded;
@@ -321,13 +321,13 @@ namespace MvvmValidation
 		{
 			ValidationResult result = ValidationResult.Valid;
 
-			IDictionary<ValidationRule, ValidationResult> ruleResultMap;
+			IDictionary<ValidationRule, RuleResult> ruleResultMap;
 
 			if (ruleValidationResultMap.TryGetValue(target, out ruleResultMap))
 			{
-				foreach (ValidationResult ruleValidationResult in ruleResultMap.Values)
+				foreach (var ruleValidationResult in ruleResultMap.Values)
 				{
-					result = result.Combine(ruleValidationResult);
+					result = result.Combine(new ValidationResult(target, ruleValidationResult.Errors));
 				}
 			}
 			return result;
@@ -337,11 +337,14 @@ namespace MvvmValidation
 		{
 			ValidationResult result = ValidationResult.Valid;
 
-			foreach (var ruleResultsMap in ruleValidationResultMap.Values)
+			foreach (var ruleResultsMapPair in ruleValidationResultMap)
 			{
-				foreach (ValidationResult validationResult in ruleResultsMap.Values)
+				var ruleTarget = ruleResultsMapPair.Key;
+				var ruleResultsMap = ruleResultsMapPair.Value;
+
+				foreach (var validationResult in ruleResultsMap.Values)
 				{
-					result = result.Combine(validationResult);
+					result = result.Combine(new ValidationResult(ruleTarget, validationResult.Errors));
 				}
 			}
 			return result;
@@ -582,15 +585,13 @@ namespace MvvmValidation
 
 				foreach (object ruleTarget in ruleTargets)
 				{
-					IDictionary<ValidationRule, ValidationResult> targetRuleMap = GetRuleMapForTarget(ruleTarget);
+					IDictionary<ValidationRule, RuleResult> targetRuleMap = GetRuleMapForTarget(ruleTarget);
 
-					ValidationResult currentRuleResult = GetCurrentValidationResultForRule(targetRuleMap, rule);
+					RuleResult currentRuleResult = GetCurrentValidationResultForRule(targetRuleMap, rule);
 
-					if (!Equals(currentRuleResult.ToRuleResult(), ruleResult))
+					if (!Equals(currentRuleResult, ruleResult))
 					{
-						targetRuleMap[rule] = ruleResult.IsValid
-						                      	? ValidationResult.Valid
-						                      	: new ValidationResult(ruleTarget, ruleResult.Errors);
+						targetRuleMap[rule] = ruleResult;
 
 						// Notify that validation result for the target has changed
 						NotifyResultChanged(ruleTarget, GetResult(ruleTarget));
@@ -599,30 +600,30 @@ namespace MvvmValidation
 			}
 		}
 
-		private static ValidationResult GetCurrentValidationResultForRule(
-			IDictionary<ValidationRule, ValidationResult> ruleMap, ValidationRule rule)
+		private static RuleResult GetCurrentValidationResultForRule(
+			IDictionary<ValidationRule, RuleResult> ruleMap, ValidationRule rule)
 		{
 			lock (ruleMap)
 			{
 				if (!ruleMap.ContainsKey(rule))
 				{
-					ruleMap.Add(rule, ValidationResult.Valid);
+					ruleMap.Add(rule, RuleResult.Valid());
 				}
 
 				return ruleMap[rule];
 			}
 		}
 
-		private IDictionary<ValidationRule, ValidationResult> GetRuleMapForTarget(object target)
+		private IDictionary<ValidationRule, RuleResult> GetRuleMapForTarget(object target)
 		{
 			lock (ruleValidationResultMap)
 			{
 				if (!ruleValidationResultMap.ContainsKey(target))
 				{
-					ruleValidationResultMap.Add(target, new Dictionary<ValidationRule, ValidationResult>());
+					ruleValidationResultMap.Add(target, new Dictionary<ValidationRule, RuleResult>());
 				}
 
-				IDictionary<ValidationRule, ValidationResult> ruleMap = ruleValidationResultMap[target];
+				IDictionary<ValidationRule, RuleResult> ruleMap = ruleValidationResultMap[target];
 
 				return ruleMap;
 			}
