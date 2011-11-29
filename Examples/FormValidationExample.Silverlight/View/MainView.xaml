@@ -8,7 +8,7 @@
 			 d:DataContext="{d:DesignInstance l:MainViewModel}">
 	
 	<Grid Background="Gray">
-		<Border MinWidth="500"
+		<Border Width="500"
 				MinHeight="600"
 				Background="White"
 				CornerRadius="5"

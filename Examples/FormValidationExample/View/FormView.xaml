@@ -5,7 +5,8 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:FormValidationExample="clr-namespace:FormValidationExample"
 			 xmlns:i="clr-namespace:FormValidationExample.Infrastructure"
-			 mc:Ignorable="d"
+             xmlns:View="clr-namespace:FormValidationExample.View"
+             mc:Ignorable="d"
 			 d:DataContext="{d:DesignInstance FormValidationExample:MainViewModel}">
 
 	<UserControl.Resources>
@@ -98,6 +99,25 @@
 					 i:PasswordBoxAssistant.BindPassword="True"
 					 i:PasswordBoxAssistant.BoundPassword="{Binding PasswordConfirmation, Mode=TwoWay, ValidatesOnDataErrors=True}"
 					 Margin="0,5,0,0" />
+
+		<TextBlock Grid.Column="0"
+				   Grid.Row="5"
+				   Text="Interests"
+				   Style="{StaticResource LabelTextBlockStyle}"
+				   Margin="0,10,5,0" />
+
+		<View:InterestSelectorView Grid.Column="1"
+								   Grid.Row="5"
+								   DataContext="{Binding InterestSelectorViewModel, ValidatesOnDataErrors=True}"
+								   Margin="0,10,0,0" />
+
+		<TextBlock Grid.Column="2"
+				   Grid.Row="5"
+				   Text="Please select at least 3 interests"
+				   FontSize="10"
+				   TextWrapping="Wrap"
+				   MaxWidth="100"
+				   Margin="10,10,0,0" />
 
 	</Grid>
 </UserControl>
