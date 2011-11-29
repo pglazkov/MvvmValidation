@@ -13,9 +13,11 @@ namespace FormValidationExample
 	{
 		private string email;
 		private string firstName;
+		private bool? isValid;
 		private string lastName;
 		private string password;
 		private string passwordConfirmation;
+		private string validationErrorsString;
 
 		public MainViewModel()
 		{
@@ -25,6 +27,7 @@ namespace FormValidationExample
 			SubmitCommant = new RelayCommand(Submit);
 
 			ConfigureValidationRules();
+			Validator.ResultChanged += OnValidationResultChanged;
 		}
 
 		public ICommand SubmitCommant { get; private set; }
@@ -84,6 +87,26 @@ namespace FormValidationExample
 			}
 		}
 
+		public string ValidationErrorsString
+		{
+			get { return validationErrorsString; }
+			private set
+			{
+				validationErrorsString = value;
+				RaisePropertyChanged("ValidationErrorsString");
+			}
+		}
+
+		public bool? IsValid
+		{
+			get { return isValid; }
+			private set
+			{
+				isValid = value;
+				RaisePropertyChanged("IsValid");
+			}
+		}
+
 		public InterestSelectorViewModel InterestSelectorViewModel { get; private set; }
 
 		private void ConfigureValidationRules()
@@ -107,21 +130,24 @@ namespace FormValidationExample
 			                  	return RuleResult.Assert(Regex.IsMatch(Email, regexPattern), "Email must by a valid email address");
 			                  });
 			Validator.AddRule(() => Password,
-				() =>
-				{
-					var result = RuleResult.Assert(!string.IsNullOrEmpty(Password), "Password is required");
+			                  () =>
+			                  {
+			                  	RuleResult result = RuleResult.Assert(!string.IsNullOrEmpty(Password), "Password is required");
 
-					if (result.IsValid)
-					{
-						Debug.Assert(Password != null);
+			                  	if (result.IsValid)
+			                  	{
+			                  		Debug.Assert(Password != null);
 
-						result = RuleResult.Assert(Password.Length >= 6, "Password must contain at least 6 characters").Combine(
-							     RuleResult.Assert(!Password.All(Char.IsLower) && !Password.All(Char.IsUpper) && !Password.All(Char.IsDigit), "Password must contain both lower case and upper case letters")).Combine(
-							     RuleResult.Assert(Password.Any(Char.IsDigit), "Password must contain at least one digit"));
-					}
+			                  		result = RuleResult.Assert(Password.Length >= 6, "Password must contain at least 6 characters").
+			                  			Combine(
+			                  				RuleResult.Assert(
+			                  					!Password.All(Char.IsLower) && !Password.All(Char.IsUpper) && !Password.All(Char.IsDigit),
+			                  					"Password must contain both lower case and upper case letters")).Combine(
+			                  						RuleResult.Assert(Password.Any(Char.IsDigit), "Password must contain at least one digit"));
+			                  	}
 
-					return result;
-				});
+			                  	return result;
+			                  });
 			Validator.AddRule(() => PasswordConfirmation,
 			                  () =>
 			                  {
@@ -145,7 +171,9 @@ namespace FormValidationExample
 			                  });
 
 			Validator.AddRule(() => InterestSelectorViewModel,
-			                  () => RuleResult.Assert(InterestSelectorViewModel.SelectedInterests.Count() >= 3, "Please select at least 3 interests"));
+			                  () =>
+			                  RuleResult.Assert(InterestSelectorViewModel.SelectedInterests.Count() >= 3,
+			                                    "Please select at least 3 interests"));
 		}
 
 		private void OnSelectedInterestsChanged(object sender, EventArgs e)
@@ -156,6 +184,18 @@ namespace FormValidationExample
 		private void Submit()
 		{
 			Validator.ValidateAll();
+			//var validationResult = Validator.ValidateAll();
+
+			//IsValid = validationResult.IsValid;
+			//ValidationErrorsString = validationResult.ToString();
+		}
+
+		private void OnValidationResultChanged(object sender, ValidationResultChangedEventArgs e)
+		{
+			var validationResult = Validator.GetResult();
+
+			IsValid = validationResult.IsValid;
+			ValidationErrorsString = validationResult.ToString();
 		}
 	}
 }
