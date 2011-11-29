@@ -19,8 +19,12 @@ namespace FormValidationExample
 
 		public MainViewModel()
 		{
-			ConfigureValidationRules();
+			InterestSelectorViewModel = new InterestSelectorViewModel();
+			InterestSelectorViewModel.SelectedInterestsChanged += OnSelectedInterestsChanged;
+
 			SubmitCommant = new RelayCommand(Submit);
+
+			ConfigureValidationRules();
 		}
 
 		public ICommand SubmitCommant { get; private set; }
@@ -80,6 +84,8 @@ namespace FormValidationExample
 			}
 		}
 
+		public InterestSelectorViewModel InterestSelectorViewModel { get; private set; }
+
 		private void ConfigureValidationRules()
 		{
 			Validator.AddRule(() => FirstName,
@@ -137,6 +143,14 @@ namespace FormValidationExample
 
 			                  	return RuleResult.Valid();
 			                  });
+
+			Validator.AddRule(() => InterestSelectorViewModel,
+			                  () => RuleResult.Assert(InterestSelectorViewModel.SelectedInterests.Count() >= 3, "Please select at least 3 interests"));
+		}
+
+		private void OnSelectedInterestsChanged(object sender, EventArgs e)
+		{
+			Validator.Validate(() => InterestSelectorViewModel);
 		}
 
 		private void Submit()

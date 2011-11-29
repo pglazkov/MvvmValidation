@@ -82,8 +82,13 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\PasswordBoxAssistant.cs" />
+    <Compile Include="ViewModel\InterestItemViewModel.cs" />
+    <Compile Include="ViewModel\InterestSelectorViewModel.cs" />
     <Compile Include="View\FormView.xaml.cs">
       <DependentUpon>FormView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\InterestSelectorView.xaml.cs">
+      <DependentUpon>InterestSelectorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
@@ -98,6 +103,10 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
     <Page Include="View\FormView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\InterestSelectorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
