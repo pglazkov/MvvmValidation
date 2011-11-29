@@ -62,12 +62,6 @@ namespace MvvmValidation
 		{
 		}
 
-		internal RuleResult(ValidationResult validationResult)
-			: this(validationResult.IsValid, validationResult.ErrorList.Select(e => e.ErrorText))
-		{
-			
-		}
-
 		private RuleResult(string error)
 			: this(false, new[] {error})
 		{
