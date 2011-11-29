@@ -129,6 +129,7 @@
     <Compile Include="AsyncRuleValidateAction.cs" />
     <Compile Include="DataErrorInfoAdapter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Internal\CollectionUtils.cs" />
     <Compile Include="ValidationResultExtensions.cs" />
     <Compile Include="Internal\CurrentDispatcher.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />
@@ -153,8 +154,8 @@
     <Compile Include="Internal\PropertyCollectionValidationTarget.cs" />
     <Compile Include="Internal\PropertyName.cs" />
     <Compile Include="Internal\PropertyValidationTarget.cs" />
-    <Compile Include="RuleValidationResult.cs" />
-    <Compile Include="RuleValidationResultExtensions.cs" />
+    <Compile Include="RuleResult.cs" />
+    <Compile Include="RuleResultExtensions.cs" />
     <Compile Include="Internal\ThreadingUtils.cs" />
     <Compile Include="Internal\UndefinedValidationTarget.cs" />
     <Compile Include="ValidationError.cs" />

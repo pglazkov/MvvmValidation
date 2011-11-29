@@ -127,20 +127,20 @@ namespace MvvmValidation.Tests
 		}
 
 		[TestMethod]
-		public void CombineRuleValidationResults_ResultContainsErrorsFromAllCombinedResults()
+		public void CombineRuleResults_ResultContainsErrorsFromAllCombinedResults()
 		{
 			// Arrange
 			var validation = new ValidationHelper();
 			validation.AddRule(() =>
 			{
-				//var r1 = RuleValidationResult.Invalid("Error1");
-				//var r2 = RuleValidationResult.Valid();
-				//var r3 = RuleValidationResult.Invalid("Error2");
+				//var r1 = RuleResult.Invalid("Error1");
+				//var r2 = RuleResult.Valid();
+				//var r3 = RuleResult.Invalid("Error2");
 
 				return
-					RuleValidationResult.Assert(false, "Error1").Combine(
-						RuleValidationResult.Assert(true, "Error0")).Combine(
-							RuleValidationResult.Assert(false, "Error2"));
+					RuleResult.Assert(false, "Error1").Combine(
+						RuleResult.Assert(true, "Error0")).Combine(
+							RuleResult.Assert(false, "Error2"));
 
 				//return r1.Combine(r2).Combine(r3);
 			});
@@ -164,7 +164,7 @@ namespace MvvmValidation.Tests
 			validation.AddRule(() => dummy.Foo, () => dummy.Bar,
 			                   () =>
 			                   {
-			                   	return RuleValidationResult.Invalid("Error");
+			                   	return RuleResult.Invalid("Error");
 			                   });
 
 			// Act
@@ -186,7 +186,7 @@ namespace MvvmValidation.Tests
 			var dummy = new DummyViewModel();
 
 			validation.AddRule(() => dummy.Foo,
-			                   () => RuleValidationResult.Invalid("Error"));
+			                   () => RuleResult.Invalid("Error"));
 
 			var eventFiredTimes = 0;
 
@@ -210,12 +210,12 @@ namespace MvvmValidation.Tests
 			var dummy = new DummyViewModel();
 
 			validation.AddRule(() => dummy.Foo,
-							   () => RuleValidationResult.Invalid("Error"));
+							   () => RuleResult.Invalid("Error"));
 			validation.AddRule(() => dummy.Foo,
-			                   RuleValidationResult.Valid);
+			                   RuleResult.Valid);
 			validation.AddRule(() => dummy.Bar,
-								RuleValidationResult.Valid);
-			validation.AddRule(() => RuleValidationResult.Invalid("Error"));
+								RuleResult.Valid);
+			validation.AddRule(() => RuleResult.Invalid("Error"));
 
 			const int expectedTimesToFire = 0 + 1 /*Invalid Foo*/+ 1 /* Invalid general target */;
 			var eventFiredTimes = 0;
@@ -239,7 +239,7 @@ namespace MvvmValidation.Tests
 			var validation = new ValidationHelper();
 			var dummy = new DummyViewModel();
 
-			var fooResult = RuleValidationResult.Valid();
+			var fooResult = RuleResult.Valid();
 
 // ReSharper disable AccessToModifiedClosure // Intended
 			validation.AddRule(() => dummy.Foo, () => fooResult);
@@ -256,7 +256,7 @@ namespace MvvmValidation.Tests
 
 			// First, verify that the event is fired with invalid result 
 
-			fooResult = RuleValidationResult.Invalid("Error");
+			fooResult = RuleResult.Invalid("Error");
 
 			onResultChanged = r =>
 			{
@@ -267,7 +267,7 @@ namespace MvvmValidation.Tests
 
 			// Second, verify that after second validation when error was corrected, the event fires with the valid result
 
-			fooResult = RuleValidationResult.Valid();
+			fooResult = RuleResult.Valid();
 
 			onResultChanged = r =>
 			{
@@ -275,6 +275,60 @@ namespace MvvmValidation.Tests
 			};
 
 			validation.ValidateAll();
+		}
+
+		[TestMethod]
+		public void ResultChanged_RuleErrorsChangedButRuleValidityDidNotChange_EventStillFires()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			validation.AddRule(() => dummy.Foo,
+				() =>
+				{
+					if (string.IsNullOrEmpty(dummy.Foo))
+					{
+						return RuleResult.Invalid("Foo should not be empty");
+					}
+
+					return
+						RuleResult.Assert(dummy.Foo.Length > 5, "Length must be greater than 5").Combine(
+							RuleResult.Assert(dummy.Foo.Any(Char.IsDigit), "Must contain digit"));
+				});
+
+			var resultChangedCalledTimes = 0;
+			const int expectedResultChangedCalls = 1 /* First invalid value */+ 1 /* Second invalid value */+ 1 /* Third invalid value */ + 1 /* Valid value */;
+
+			validation.ResultChanged += (o, e) =>
+			{
+				resultChangedCalledTimes++;
+			};
+
+			// ACT
+
+			dummy.Foo = null;
+
+			// Should generage "Foo should not be empty" error
+			validation.ValidateAll();
+
+			dummy.Foo = "123";
+
+			// Should generate the "Length must be greater than 5" error
+			validation.ValidateAll();
+
+			dummy.Foo = "sdfldlssd";
+
+			// Should generate the "Must contain digit" error
+			validation.ValidateAll();
+
+			dummy.Foo = "lsdklfjsld2342";
+
+			// Now should be valid
+			validation.ValidateAll();
+
+			// VERIFY
+			Assert.AreEqual(expectedResultChangedCalls, resultChangedCalledTimes, "ResultChanged event must be fired for every change of result");
 		}
 	}
 }
