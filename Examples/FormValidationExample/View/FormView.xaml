@@ -85,7 +85,7 @@
 				   FontSize="10"
 				   TextWrapping="Wrap"
 				   MaxWidth="100"
-				   Margin="10,0,0,0" />
+				   Margin="10,5,0,0" />
 
 		<TextBlock Grid.Column="0"
 				   Grid.Row="4"
