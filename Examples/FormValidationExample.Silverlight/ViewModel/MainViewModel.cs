@@ -183,17 +183,23 @@ namespace FormValidationExample
 
 		private void Submit()
 		{
-			Validator.ValidateAll();
-			//var validationResult = Validator.ValidateAll();
+			var validationResult = Validator.ValidateAll();
 
-			//IsValid = validationResult.IsValid;
-			//ValidationErrorsString = validationResult.ToString();
+			UpdateValidationSummary(validationResult);
 		}
 
 		private void OnValidationResultChanged(object sender, ValidationResultChangedEventArgs e)
 		{
-			var validationResult = Validator.GetResult();
+			if (!IsValid.GetValueOrDefault())
+			{
+				var validationResult = Validator.GetResult();
 
+				UpdateValidationSummary(validationResult);
+			}
+		}
+
+		private void UpdateValidationSummary(ValidationResult validationResult)
+		{
 			IsValid = validationResult.IsValid;
 			ValidationErrorsString = validationResult.ToString();
 		}
