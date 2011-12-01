@@ -190,7 +190,7 @@ namespace FormValidationExample
 
 		private void OnValidationResultChanged(object sender, ValidationResultChangedEventArgs e)
 		{
-			if (!IsValid.GetValueOrDefault())
+			if (!IsValid.GetValueOrDefault(true))
 			{
 				var validationResult = Validator.GetResult();
 
