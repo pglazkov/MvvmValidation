@@ -2,27 +2,50 @@
 
 	<PropertyGroup>
 		<SolutionFilePath>.\MvvmValidation.sln</SolutionFilePath>
+		<OutputFolderPath>.\Output</OutputFolderPath>
 		<Configuration>Release</Configuration>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<BuildFullDependsOn>
 			Clean;
-			BuildSolution
+			BuildSolution;
+			StaticAnalysis;
+			CreateNuGetPackage
 		</BuildFullDependsOn>
+		<CreateNuGetPackageDependsOn>
+			BuildSolution
+		</CreateNuGetPackageDependsOn>
+		<StaticAnalysisDependsOn>
+			BuildSolution
+		</StaticAnalysisDependsOn>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<CodeAnalysisFiles Include="$(OutputFolderPath)\**\*CodeAnalysisLog.xml" />
+		<CodeAnalysisFiles Include="$(OutputFolderPath)\**\*.lastcodeanalysissucceeded" />
+	</ItemGroup>
 
 	<Target Name="BuildFull" DependsOnTargets="$(BuildFullDependsOn)">
 	</Target>
 	
 	<Target Name="Clean">
 		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />
-	</Target>
+	</Target>		
 
 	<Target Name="BuildSolution">
 		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false"  Properties="Configuration=$(Configuration);BuildInParallel=True">
 			<Output ItemName="BuildOutput" TaskParameter="TargetOutputs"/>
 		</MSBuild>
+	</Target>
+
+	<Target Name="StaticAnalysis" DependsOnTargets="$(StaticAnalysisDependsOn)">
+		<Delete Files="%(CodeAnalysisFiles.FullPath)" ContinueOnError="false" />
+	</Target>
+
+	<Target Name="CreateNuGetPackage"
+					DependsOnTargets="$(CreateNuGetPackageDependsOn)">
+		<Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath Output -OutputDirectory Output"/>
 	</Target>
 
 	
