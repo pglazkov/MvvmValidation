@@ -1,0 +1,81 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<SourceDir>.\</SourceDir>
+		<SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
+		<OutputFolderPath>$(SourceDir)Output</OutputFolderPath>		
+		<UnitTestAssemblies>$(SourceDir)\**\bin\Debug\*.Tests.dll</UnitTestAssemblies>
+		<MSTestPath>c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\</MSTestPath>
+		<MSTestOutputFileName>mstestresults.xml</MSTestOutputFileName>
+		<Configuration>Release</Configuration>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<TestsDirectory Include="$(OutputFolderPath)\Tests" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<BuildFullDependsOn>
+			Clean;
+			BuildSolution;
+			StaticAnalysis;
+			UnitTest;
+			CreateNuGetPackage
+		</BuildFullDependsOn>
+		<CreateNuGetPackageDependsOn>
+			BuildSolution
+		</CreateNuGetPackageDependsOn>
+		<StaticAnalysisDependsOn>
+			BuildSolution
+		</StaticAnalysisDependsOn>
+		<UnitTestDependsOn>
+			BuildSolution
+		</UnitTestDependsOn>
+	</PropertyGroup>
+
+	<Target Name="BuildFull" DependsOnTargets="$(BuildFullDependsOn)">
+	</Target>
+	
+	<Target Name="Clean">
+		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />
+	</Target>		
+
+	<Target Name="BuildSolution">
+		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false"  Properties="Configuration=$(Configuration);BuildInParallel=True">
+			<Output ItemName="BuildOutput" TaskParameter="TargetOutputs"/>
+		</MSBuild>
+	</Target>
+
+	<Target Name="StaticAnalysis" DependsOnTargets="$(StaticAnalysisDependsOn)">
+		<CreateItem Include="$(OutputFolderPath)\**\*CodeAnalysisLog.xml">
+			<Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
+		</CreateItem>
+		<CreateItem Include="$(OutputFolderPath)\**\*.lastcodeanalysissucceeded">
+			<Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
+		</CreateItem>
+		
+		<Delete Files="%(CodeAnalysisFiles.FullPath)" ContinueOnError="false" />
+	</Target>
+
+	<Target Name="UnitTest" DependsOnTargets="$(UnitTestDependsOn)">
+		<CreateItem Include="$(UnitTestAssemblies)">
+			<Output TaskParameter="Include" ItemName="AssembliesToTest" />
+		</CreateItem>
+		<CreateItem Include="%(TestsDirectory.fullpath)\**\*.*">
+			<Output TaskParameter="Include" ItemName="ItemsToCleanup"/>
+		</CreateItem>
+		<Delete Files="%(ItemsToCleanup.FullPath)" ContinueOnError="false" />
+		<MakeDir Directories="%(TestsDirectory.fullpath)" Condition="!Exists('%(TestsDirectory.fullpath)')" />
+		<CreateProperty Value="@(AssembliesToTest ->'/testcontainer:&quot;%(fullpath)&quot;',' ')">
+			<Output TaskParameter="Value" PropertyName="testList" />
+		</CreateProperty>	
+		<Exec Command="&quot;$(MSTestPath)mstest.exe&quot; $(testList) /resultsfile:&quot;%(TestsDirectory.fullpath)\$(MSTestOutputFileName)&quot;" WorkingDirectory="$(SourceDir)" ContinueOnError="false" />		
+	</Target>
+
+	<Target Name="CreateNuGetPackage"
+					DependsOnTargets="$(CreateNuGetPackageDependsOn)">
+		<Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath $(OutputFolderPath) -OutputDirectory $(OutputFolderPath) -Exclude **\Tests\**"/>
+	</Target>
+
+	
+</Project>

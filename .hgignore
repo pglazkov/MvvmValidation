@@ -16,3 +16,5 @@ Bin/*
 bin/*
 *.crunchproject.local.xml
 *.xap
+Output/*
+TestResults/*
