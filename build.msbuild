@@ -21,11 +21,6 @@
 		</StaticAnalysisDependsOn>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<CodeAnalysisFiles Include="$(OutputFolderPath)\**\*CodeAnalysisLog.xml" />
-		<CodeAnalysisFiles Include="$(OutputFolderPath)\**\*.lastcodeanalysissucceeded" />
-	</ItemGroup>
-
 	<Target Name="BuildFull" DependsOnTargets="$(BuildFullDependsOn)">
 	</Target>
 	
@@ -40,12 +35,19 @@
 	</Target>
 
 	<Target Name="StaticAnalysis" DependsOnTargets="$(StaticAnalysisDependsOn)">
+		<CreateItem Include="$(OutputFolderPath)\**\*CodeAnalysisLog.xml">
+			<Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
+		</CreateItem>
+		<CreateItem Include="$(OutputFolderPath)\**\*.lastcodeanalysissucceeded">
+			<Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
+		</CreateItem>
+		
 		<Delete Files="%(CodeAnalysisFiles.FullPath)" ContinueOnError="false" />
 	</Target>
 
 	<Target Name="CreateNuGetPackage"
 					DependsOnTargets="$(CreateNuGetPackageDependsOn)">
-		<Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath Output -OutputDirectory Output"/>
+		<Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath $(OutputFolderPath) -OutputDirectory $(OutputFolderPath)"/>
 	</Target>
 
 	
