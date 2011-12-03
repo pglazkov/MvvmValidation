@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>MvvmValidation</id>
+    <version>1.0</version>
+    <authors>Pavlo Glazkov</authors>
+    <owners>Pavlo Glazkov</owners>
+    <licenseUrl>http://mvvmvalidation.codeplex.com/license</licenseUrl>
+    <projectUrl>http://mvvmvalidation.codeplex.com</projectUrl>
+    <iconUrl></iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>MVVM Validation is a lightweight framework that makes it easier for developers to implement validation in their WPF/Silverlight MVVM applications. You'll no longer have to implement IDataErrorInfo and INotifyDataErrorInfo interfaces manually in your view models. It allows you to define and keep all you validation rules conveniently in one place.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2011 Pavlo Glazkov</copyright>
+    <tags>mvvm validation silverlight wpf</tags>
+    <dependencies>
+
+    </dependencies>
+  </metadata>
+</package>
