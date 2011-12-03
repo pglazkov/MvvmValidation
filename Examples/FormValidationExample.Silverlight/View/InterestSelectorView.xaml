@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="FormValidationExample.View.InterestSelectorView"
+			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:FormValidationExample="clr-namespace:FormValidationExample"
+			 mc:Ignorable="d"
+			 d:DataContext="{d:DesignInstance FormValidationExample:InterestSelectorViewModel}"
+			 x:Name="root">
+
+	<UserControl.Resources>
+		<DataTemplate x:Key="InterestItemTemplate">
+			<Grid d:DataContext="{d:DesignInstance FormValidationExample:InterestItemViewModel}"
+				  Margin="0,0,0,5">
+				<CheckBox Content="{Binding Name}"
+						  IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+			</Grid>
+		</DataTemplate>
+	</UserControl.Resources>	
+	
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="Auto" />
+			<ColumnDefinition Width="*" />
+		</Grid.ColumnDefinitions>
+
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup x:Name="ValidationStates">
+				<VisualState x:Name="Valid" />
+				<VisualState x:Name="InvalidUnfocused">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
+													   Storyboard.TargetName="textBlock">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Visible</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+				<VisualState x:Name="InvalidFocused">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
+													   Storyboard.TargetName="textBlock">
+							<DiscreteObjectKeyFrame KeyTime="0">
+								<DiscreteObjectKeyFrame.Value>
+									<Visibility>Visible</Visibility>
+								</DiscreteObjectKeyFrame.Value>
+							</DiscreteObjectKeyFrame>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+
+		<ItemsControl ItemsSource="{Binding Interests}"
+					  ItemTemplate="{StaticResource InterestItemTemplate}" />
+
+		<TextBlock x:Name="textBlock"
+				   Grid.Column="1"
+				   Text="{Binding ElementName=root, Path=(Validation.Errors)[0].ErrorContent}"
+				   HorizontalAlignment="Right"
+				   Margin="10,0,5,0"
+				   TextWrapping="Wrap"
+				   TextTrimming="WordEllipsis"
+				   Visibility="Collapsed"
+				   Foreground="Red" />
+	</Grid>
+</UserControl>
