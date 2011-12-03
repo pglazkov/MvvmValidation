@@ -1,0 +1,29 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<PropertyGroup>
+		<SolutionFilePath>.\MvvmValidation.sln</SolutionFilePath>
+		<Configuration>Release</Configuration>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<BuildFullDependsOn>
+			Clean;
+			BuildSolution
+		</BuildFullDependsOn>
+	</PropertyGroup>
+
+	<Target Name="BuildFull" DependsOnTargets="$(BuildFullDependsOn)">
+	</Target>
+	
+	<Target Name="Clean">
+		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />
+	</Target>
+
+	<Target Name="BuildSolution">
+		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false"  Properties="Configuration=$(Configuration);BuildInParallel=True">
+			<Output ItemName="BuildOutput" TaskParameter="TargetOutputs"/>
+		</MSBuild>
+	</Target>
+
+	
+</Project>
