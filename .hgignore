@@ -1,0 +1,22 @@
+syntax: glob
+_ReSharper*
+*.suo
+MvvmValidation/bin/*
+MvvmValidation/obj/*
+MvvmValidation.Silverlight/Bin/*
+MvvmValidation.Silverlight/obj/*
+MvvmValidation.Tests/bin/*
+MvvmValidation.Tests/obj/*
+*.user
+*.crunchsolution.cache
+Output/Desktop/*
+Output/Silverlight/*
+obj/*
+Bin/*
+bin/*
+*.crunchproject.local.xml
+*.xap
+Output/*
+TestResults/*
+testimpactdata.sdf
+MvvmValidation.vsmdi
