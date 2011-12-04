@@ -70,6 +70,9 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="System.Reactive">
+      <HintPath>..\..\packages\Rx-Main.1.0.10621\lib\SL4\System.Reactive.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -86,8 +89,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\PasswordBoxAssistant.cs" />
+    <Compile Include="Services\UserRegistrationService.cs" />
     <Compile Include="ViewModel\InterestItemViewModel.cs" />
     <Compile Include="ViewModel\InterestSelectorViewModel.cs" />
+    <Compile Include="Services\IUserRegistrationService.cs" />
     <Compile Include="View\FormView.xaml.cs">
       <DependentUpon>FormView.xaml</DependentUpon>
     </Compile>

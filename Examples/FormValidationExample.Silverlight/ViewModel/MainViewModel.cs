@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 using FormValidationExample.Infrastructure;
+using FormValidationExample.Services;
 using GalaSoft.MvvmLight.Command;
 using MvvmValidation;
 
@@ -17,10 +19,15 @@ namespace FormValidationExample
 		private string lastName;
 		private string password;
 		private string passwordConfirmation;
+		private string userName;
 		private string validationErrorsString;
 
-		public MainViewModel()
+		public MainViewModel(IUserRegistrationService userRegistrationService)
 		{
+			Contract.Requires(userRegistrationService != null);
+
+			UserRegistrationService = userRegistrationService;
+
 			InterestSelectorViewModel = new InterestSelectorViewModel();
 			InterestSelectorViewModel.SelectedInterestsChanged += OnSelectedInterestsChanged;
 
@@ -30,7 +37,20 @@ namespace FormValidationExample
 			Validator.ResultChanged += OnValidationResultChanged;
 		}
 
+		private IUserRegistrationService UserRegistrationService { get; set; }
+
 		public ICommand SubmitCommant { get; private set; }
+
+		public string UserName
+		{
+			get { return userName; }
+			set
+			{
+				userName = value;
+				RaisePropertyChanged("UserName");
+				Validator.ValidateAsync(() => UserName);
+			}
+		}
 
 		public string FirstName
 		{
@@ -111,6 +131,12 @@ namespace FormValidationExample
 
 		private void ConfigureValidationRules()
 		{
+			Validator.AddRule(() => UserName,
+			                  () => RuleResult.Assert(!string.IsNullOrEmpty(UserName), "User Name is required"));
+
+			Validator.AddAsyncRule(() => UserName,
+			                       ValidateUserNameIsAvailable);
+
 			Validator.AddRule(() => FirstName,
 			                  () => RuleResult.Assert(!string.IsNullOrEmpty(FirstName), "First Name is required"));
 
@@ -176,6 +202,24 @@ namespace FormValidationExample
 			                                    "Please select at least 3 interests"));
 		}
 
+		private void ValidateUserNameIsAvailable(Action<RuleResult> onCompleted)
+		{
+			if (string.IsNullOrEmpty(UserName))
+			{
+				onCompleted(RuleResult.Valid());
+			}
+
+			var asyncOperatoin = UserRegistrationService.IsUserNameAvailable(UserName);
+
+			asyncOperatoin.Subscribe(
+				isAvailable =>
+				{
+					var ruleResult = RuleResult.Assert(isAvailable, string.Format("User Name {0} is taken. Please choose a different one.", UserName));
+
+					onCompleted(ruleResult);
+				});
+		}
+
 		private void OnSelectedInterestsChanged(object sender, EventArgs e)
 		{
 			Validator.Validate(() => InterestSelectorViewModel);
@@ -183,8 +227,11 @@ namespace FormValidationExample
 
 		private void Submit()
 		{
-			var validationResult = Validator.ValidateAll();
+			Validator.ValidateAllAsync(OnValidateAllCompleted);
+		}
 
+		private void OnValidateAllCompleted(ValidationResult validationResult)
+		{
 			UpdateValidationSummary(validationResult);
 		}
 
@@ -192,7 +239,7 @@ namespace FormValidationExample
 		{
 			if (!IsValid.GetValueOrDefault(true))
 			{
-				var validationResult = Validator.GetResult();
+				ValidationResult validationResult = Validator.GetResult();
 
 				UpdateValidationSummary(validationResult);
 			}
