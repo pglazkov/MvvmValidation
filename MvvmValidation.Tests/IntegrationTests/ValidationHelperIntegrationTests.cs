@@ -186,29 +186,29 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
-		public void SyncValidation_ThereAreAsyncRules_ThrowsInvalidOperationException()
-		{
-			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
-			{
-				var vm = new DummyViewModel();
+		//[TestMethod]
+		//[ExpectedException(typeof(InvalidOperationException))]
+		//public void SyncValidation_ThereAreAsyncRules_ThrowsInvalidOperationException()
+		//{
+		//    TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
+		//    {
+		//        var vm = new DummyViewModel();
 
-				var validation = new ValidationHelper();
+		//        var validation = new ValidationHelper();
 
-				validation.AddAsyncRule(vm,
-				                        setResultDelegate =>
-				                        ThreadPool.QueueUserWorkItem(_ =>
-				                                                     setResultDelegate(RuleResult.Valid())));
+		//        validation.AddAsyncRule(vm,
+		//                                setResultDelegate =>
+		//                                ThreadPool.QueueUserWorkItem(_ =>
+		//                                                             setResultDelegate(RuleResult.Valid())));
 
-				validation.AddRule(vm, () =>
-				{
-					return RuleResult.Invalid("Rule 2 failed");
-				});
+		//        validation.AddRule(vm, () =>
+		//        {
+		//            return RuleResult.Invalid("Rule 2 failed");
+		//        });
 
-				validation.ValidateAll();
-			});
-		}
+		//        validation.ValidateAll();
+		//    });
+		//}
 
 		[TestMethod]
 		public void SyncValidation_SeveralRulesForOneTarget_ValidWhenAllRulesAreValid()
