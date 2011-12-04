@@ -298,7 +298,7 @@ namespace MvvmValidation
 		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
 		public ValidationResult GetResult()
 		{
-			return GetResult(null);
+			return GetResultInternal();
 		}
 
 		/// <summary>
@@ -308,13 +308,27 @@ namespace MvvmValidation
 		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
 		public ValidationResult GetResult(object target)
 		{
+			Contract.Requires(target != null);
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
 
-			bool returnAllResults = target == null || (string.IsNullOrEmpty(target as string));
+			bool returnAllResults = string.IsNullOrEmpty(target as string);
 
 			ValidationResult result = returnAllResults ? GetResultInternal() : GetResultInternal(target);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Returns the current validation state for a property represented by <paramref name="propertyExpression"/> (all errors tracked by this instance of <see cref="ValidationHelper"/>).
+		/// </summary>
+		/// <param name="propertyExpression">The property for which to retrieve the validation state. Example: GetResult(() => MyProperty)</param>
+		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public ValidationResult GetResult(Expression<Func<object>> propertyExpression)
+		{
+			Contract.Requires(propertyExpression != null);
+
+			return GetResult(PropertyName.For(propertyExpression));
 		}
 
 		private ValidationResult GetResultInternal(object target)
@@ -504,6 +518,10 @@ namespace MvvmValidation
 				// Skip rule if the target is already invalid
 				if (failedTargets.Contains(validationRule.Target))
 				{
+					// Assume that the rule is valid at this point because we are not interested in this error until
+					// previous rule is fixed.
+					SaveRuleValidationResultAndNotifyIfNeeded(validationRule, RuleResult.Valid());
+
 					continue;
 				}
 
@@ -540,6 +558,9 @@ namespace MvvmValidation
 					// Skip rule if the target is already invalid
 					if (failedTargets.Contains(validationRule.Target))
 					{
+						// Assume that the rule is valid at this point because we are not interested in this error until
+						// previous rule is fixed.
+						SaveRuleValidationResultAndNotifyIfNeeded(validationRule, RuleResult.Valid());
 						continue;
 					}
 
