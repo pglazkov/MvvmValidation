@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Windows;
 using System.Windows.Controls;
+using FormValidationExample.Services;
 
 namespace FormValidationExample
 {
@@ -11,7 +10,7 @@ namespace FormValidationExample
 		{
 			InitializeComponent();
 
-			DataContext = new MainViewModel();
+			DataContext = new MainViewModel(new UserRegistrationService());
 		}
 	}
 }
