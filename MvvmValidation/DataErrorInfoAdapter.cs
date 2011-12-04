@@ -33,7 +33,7 @@ namespace MvvmValidation
 		/// <returns>The error message for the property. The default is an empty string ("").</returns>
 		public string this[string columnName]
 		{
-			get { return Validation.GetResult(columnName).ErrorList.ToString(); }
+			get { return Validation.GetResult(columnName).ToString(); }
 		}
 
 		/// <summary>
@@ -42,7 +42,7 @@ namespace MvvmValidation
 		/// <returns>An error message indicating what is wrong with this object. The default is an empty string ("").</returns>
 		public string Error
 		{
-			get { return Validation.GetResult().ErrorList.ToString(); }
+			get { return Validation.GetResult().ToString(); }
 		}
 
 		#endregion
