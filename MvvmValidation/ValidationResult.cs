@@ -100,9 +100,9 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<string>() != null);
 
-			string result = ToString(new NumberedListValidationResultFormatter());
+			var result = ToString(new NumberedListValidationResultFormatter());
 
-			return !string.IsNullOrEmpty(result) ? result : "Valid";
+			return result;
 		}
 	}
 }
