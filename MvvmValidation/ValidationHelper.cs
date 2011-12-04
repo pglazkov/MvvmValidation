@@ -495,21 +495,31 @@ namespace MvvmValidation
 			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)));
 		}
 
-		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
 		private ValidationResult ExecuteValidationRules(object target = null)
 		{
 			Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
 
-			var result = new ValidationResult();
-
 			ValidationRule[] rulesToExecute = ValidationRules.Where(ruleFilter).ToArray();
 
-			// Check that all the rules support syncronious validation
-			if (rulesToExecute.Any(r => !r.SupportsSyncValidation))
+			ValidationResult result = ExecuteValidationRulesCore(rulesToExecute);
+
+			return result;
+		}
+
+		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed)
+		{
+			ThreadPool.QueueUserWorkItem(_ =>
 			{
-				throw new InvalidOperationException(
-					"There are asynchronous validation rules for this target that cannot be executed synchronously. Please call ValidateAsync instead.");
-			}
+				ValidationResult result = ExecuteValidationRules(target);
+
+				completed(result);
+			});
+		}
+
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
+		private ValidationResult ExecuteValidationRulesCore(IEnumerable<ValidationRule> rulesToExecute)
+		{
+			var result = new ValidationResult();
 
 			var failedTargets = new HashSet<object>();
 
@@ -525,10 +535,10 @@ namespace MvvmValidation
 					continue;
 				}
 
-				RuleResult ruleResult = validationRule.Evaluate();
+				RuleResult ruleResult = ExecuteRuleCore(validationRule);
 
 				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult);
-				
+
 				AddErrorsFromRuleResult(result, validationRule, ruleResult);
 
 				if (!ruleResult.IsValid)
@@ -540,53 +550,28 @@ namespace MvvmValidation
 			return result;
 		}
 
-		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed)
+		private RuleResult ExecuteRuleCore(ValidationRule rule)
 		{
-			ThreadPool.QueueUserWorkItem(_ =>
+			RuleResult result = RuleResult.Valid();
+
+			if (!rule.SupportsSyncValidation)
 			{
-				Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
+				var completedEvent = new ManualResetEvent(false);
 
-				var result = new ValidationResult();
-
-				ValidationRule[] rulesToExecute =
-					ValidationRules.Where(ruleFilter).Where(r => r.SupportsAsyncValidation).ToArray();
-
-				var failedTargets = new HashSet<object>();
-
-				foreach (ValidationRule validationRule in rulesToExecute)
+				rule.EvaluateAsync(r =>
 				{
-					// Skip rule if the target is already invalid
-					if (failedTargets.Contains(validationRule.Target))
-					{
-						// Assume that the rule is valid at this point because we are not interested in this error until
-						// previous rule is fixed.
-						SaveRuleValidationResultAndNotifyIfNeeded(validationRule, RuleResult.Valid());
-						continue;
-					}
+					result = r;
+					completedEvent.Set();
+				});
 
-					ValidationRule rule = validationRule;
+				completedEvent.WaitOne();
+			}
+			else
+			{
+				result = rule.Evaluate();
+			}
 
-					var completedEvent = new ManualResetEvent(false);
-
-					validationRule.EvaluateAsync(ruleResult =>
-					{
-						SaveRuleValidationResultAndNotifyIfNeeded(rule, ruleResult);
-
-						AddErrorsFromRuleResult(result, rule, ruleResult);
-
-						if (!ruleResult.IsValid)
-						{
-							failedTargets.Add(rule.Target);
-						}
-
-						completedEvent.Set();
-					});
-
-					completedEvent.WaitOne();
-				}
-
-				completed(result);
-			});
+			return result;
 		}
 
 		private static void AddErrorsFromRuleResult(ValidationResult resultToAddTo, ValidationRule validationRule,
