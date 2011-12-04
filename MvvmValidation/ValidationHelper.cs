@@ -501,24 +501,6 @@ namespace MvvmValidation
 
 			ValidationRule[] rulesToExecute = ValidationRules.Where(ruleFilter).ToArray();
 
-			ValidationResult result = ExecuteValidationRulesCore(rulesToExecute);
-
-			return result;
-		}
-
-		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed)
-		{
-			ThreadPool.QueueUserWorkItem(_ =>
-			{
-				ValidationResult result = ExecuteValidationRules(target);
-
-				completed(result);
-			});
-		}
-
-		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
-		private ValidationResult ExecuteValidationRulesCore(IEnumerable<ValidationRule> rulesToExecute)
-		{
 			var result = new ValidationResult();
 
 			var failedTargets = new HashSet<object>();
@@ -548,6 +530,16 @@ namespace MvvmValidation
 			}
 
 			return result;
+		}
+
+		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed)
+		{
+			ThreadPool.QueueUserWorkItem(_ =>
+			{
+				ValidationResult result = ExecuteValidationRules(target);
+
+				completed(result);
+			});
 		}
 
 		private RuleResult ExecuteRuleCore(ValidationRule rule)
