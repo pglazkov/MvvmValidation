@@ -12,6 +12,7 @@
 
 	<ItemGroup>
 		<TestsDirectory Include="$(OutputFolderPath)\Tests" />
+		<OutputFolder Include="$(OutputFolderPath)"/>
 	</ItemGroup>
 
 	<PropertyGroup>
@@ -37,7 +38,9 @@
 	</Target>
 	
 	<Target Name="Clean">
-		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />
+		<!--<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />-->
+		<RemoveDir Directories="%(OutputFolder.FullPath)"/>
+		<MakeDir Directories="%(OutputFolder.FullPath)"/>
 	</Target>		
 
 	<Target Name="BuildSolution">
