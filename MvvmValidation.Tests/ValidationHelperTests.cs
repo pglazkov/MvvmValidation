@@ -330,5 +330,38 @@ namespace MvvmValidation.Tests
 			// VERIFY
 			Assert.AreEqual(expectedResultChangedCalls, resultChangedCalledTimes, "ResultChanged event must be fired for every change of result");
 		}
+
+		[TestMethod]
+		public void Validate_MultipleRulesForSameTarget_DoesNotExecuteRulesIfPerviousFailed()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			bool firstRuleExecuted = false;
+			bool secondRuleExecuted = false;
+
+			validation.AddRule(() => dummy.Foo,
+			                   () =>
+			                   {
+			                   	firstRuleExecuted = true;
+			                   	return RuleResult.Invalid("Error1");
+			                   });
+			validation.AddRule(() => dummy.Foo,
+			                   () =>
+			                   {
+			                   	secondRuleExecuted = true;
+			                   	return RuleResult.Invalid("Error2");
+			                   });
+
+			// ACT
+
+			validation.ValidateAll();
+
+			// VERIFY
+
+			Assert.IsTrue(firstRuleExecuted, "First rule must have been executed");
+			Assert.IsFalse(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
+		}
 	}
 }

@@ -118,7 +118,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
 				{
 					rule2Executed = true;
-					setResultDelegate(RuleResult.Invalid("Rule 2 failed"));
+					setResultDelegate(RuleResult.Valid());
 				}));
 
 				bool rule3Executed = false;
@@ -134,7 +134,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					Assert.IsTrue(rule1Executed);
 					Assert.IsTrue(rule2Executed);
 					Assert.IsTrue(rule3Executed);
-					Assert.IsFalse(r.IsValid);
+					Assert.IsTrue(r.IsValid);
 
 					completedAction();
 				});
@@ -163,7 +163,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddRule(vm, () =>
 				{
 					rule2Executed = true;
-					return RuleResult.Invalid("Rule 2 failed");
+					return RuleResult.Valid();
 				});
 
 				bool rule3Executed = false;
@@ -179,7 +179,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					Assert.IsTrue(rule1Executed);
 					Assert.IsTrue(rule2Executed);
 					Assert.IsTrue(rule3Executed);
-					Assert.IsFalse(r.IsValid);
+					Assert.IsTrue(r.IsValid);
 
 					completedAction();
 				});
@@ -319,6 +319,46 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				// ACT
 				vm.StringProperty2 = null;
+			});
+		}
+
+		[TestMethod]
+		public void ValidateAsync_MultipleRulesForSameTarget_DoesNotExecuteRulesIfPerviousFailed()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var validation = new ValidationHelper();
+				var dummy = new DummyViewModel();
+
+				bool firstRuleExecuted = false;
+				bool secondRuleExecuted = false;
+
+				validation.AddRule(() => dummy.Foo,
+				                   () =>
+				                   {
+				                   	firstRuleExecuted = true;
+				                   	return RuleResult.Invalid("Error1");
+				                   });
+
+				validation.AddAsyncRule(() => dummy.Foo,
+				                        onCompleted =>
+				                        {
+				                        	secondRuleExecuted = true;
+				                        	onCompleted(RuleResult.Invalid("Error2"));
+				                        });
+
+				// ACT
+
+				validation.ValidateAllAsync(result =>
+				{
+					// VERIFY
+
+					Assert.IsTrue(firstRuleExecuted, "First rule must have been executed");
+					Assert.IsFalse(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
+
+					completedAction();
+				});
 			});
 		}
 	}
