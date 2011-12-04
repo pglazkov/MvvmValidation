@@ -18,3 +18,5 @@ bin/*
 *.xap
 Output/*
 TestResults/*
+testimpactdata.sdf
+MvvmValidation.vsmdi
