@@ -135,7 +135,23 @@ namespace FormValidationExample
 			                  () => RuleResult.Assert(!string.IsNullOrEmpty(UserName), "User Name is required"));
 
 			Validator.AddAsyncRule(() => UserName,
-			                       ValidateUserNameIsAvailable);
+			                       (Action<RuleResult> onCompleted) =>
+			                       {
+			                       	if (string.IsNullOrEmpty(UserName))
+			                       	{
+			                       		onCompleted(RuleResult.Valid());
+			                       	}
+
+			                       	var asyncOperation = UserRegistrationService.IsUserNameAvailable(UserName);
+
+			                       	asyncOperation.Subscribe(
+			                       		isAvailable =>
+			                       		{
+			                       			var ruleResult = RuleResult.Assert(isAvailable, string.Format("User Name {0} is taken. Please choose a different one.", UserName));
+
+			                       			onCompleted(ruleResult);
+			                       		});
+			                       });
 
 			Validator.AddRule(() => FirstName,
 			                  () => RuleResult.Assert(!string.IsNullOrEmpty(FirstName), "First Name is required"));
@@ -200,24 +216,6 @@ namespace FormValidationExample
 			                  () =>
 			                  RuleResult.Assert(InterestSelectorViewModel.SelectedInterests.Count() >= 3,
 			                                    "Please select at least 3 interests"));
-		}
-
-		private void ValidateUserNameIsAvailable(Action<RuleResult> onCompleted)
-		{
-			if (string.IsNullOrEmpty(UserName))
-			{
-				onCompleted(RuleResult.Valid());
-			}
-
-			var asyncOperatoin = UserRegistrationService.IsUserNameAvailable(UserName);
-
-			asyncOperatoin.Subscribe(
-				isAvailable =>
-				{
-					var ruleResult = RuleResult.Assert(isAvailable, string.Format("User Name {0} is taken. Please choose a different one.", UserName));
-
-					onCompleted(ruleResult);
-				});
 		}
 
 		private void OnSelectedInterestsChanged(object sender, EventArgs e)
