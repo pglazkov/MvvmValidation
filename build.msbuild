@@ -38,7 +38,11 @@
 	</Target>
 	
 	<Target Name="Clean">
+		<CreateItem Include="%(OutputFolder.FullPath)\**\*.*">
+			<Output TaskParameter="Include" ItemName="FilesToRemove"/>
+		</CreateItem>
 		<!--<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />-->
+		<Delete Files="%(FilesToRemove.FullPath)" ContinueOnError="false" />
 		<RemoveDir Directories="%(OutputFolder.FullPath)"/>
 		<MakeDir Directories="%(OutputFolder.FullPath)"/>
 	</Target>		
