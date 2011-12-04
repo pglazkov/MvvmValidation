@@ -497,13 +497,26 @@ namespace MvvmValidation
 					"There are asynchronous validation rules for this target that cannot be executed synchronously. Please call ValidateAsync instead.");
 			}
 
+			var failedTargets = new HashSet<object>();
+
 			foreach (ValidationRule validationRule in rulesToExecute)
 			{
+				// Skip rule if the target is already invalid
+				if (failedTargets.Contains(validationRule.Target))
+				{
+					continue;
+				}
+
 				RuleResult ruleResult = validationRule.Evaluate();
 
 				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult);
-
+				
 				AddErrorsFromRuleResult(result, validationRule, ruleResult);
+
+				if (!ruleResult.IsValid)
+				{
+					failedTargets.Add(validationRule.Target);
+				}
 			}
 
 			return result;
@@ -517,17 +530,22 @@ namespace MvvmValidation
 
 				var result = new ValidationResult();
 
-				IEnumerable<ValidationRule> rulesToExecute =
-					ValidationRules.Where(ruleFilter).Where(r => r.SupportsAsyncValidation);
+				ValidationRule[] rulesToExecute =
+					ValidationRules.Where(ruleFilter).Where(r => r.SupportsAsyncValidation).ToArray();
 
-				var events = new List<ManualResetEvent>();
+				var failedTargets = new HashSet<object>();
 
 				foreach (ValidationRule validationRule in rulesToExecute)
 				{
+					// Skip rule if the target is already invalid
+					if (failedTargets.Contains(validationRule.Target))
+					{
+						continue;
+					}
+
 					ValidationRule rule = validationRule;
 
 					var completedEvent = new ManualResetEvent(false);
-					events.Add(completedEvent);
 
 					validationRule.EvaluateAsync(ruleResult =>
 					{
@@ -535,13 +553,15 @@ namespace MvvmValidation
 
 						AddErrorsFromRuleResult(result, rule, ruleResult);
 
+						if (!ruleResult.IsValid)
+						{
+							failedTargets.Add(rule.Target);
+						}
+
 						completedEvent.Set();
 					});
-				}
 
-				if (events.Any())
-				{
-					WaitHandle.WaitAll(events.ToArray());
+					completedEvent.WaitOne();
 				}
 
 				completed(result);
