@@ -37,14 +37,16 @@
 	<Target Name="BuildFull" DependsOnTargets="$(BuildFullDependsOn)">
 	</Target>
 	
-	<Target Name="Clean">
+	<Target Name="Clean">		
+		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />
+
 		<CreateItem Include="%(OutputFolder.FullPath)\**\*.*">
 			<Output TaskParameter="Include" ItemName="FilesToRemove"/>
 		</CreateItem>
-		<!--<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />-->
-		<Delete Files="%(FilesToRemove.FullPath)" ContinueOnError="false" />
-		<RemoveDir Directories="%(OutputFolder.FullPath)"/>
-		<MakeDir Directories="%(OutputFolder.FullPath)"/>
+		
+		<Delete Files="%(FilesToRemove.FullPath)" ContinueOnError="true" />
+		<RemoveDir Directories="%(OutputFolder.FullPath)" ContinueOnError="true"/>
+		<MakeDir Directories="%(OutputFolder.FullPath)" ContinueOnError="true"/>
 	</Target>		
 
 	<Target Name="BuildSolution">
