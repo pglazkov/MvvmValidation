@@ -131,8 +131,7 @@ namespace FormValidationExample
 
 		private void ConfigureValidationRules()
 		{
-			Validator.AddRule(() => UserName,
-			                  () => RuleResult.Assert(!string.IsNullOrEmpty(UserName), "User Name is required"));
+			Validator.AddRequiredRule(() => UserName, "User Name is required");
 
 			Validator.AddAsyncRule(() => UserName,
 			                       (Action<RuleResult> onCompleted) =>
@@ -148,14 +147,11 @@ namespace FormValidationExample
 			                       		});
 			                       });
 
-			Validator.AddRule(() => FirstName,
-			                  () => RuleResult.Assert(!string.IsNullOrEmpty(FirstName), "First Name is required"));
+			Validator.AddRequiredRule(() => FirstName, "First Name is required");
 
-			Validator.AddRule(() => LastName,
-			                  () => RuleResult.Assert(!string.IsNullOrEmpty(LastName), "Last Name is required"));
+			Validator.AddRequiredRule(() => LastName, "Last Name is required");
 
-			Validator.AddRule(() => Email,
-			                  () => RuleResult.Assert(!string.IsNullOrEmpty(Email), "Email is required"));
+			Validator.AddRequiredRule(() => Email, "Email is required");
 
 			Validator.AddRule(() => Email,
 			                  () =>
@@ -166,9 +162,7 @@ namespace FormValidationExample
 			                  	                         "Email must by a valid email address");
 			                  });
 
-			Validator.AddRule(() => Password,
-			                  () => RuleResult.Assert(!string.IsNullOrEmpty(Password),
-			                                          "Password is required"));
+			Validator.AddRequiredRule(() => Password, "Password is required");
 
 			Validator.AddRule(() => Password,
 			                  () => RuleResult.Assert(Password.Length >= 6,
