@@ -401,5 +401,28 @@ namespace MvvmValidation.Tests
 			Assert.AreEqual(1, result.ErrorList.Count, "There must be only one error for the first failed rule.");
 			Assert.AreEqual("Error1", result.ErrorList[0].ErrorText);
 		}
+
+		[TestMethod]
+		public void AddRequiredRule_AddsRuleThatChecksTheObjectNotNullOrEmptyString()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			validation.AddRequiredRule(() => dummy.Foo, "Foo cannot be empty");
+
+			// ACT
+			var result = validation.ValidateAll();
+
+			// VERIFY
+			Assert.IsFalse(result.IsValid, "Validation must fail");
+
+			// ACT
+			dummy.Foo = "abc";
+			var resultAfterCorrection = validation.ValidateAll();
+
+			// VERIFY
+			Assert.IsTrue(resultAfterCorrection.IsValid, "The result must be valid after the correction of the error");
+		}
 	}
 }
