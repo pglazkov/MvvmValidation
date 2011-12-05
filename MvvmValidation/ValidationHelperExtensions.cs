@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 
@@ -16,6 +17,8 @@ namespace MvvmValidation
 		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
 		/// <param name="propertyExpression">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
 		/// <param name="errorMessage">Error message in case if the property is null or empty.</param>
+		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public static void AddRequiredRule(this ValidationHelper validator, Expression<Func<object>> propertyExpression, string errorMessage)
 		{
 			Contract.Requires(validator != null);
