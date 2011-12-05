@@ -6,6 +6,9 @@ namespace MvvmValidation
 	/// <summary>
 	/// Represents an exception that occurs during validation
 	/// </summary>
+#if !SILVERLIGHT
+	[Serializable]
+#endif
 	public class ValidationException : Exception
 	{
 		/// <summary>

@@ -21,11 +21,6 @@ namespace MvvmValidation.Internal
 		private AsyncRuleValidateAction AsyncValidateAction { get; set; }
 		private Func<RuleResult> ValidateDelegate { get; set; }
 
-		public bool SupportsAsyncValidation
-		{
-			get { return AsyncValidateAction != null || AsyncValidateAction != null; }
-		}
-
 		public bool SupportsSyncValidation
 		{
 			get { return ValidateDelegate != null; }
