@@ -20,3 +20,4 @@ Output/*
 TestResults/*
 testimpactdata.sdf
 MvvmValidation.vsmdi
+*.local.xml
