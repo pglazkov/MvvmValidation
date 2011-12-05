@@ -330,5 +330,76 @@ namespace MvvmValidation.Tests
 			// VERIFY
 			Assert.AreEqual(expectedResultChangedCalls, resultChangedCalledTimes, "ResultChanged event must be fired for every change of result");
 		}
+
+		[TestMethod]
+		public void Validate_MultipleRulesForSameTarget_DoesNotExecuteRulesIfPerviousFailed()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			bool firstRuleExecuted = false;
+			bool secondRuleExecuted = false;
+
+			validation.AddRule(() => dummy.Foo,
+			                   () =>
+			                   {
+			                   	firstRuleExecuted = true;
+			                   	return RuleResult.Invalid("Error1");
+			                   });
+			validation.AddRule(() => dummy.Foo,
+			                   () =>
+			                   {
+			                   	secondRuleExecuted = true;
+			                   	return RuleResult.Invalid("Error2");
+			                   });
+
+			// ACT
+
+			validation.ValidateAll();
+
+			// VERIFY
+
+			Assert.IsTrue(firstRuleExecuted, "First rule must have been executed");
+			Assert.IsFalse(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
+		}
+
+		[TestMethod]
+		public void Validate_MultipleRulesForSameTarget_ClearsResultsBeforeValidation()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			var dummy = new DummyViewModel();
+
+			RuleResult firstRuleResult = RuleResult.Valid();
+			RuleResult secondRuleResult = RuleResult.Invalid("Error2");
+
+			validation.AddRule(() => dummy.Foo,
+							   () =>
+							   {
+								   return firstRuleResult;
+							   });
+			validation.AddRule(() => dummy.Foo,
+							   () =>
+							   {
+								   return secondRuleResult;
+							   });
+
+			// ACT
+
+			validation.ValidateAll();
+
+			firstRuleResult = RuleResult.Invalid("Error1");
+
+			validation.ValidateAll();
+
+			// VERIFY
+
+			var result = validation.GetResult(() => dummy.Foo);
+
+			Assert.IsFalse(result.IsValid);
+			Assert.AreEqual(1, result.ErrorList.Count, "There must be only one error for the first failed rule.");
+			Assert.AreEqual("Error1", result.ErrorList[0].ErrorText);
+		}
 	}
 }

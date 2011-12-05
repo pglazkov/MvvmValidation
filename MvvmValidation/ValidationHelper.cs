@@ -15,6 +15,12 @@ namespace MvvmValidation
 	/// </summary>
 	public class ValidationHelper
 	{
+		#region Constants
+
+		private static readonly TimeSpan DefaultAsyncRuleExecutionTimout = TimeSpan.FromSeconds(30);
+
+		#endregion
+
 		#region Fields
 
 		private readonly IDictionary<object, IDictionary<ValidationRule, RuleResult>> ruleValidationResultMap =
@@ -33,6 +39,7 @@ namespace MvvmValidation
 		public ValidationHelper()
 		{
 			ValidationRules = new ValidationRuleCollection();
+			AsyncRuleExecutionTimeout = DefaultAsyncRuleExecutionTimout;
 		}
 
 		#endregion
@@ -40,6 +47,12 @@ namespace MvvmValidation
 		#region Properties
 
 		private ValidationRuleCollection ValidationRules { get; set; }
+
+		/// <summary>
+		/// Gets or sets a timeout that indicates how much time is allocated for an async rule to complete.
+		/// If a rule did not complete in this timeout, then an exception will be thrown.
+		/// </summary>
+		public TimeSpan AsyncRuleExecutionTimeout { get; set; }
 
 		#endregion
 
@@ -97,7 +110,7 @@ namespace MvvmValidation
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new[] {propertyExpression}, validateDelegate);
+			AddRule(new[] { propertyExpression }, validateDelegate);
 		}
 
 		/// <summary>
@@ -117,13 +130,13 @@ namespace MvvmValidation
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-		                    Func<RuleResult> validateDelegate)
+							Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new[] {property1Expression, property2Expression}, validateDelegate);
+			AddRule(new[] { property1Expression, property2Expression }, validateDelegate);
 		}
 
 		/// <summary>
@@ -203,7 +216,7 @@ namespace MvvmValidation
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] {propertyExpression}, validateAction);
+			AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
 		}
 
 		/// <summary>
@@ -227,13 +240,13 @@ namespace MvvmValidation
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-		                         AsyncRuleValidateAction validateAction)
+								 AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] {property1Expression, property2Expression}, validateAction);
+			AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
 		}
 
 		/// <summary>
@@ -258,7 +271,7 @@ namespace MvvmValidation
 		}
 
 		private void AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
-		                         AsyncRuleValidateAction asyncValidateAction)
+								 AsyncRuleValidateAction asyncValidateAction)
 		{
 			var rule = new ValidationRule(target, validateDelegate, asyncValidateAction);
 
@@ -298,7 +311,7 @@ namespace MvvmValidation
 		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
 		public ValidationResult GetResult()
 		{
-			return GetResult(null);
+			return GetResultInternal();
 		}
 
 		/// <summary>
@@ -308,13 +321,27 @@ namespace MvvmValidation
 		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
 		public ValidationResult GetResult(object target)
 		{
+			Contract.Requires(target != null);
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
 
-			bool returnAllResults = target == null || (string.IsNullOrEmpty(target as string));
+			bool returnAllResults = string.IsNullOrEmpty(target as string);
 
 			ValidationResult result = returnAllResults ? GetResultInternal() : GetResultInternal(target);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Returns the current validation state for a property represented by <paramref name="propertyExpression"/> (all errors tracked by this instance of <see cref="ValidationHelper"/>).
+		/// </summary>
+		/// <param name="propertyExpression">The property for which to retrieve the validation state. Example: GetResult(() => MyProperty)</param>
+		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public ValidationResult GetResult(Expression<Func<object>> propertyExpression)
+		{
+			Contract.Requires(propertyExpression != null);
+
+			return GetResult(PropertyName.For(propertyExpression));
 		}
 
 		private ValidationResult GetResultInternal(object target)
@@ -398,9 +425,15 @@ namespace MvvmValidation
 				return ValidationResult.Valid;
 			}
 
-			ValidationResult validationResult = ExecuteValidationRules(target);
-
-			return validationResult;
+			try
+			{
+				ValidationResult validationResult = ExecuteValidationRules(target);
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
+			}
 		}
 
 		/// <summary>
@@ -448,7 +481,7 @@ namespace MvvmValidation
 		{
 			Contract.Requires(target != null);
 
-			ValidateInternalAsync(target, onCompleted);
+			ValidateInternalAsync(target, onCompleted, null);
 		}
 
 		/// <summary>
@@ -465,12 +498,16 @@ namespace MvvmValidation
 		/// <param name="onCompleted">Callback to execute when the asynchronous validation is completed. The callback will be executed on the UI thread.</param>
 		public void ValidateAllAsync(Action<ValidationResult> onCompleted)
 		{
-			ValidateInternalAsync(null, onCompleted);
+			ValidateInternalAsync(null, onCompleted, null);
 		}
 
-		private void ValidateInternalAsync(object target, Action<ValidationResult> onCompleted)
+		private void ValidateInternalAsync(object target, Action<ValidationResult> onCompleted, Action<Exception> onException)
 		{
 			onCompleted = onCompleted ?? (r => { });
+			onException = onException ?? (ex =>
+			{
+				throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
+			});
 
 			if (isValidationSuspanded)
 			{
@@ -478,78 +515,98 @@ namespace MvvmValidation
 				return;
 			}
 
-			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)));
+			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)), ex => ThreadingUtils.RunOnUI(() => onException(ex)));
 		}
 
-		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
 		private ValidationResult ExecuteValidationRules(object target = null)
 		{
 			Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
 
-			var result = new ValidationResult();
-
 			ValidationRule[] rulesToExecute = ValidationRules.Where(ruleFilter).ToArray();
 
-			// Check that all the rules support syncronious validation
-			if (rulesToExecute.Any(r => !r.SupportsSyncValidation))
-			{
-				throw new InvalidOperationException(
-					"There are asynchronous validation rules for this target that cannot be executed synchronously. Please call ValidateAsync instead.");
-			}
+			var result = new ValidationResult();
+
+			var failedTargets = new HashSet<object>();
 
 			foreach (ValidationRule validationRule in rulesToExecute)
 			{
-				RuleResult ruleResult = validationRule.Evaluate();
+				// Skip rule if the target is already invalid
+				if (failedTargets.Contains(validationRule.Target))
+				{
+					// Assume that the rule is valid at this point because we are not interested in this error until
+					// previous rule is fixed.
+					SaveRuleValidationResultAndNotifyIfNeeded(validationRule, RuleResult.Valid());
+
+					continue;
+				}
+
+				RuleResult ruleResult = ExecuteRuleCore(validationRule);
 
 				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult);
 
 				AddErrorsFromRuleResult(result, validationRule, ruleResult);
+
+				if (!ruleResult.IsValid)
+				{
+					failedTargets.Add(validationRule.Target);
+				}
 			}
 
 			return result;
 		}
 
-		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed)
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", 
+			Justification = "Rethrowing the exception is not possible because execution is in a different thread and it would make it impossible to handle the exception on the calling side, so instead, calling a callback.")]
+		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed, Action<Exception> onException)
 		{
 			ThreadPool.QueueUserWorkItem(_ =>
 			{
-				Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
-
-				var result = new ValidationResult();
-
-				IEnumerable<ValidationRule> rulesToExecute =
-					ValidationRules.Where(ruleFilter).Where(r => r.SupportsAsyncValidation);
-
-				var events = new List<ManualResetEvent>();
-
-				foreach (ValidationRule validationRule in rulesToExecute)
+				try
 				{
-					ValidationRule rule = validationRule;
-
-					var completedEvent = new ManualResetEvent(false);
-					events.Add(completedEvent);
-
-					validationRule.EvaluateAsync(ruleResult =>
+					ValidationResult result = ExecuteValidationRules(target);
+					completed(result);
+				}
+				catch (Exception ex)
+				{
+					if (onException != null)
 					{
-						SaveRuleValidationResultAndNotifyIfNeeded(rule, ruleResult);
-
-						AddErrorsFromRuleResult(result, rule, ruleResult);
-
-						completedEvent.Set();
-					});
+						onException(ex);
+					}
 				}
-
-				if (events.Any())
-				{
-					WaitHandle.WaitAll(events.ToArray());
-				}
-
-				completed(result);
 			});
 		}
 
+		private RuleResult ExecuteRuleCore(ValidationRule rule)
+		{
+			RuleResult result = RuleResult.Valid();
+
+			if (!rule.SupportsSyncValidation)
+			{
+				var completedEvent = new ManualResetEvent(false);
+
+				rule.EvaluateAsync(r =>
+				{
+					result = r;
+					completedEvent.Set();
+				});
+
+				var isCompleted = completedEvent.WaitOne(AsyncRuleExecutionTimeout);
+
+				if (!isCompleted)
+				{
+					throw new TimeoutException("Rule validation did not complete in specified timeout.");
+				}
+			}
+			else
+			{
+				result = rule.Evaluate();
+			}
+
+			return result;
+		}
+
 		private static void AddErrorsFromRuleResult(ValidationResult resultToAddTo, ValidationRule validationRule,
-		                                            RuleResult ruleResult)
+													RuleResult ruleResult)
 		{
 			if (!ruleResult.IsValid)
 			{
