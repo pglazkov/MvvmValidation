@@ -25,10 +25,10 @@ namespace MvvmValidation
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(!string.IsNullOrEmpty(errorMessage));
 
+			var propertyGetter = propertyExpression.Compile();
+
 			validator.AddRule(propertyExpression, () =>
 			{
-				var propertyGetter = propertyExpression.Compile();
-
 				var propertyValue = propertyGetter();
 
 				var stringPropertyValue = propertyValue as string;
