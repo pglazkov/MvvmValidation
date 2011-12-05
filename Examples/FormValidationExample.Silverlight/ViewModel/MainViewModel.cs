@@ -137,11 +137,6 @@ namespace FormValidationExample
 			Validator.AddAsyncRule(() => UserName,
 			                       (Action<RuleResult> onCompleted) =>
 			                       {
-			                       	if (string.IsNullOrEmpty(UserName))
-			                       	{
-			                       		onCompleted(RuleResult.Valid());
-			                       	}
-
 			                       	var asyncOperation = UserRegistrationService.IsUserNameAvailable(UserName);
 
 			                       	asyncOperation.Subscribe(
@@ -167,7 +162,7 @@ namespace FormValidationExample
 			                  {
 			                  	const string regexPattern =
 			                  		@"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$";
-			                  	return RuleResult.Assert(string.IsNullOrEmpty(Email) || Regex.IsMatch(Email, regexPattern),
+			                  	return RuleResult.Assert(Regex.IsMatch(Email, regexPattern),
 			                  	                         "Email must by a valid email address");
 			                  });
 
@@ -176,17 +171,17 @@ namespace FormValidationExample
 			                                          "Password is required"));
 
 			Validator.AddRule(() => Password,
-			                  () => RuleResult.Assert(string.IsNullOrEmpty(Password) || Password.Length >= 6,
+			                  () => RuleResult.Assert(Password.Length >= 6,
 			                                          "Password must contain at least 6 characters"));
 
 			Validator.AddRule(() => Password,
-			                  () => RuleResult.Assert(string.IsNullOrEmpty(Password) || (!Password.All(Char.IsLower) &&
-			                                                                             !Password.All(Char.IsUpper) &&
-			                                                                             !Password.All(Char.IsDigit)),
+			                  () => RuleResult.Assert((!Password.All(Char.IsLower) &&
+			                                           !Password.All(Char.IsUpper) &&
+			                                           !Password.All(Char.IsDigit)),
 			                                          "Password must contain both lower case and upper case letters"));
 
 			Validator.AddRule(() => Password,
-			                  () => RuleResult.Assert(string.IsNullOrEmpty(Password) || Password.Any(Char.IsDigit),
+			                  () => RuleResult.Assert(Password.Any(Char.IsDigit),
 			                                          "Password must contain at least one digit"));
 
 			Validator.AddRule(() => PasswordConfirmation,
