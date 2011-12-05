@@ -15,6 +15,12 @@ namespace MvvmValidation
 	/// </summary>
 	public class ValidationHelper
 	{
+		#region Constants
+
+		private static readonly TimeSpan DefaultAsyncRuleExecutionTimout = TimeSpan.FromSeconds(30);
+
+		#endregion
+
 		#region Fields
 
 		private readonly IDictionary<object, IDictionary<ValidationRule, RuleResult>> ruleValidationResultMap =
@@ -33,6 +39,7 @@ namespace MvvmValidation
 		public ValidationHelper()
 		{
 			ValidationRules = new ValidationRuleCollection();
+			AsyncRuleExecutionTimeout = DefaultAsyncRuleExecutionTimout;
 		}
 
 		#endregion
@@ -40,6 +47,12 @@ namespace MvvmValidation
 		#region Properties
 
 		private ValidationRuleCollection ValidationRules { get; set; }
+
+		/// <summary>
+		/// Gets or sets a timeout that indicates how much time is allocated for an async rule to complete.
+		/// If a rule did not complete in this timeout, then an exception will be thrown.
+		/// </summary>
+		public TimeSpan AsyncRuleExecutionTimeout { get; set; }
 
 		#endregion
 
@@ -97,7 +110,7 @@ namespace MvvmValidation
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new[] {propertyExpression}, validateDelegate);
+			AddRule(new[] { propertyExpression }, validateDelegate);
 		}
 
 		/// <summary>
@@ -117,13 +130,13 @@ namespace MvvmValidation
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-		                    Func<RuleResult> validateDelegate)
+							Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new[] {property1Expression, property2Expression}, validateDelegate);
+			AddRule(new[] { property1Expression, property2Expression }, validateDelegate);
 		}
 
 		/// <summary>
@@ -203,7 +216,7 @@ namespace MvvmValidation
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] {propertyExpression}, validateAction);
+			AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
 		}
 
 		/// <summary>
@@ -227,13 +240,13 @@ namespace MvvmValidation
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-		                         AsyncRuleValidateAction validateAction)
+								 AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] {property1Expression, property2Expression}, validateAction);
+			AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
 		}
 
 		/// <summary>
@@ -258,7 +271,7 @@ namespace MvvmValidation
 		}
 
 		private void AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
-		                         AsyncRuleValidateAction asyncValidateAction)
+								 AsyncRuleValidateAction asyncValidateAction)
 		{
 			var rule = new ValidationRule(target, validateDelegate, asyncValidateAction);
 
@@ -412,9 +425,15 @@ namespace MvvmValidation
 				return ValidationResult.Valid;
 			}
 
-			ValidationResult validationResult = ExecuteValidationRules(target);
-
-			return validationResult;
+			try
+			{
+				ValidationResult validationResult = ExecuteValidationRules(target);
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				throw new ValidationException("An exception occured during validation. See inner exception for details.", ex);
+			}
 		}
 
 		/// <summary>
@@ -462,7 +481,7 @@ namespace MvvmValidation
 		{
 			Contract.Requires(target != null);
 
-			ValidateInternalAsync(target, onCompleted);
+			ValidateInternalAsync(target, onCompleted, null);
 		}
 
 		/// <summary>
@@ -479,12 +498,16 @@ namespace MvvmValidation
 		/// <param name="onCompleted">Callback to execute when the asynchronous validation is completed. The callback will be executed on the UI thread.</param>
 		public void ValidateAllAsync(Action<ValidationResult> onCompleted)
 		{
-			ValidateInternalAsync(null, onCompleted);
+			ValidateInternalAsync(null, onCompleted, null);
 		}
 
-		private void ValidateInternalAsync(object target, Action<ValidationResult> onCompleted)
+		private void ValidateInternalAsync(object target, Action<ValidationResult> onCompleted, Action<Exception> onException)
 		{
 			onCompleted = onCompleted ?? (r => { });
+			onException = onException ?? (ex =>
+			{
+				throw new ValidationException("An exception occured during validation. See inner exception for details.", ex);
+			});
 
 			if (isValidationSuspanded)
 			{
@@ -492,7 +515,7 @@ namespace MvvmValidation
 				return;
 			}
 
-			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)));
+			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)), ex => ThreadingUtils.RunOnUI(() => onException(ex)));
 		}
 
 		private ValidationResult ExecuteValidationRules(object target = null)
@@ -532,13 +555,22 @@ namespace MvvmValidation
 			return result;
 		}
 
-		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed)
+		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed, Action<Exception> onException)
 		{
 			ThreadPool.QueueUserWorkItem(_ =>
 			{
-				ValidationResult result = ExecuteValidationRules(target);
-
-				completed(result);
+				try
+				{
+					ValidationResult result = ExecuteValidationRules(target);
+					completed(result);
+				}
+				catch (Exception ex)
+				{
+					if (onException != null)
+					{
+						onException(ex);
+					}
+				}
 			});
 		}
 
@@ -556,7 +588,12 @@ namespace MvvmValidation
 					completedEvent.Set();
 				});
 
-				completedEvent.WaitOne();
+				var isCompleted = completedEvent.WaitOne(AsyncRuleExecutionTimeout);
+
+				if (!isCompleted)
+				{
+					throw new TimeoutException("Rule validation did not complete in specified timeout.");
+				}
 			}
 			else
 			{
@@ -567,7 +604,7 @@ namespace MvvmValidation
 		}
 
 		private static void AddErrorsFromRuleResult(ValidationResult resultToAddTo, ValidationRule validationRule,
-		                                            RuleResult ruleResult)
+													RuleResult ruleResult)
 		{
 			if (!ruleResult.IsValid)
 			{

@@ -7,6 +7,7 @@ using MvvmValidation.Tests.Helpers;
 
 namespace MvvmValidation.Tests.IntegrationTests
 {
+	// ReSharper disable InconsistentNaming
 	[TestClass]
 	public class ValidationHelperIntegrationTests
 	{
@@ -15,8 +16,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
 			{
-				var vm = new DummyViewModel();
-				vm.Foo = null;
+				var vm = new DummyViewModel {Foo = null};
 
 				var validation = new ValidationHelper();
 				
@@ -67,9 +67,12 @@ namespace MvvmValidation.Tests.IntegrationTests
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, testCompleted) =>
 			{
-				var vm = new DummyViewModel();
-				vm.Foo = "abc";
-				vm.Bar = "abc";
+				var vm = new DummyViewModel
+				{
+					Foo = "abc", 
+					Bar = "abc"
+				};
+
 				Func<bool> validCondition = () => vm.Foo != vm.Bar;
 
 				var validation = new ValidationHelper();
@@ -213,8 +216,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 		[TestMethod]
 		public void SyncValidation_SeveralRulesForOneTarget_ValidWhenAllRulesAreValid()
 		{
-			var uiThreadDispatcher = Dispatcher.CurrentDispatcher;
-			
 			var vm = new DummyViewModel();
 
 			var validation = new ValidationHelper();
@@ -361,5 +362,30 @@ namespace MvvmValidation.Tests.IntegrationTests
 				});
 			});
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(ValidationException))]
+		public void ValidatedAsync_AsyncRuleDoesnotCallCallback_ThrowsAnExceptionAfterTimeout()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var validation = new ValidationHelper();
+				validation.AsyncRuleExecutionTimeout = TimeSpan.FromSeconds(0.1);
+
+				var dummy = new DummyViewModel();
+				
+				validation.AddAsyncRule(() => dummy.Foo,
+										onCompleted =>
+										{
+											// Do nothing
+										});
+
+				// ACT
+
+				validation.ValidateAllAsync(result => completedAction());
+			});
+		}
 	}
+	// ReSharper restore InconsistentNaming
 }
