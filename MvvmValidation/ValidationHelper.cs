@@ -432,7 +432,7 @@ namespace MvvmValidation
 			}
 			catch (Exception ex)
 			{
-				throw new ValidationException("An exception occured during validation. See inner exception for details.", ex);
+				throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
 			}
 		}
 
@@ -506,7 +506,7 @@ namespace MvvmValidation
 			onCompleted = onCompleted ?? (r => { });
 			onException = onException ?? (ex =>
 			{
-				throw new ValidationException("An exception occured during validation. See inner exception for details.", ex);
+				throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
 			});
 
 			if (isValidationSuspanded)
@@ -555,6 +555,8 @@ namespace MvvmValidation
 			return result;
 		}
 
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", 
+			Justification = "Rethrowing the exception is not possible because execution is in a different thread and it would make it impossible to handle the exception on the calling side, so instead, calling a callback.")]
 		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed, Action<Exception> onException)
 		{
 			ThreadPool.QueueUserWorkItem(_ =>
