@@ -96,7 +96,7 @@
 
 		<TextBlock Grid.Column="2"
 				   Grid.Row="4"
-				   Text="Should be atleast 6 characters and contain both lowercase and uppcase letters as well as numbers."
+				   Text="Should be at least 6 characters and contain both lowercase and uppcase letters as well as numbers."
 				   FontSize="10"
 				   TextWrapping="Wrap"
 				   MaxWidth="100"
