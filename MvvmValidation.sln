@@ -1,13 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation", "MvvmValidation\MvvmValidation.csproj", "{56D2052D-459D-402A-8938-174DACDC66C5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Silverlight", "MvvmValidation.Silverlight\MvvmValidation.Silverlight.csproj", "{BE1CBB49-B796-4A61-B79F-DA7BCC6C9C5D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{1EC81A79-B894-4B22-B163-68FFDA3389FF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Tests", "MvvmValidation.Tests\MvvmValidation.Tests.csproj", "{9D98F797-07E1-4936-9349-E874572DBCD1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB9FED21-F8DB-4EE9-ACFE-A82F1D5AEC2A}"
 	ProjectSection(SolutionItems) = preProject
@@ -20,6 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{AD568145-6ABE-441A-B4F1-364204B15F3B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation", "MvvmValidation\MvvmValidation.csproj", "{56D2052D-459D-402A-8938-174DACDC66C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Silverlight", "MvvmValidation.Silverlight\MvvmValidation.Silverlight.csproj", "{BE1CBB49-B796-4A61-B79F-DA7BCC6C9C5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Tests", "MvvmValidation.Tests\MvvmValidation.Tests.csproj", "{9D98F797-07E1-4936-9349-E874572DBCD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormValidationExample.Silverlight", "Examples\FormValidationExample.Silverlight\FormValidationExample.Silverlight.csproj", "{3870EB67-7EF0-4645-B3C8-8D04477A82A5}"
 EndProject

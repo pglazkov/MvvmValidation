@@ -4,11 +4,14 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:l="clr-namespace:FormValidationExample"
 			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-			 xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+			 xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
+			 x:Name="userControl"
 			 x:Class="FormValidationExample.MainView"
 			 mc:Ignorable="d"
-			 d:DataContext="{d:DesignInstance l:MainViewModel}">
-	<Grid Background="Gray">
+			 d:DataContext="{d:DesignInstance l:MainViewModel}" RenderTransformOrigin="0.5,0.5">
+	
+	
+	<Grid Background="Gray">		
 		<i:Interaction.Behaviors>
 			<ei:DataStateBehavior Binding="{Binding IsValid}"
 								  Value="True"
@@ -17,7 +20,7 @@
 		</i:Interaction.Behaviors>
 		
 		<VisualStateManager.VisualStateGroups>
-			<VisualStateGroup x:Name="ValidationSummaryStates">
+			<VisualStateGroup x:Name="ValidationSummaryStates">				
 				<VisualState x:Name="ValidState">
 					<Storyboard>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)"
@@ -28,6 +31,13 @@
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)"
+													   Storyboard.TargetName="BackgroundOverlayBorder">
+							<EasingDoubleKeyFrame KeyTime="0:0:1"
+												  Value="0.5" />
+							<EasingDoubleKeyFrame KeyTime="0:0:2"
+												  Value="0" />
+						</DoubleAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
 				<VisualState x:Name="InvalidState">
@@ -40,19 +50,39 @@
 								</DiscreteObjectKeyFrame.Value>
 							</DiscreteObjectKeyFrame>
 						</ObjectAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)"
+													   Storyboard.TargetName="border">
+							<EasingDoubleKeyFrame KeyTime="0:0:0.066"
+												  Value="-10" />
+							<EasingDoubleKeyFrame KeyTime="0:0:0.134"
+												  Value="10" />
+							<EasingDoubleKeyFrame KeyTime="0:0:0.2"
+												  Value="0" />
+						</DoubleAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
-		<Border Width="500"
+		<Border x:Name="BackgroundOverlayBorder" Background="#FF06C409" Opacity="0"/>
+		<Border x:Name="border" 
+				Width="600"
 				MinHeight="600"
 				Background="White"
 				CornerRadius="5"
 				VerticalAlignment="Center"
 				HorizontalAlignment="Center"
-				Padding="20">
+				Padding="20"
+				RenderTransformOrigin="0.5,0.5">
+			<Border.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform />
+					<SkewTransform />
+					<RotateTransform />
+					<TranslateTransform />
+				</TransformGroup>
+			</Border.RenderTransform>
 			<Border.Effect>
-				<DropShadowEffect />
+				<DropShadowEffect Color="#FF252525" Opacity="0.7" />
 			</Border.Effect>
 			<Grid>
 				<Grid.RowDefinitions>
@@ -111,7 +141,8 @@
 							VerticalAlignment="Bottom"
 							Margin="0,10,0,0">
 						<Button Content="Submit (Validate)"
-								Command="{Binding SubmitCommant}" />
+								Command="{Binding SubmitCommant}"
+								Padding="10"/>
 					</Border>
 
 				</Grid>
