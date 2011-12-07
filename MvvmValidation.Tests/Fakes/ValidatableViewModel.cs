@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MvvmValidation.Tests.Fakes
 {
@@ -14,6 +15,8 @@ namespace MvvmValidation.Tests.Fakes
 		public string Foo { get; set; }
 
 		public IValidatable Child { get; set; }
+
+		public IEnumerable<IValidatable> Children { get; set; }
 
 		public void Validate(Action<ValidationResult> onCompleted)
 		{
