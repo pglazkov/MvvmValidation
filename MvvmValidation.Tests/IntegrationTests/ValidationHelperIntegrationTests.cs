@@ -386,6 +386,31 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.ValidateAllAsync(result => completedAction());
 			});
 		}
+
+		[TestMethod]
+		public void AddChildValidatable_AddsRuleThatExecutedValidationOnChild()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var parent = new ValidatableViewModel();
+				var child = new ValidatableViewModel();
+				parent.Child = child;
+
+				child.Validator.AddRequiredRule(() => child.Foo, "Error1");
+				parent.Validator.AddChildValidatable(() => parent.Child);
+
+				// ACT
+				parent.Validator.ValidateAllAsync(result =>
+				{
+					// VERIFY
+					Assert.IsFalse(result.IsValid, "Validation must fail");
+					Assert.AreEqual("Error1", result.ErrorList[0].ErrorText);
+
+					completedAction();
+				});
+			});
+		}
 	}
 	// ReSharper restore InconsistentNaming
 }

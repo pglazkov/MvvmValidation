@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fakes\DummyViewModel.cs" />
+    <Compile Include="Fakes\ValidatableViewModel.cs" />
     <Compile Include="IntegrationTests\ValidationHelperIntegrationTests.cs" />
     <Compile Include="Fakes\MockViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
