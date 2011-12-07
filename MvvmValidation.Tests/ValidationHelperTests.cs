@@ -424,5 +424,22 @@ namespace MvvmValidation.Tests
 			// VERIFY
 			Assert.IsTrue(resultAfterCorrection.IsValid, "The result must be valid after the correction of the error");
 		}
+
+		[TestMethod]
+		[ExpectedException(typeof(InvalidOperationException))]
+		public void Validate_ThereAreAsyncRules_ThrowsException()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+
+			// Add a simple sync rule
+			validation.AddRule(RuleResult.Valid);
+
+			// Add an async rule
+			validation.AddAsyncRule(onCompleted => onCompleted(RuleResult.Invalid("Error")));
+		
+			// ACT
+			validation.ValidateAll();
+		}
 	}
 }

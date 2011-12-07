@@ -416,6 +416,7 @@ namespace MvvmValidation
 			return ValidateInternal(null);
 		}
 
+		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
 		private ValidationResult ValidateInternal(object target)
 		{
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
@@ -425,9 +426,16 @@ namespace MvvmValidation
 				return ValidationResult.Valid;
 			}
 
+			var rulesToExecute = GetRulesForTarget(target).ToArray();
+
+			if (rulesToExecute.Any(r => !r.SupportsSyncValidation))
+			{
+				throw new InvalidOperationException("There are asynchronous rules that cannot be executed synchronously. Please use ValidateAsync method to execute validation instead.");
+			}
+
 			try
 			{
-				ValidationResult validationResult = ExecuteValidationRules(target);
+				ValidationResult validationResult = ExecuteValidationRules(rulesToExecute);
 				return validationResult;
 			}
 			catch (Exception ex)
@@ -518,12 +526,8 @@ namespace MvvmValidation
 			ExecuteValidationRulesAsync(target, r => ThreadingUtils.RunOnUI(() => onCompleted(r)), ex => ThreadingUtils.RunOnUI(() => onException(ex)));
 		}
 
-		private ValidationResult ExecuteValidationRules(object target = null)
+		private ValidationResult ExecuteValidationRules(IEnumerable<ValidationRule> rulesToExecute)
 		{
-			Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
-
-			ValidationRule[] rulesToExecute = ValidationRules.Where(ruleFilter).ToArray();
-
 			var result = new ValidationResult();
 
 			var failedTargets = new HashSet<object>();
@@ -555,6 +559,15 @@ namespace MvvmValidation
 			return result;
 		}
 
+		private IEnumerable<ValidationRule> GetRulesForTarget(object target)
+		{
+			Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
+
+			var result = ValidationRules.Where(ruleFilter);
+
+			return result;
+		}
+
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", 
 			Justification = "Rethrowing the exception is not possible because execution is in a different thread and it would make it impossible to handle the exception on the calling side, so instead, calling a callback.")]
 		private void ExecuteValidationRulesAsync(object target, Action<ValidationResult> completed, Action<Exception> onException)
@@ -563,7 +576,10 @@ namespace MvvmValidation
 			{
 				try
 				{
-					ValidationResult result = ExecuteValidationRules(target);
+					var rulesToExecute = GetRulesForTarget(target);
+
+					ValidationResult result = ExecuteValidationRules(rulesToExecute);
+
 					completed(result);
 				}
 				catch (Exception ex)
