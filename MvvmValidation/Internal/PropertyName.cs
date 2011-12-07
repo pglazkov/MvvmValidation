@@ -13,6 +13,23 @@ namespace MvvmValidation.Internal
 		/// <summary>
 		/// Returns the property name by given expression.
 		/// </summary>
+		/// <typeparam name="T">Type of property's return value</typeparam>
+		/// <param name="expression">The expression.</param>
+		/// <param name="compound"><c>True</c> if the full expression path should be used to build the string. For example, 
+		/// call PropertyName.For(() => MyObj.Property.NestedProperty) will result in string "MyObj.Property.NestedProperty".
+		/// If <c>False</c> it will return only the last part, which is "NestedProperty" in the example above.</param>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
+		[SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
+		public static string For<T>(Expression<Func<T>> expression, bool compound = true)
+		{
+			Expression body = expression.Body;
+			return GetMemberName(body, compound);
+		}
+
+		/// <summary>
+		/// Returns the property name by given expression.
+		/// </summary>
 		/// <param name="expression">The expression.</param>
 		/// <param name="compound"><c>True</c> if the full expression path should be used to build the string. For example, 
 		/// call PropertyName.For(() => MyObj.Property.NestedProperty) will result in string "MyObj.Property.NestedProperty".

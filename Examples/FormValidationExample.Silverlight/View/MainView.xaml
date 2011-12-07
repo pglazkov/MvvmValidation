@@ -128,10 +128,10 @@
 					<Grid x:Name="ValidSummaryContainer"
 						  Grid.Column="0"
 						  Visibility="Collapsed"
-						  VerticalAlignment="Bottom"
+						  VerticalAlignment="Center"
 						  HorizontalAlignment="Left"
-						  Margin="0,10,10,0">
-						<TextBlock Text="Valid"
+						  Margin="0,10,5,0">
+						<TextBlock Text="Congratulations! You successfully completed the form!"
 								   Foreground="Green"
 								   FontSize="16"/>
 					</Grid>

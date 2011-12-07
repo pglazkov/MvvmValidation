@@ -414,6 +414,31 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[TestMethod]
+		public void AddChildValidatable_AddsRuleWithProperTarget()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var parent = new ValidatableViewModel();
+				var child = new ValidatableViewModel();
+				parent.Child = child;
+
+				child.Validator.AddRequiredRule(() => child.Foo, "Error1");
+				parent.Validator.AddChildValidatable(() => parent.Child);
+
+				// ACT
+				parent.Validator.ValidateAllAsync(result =>
+				{
+					// VERIFY
+					Assert.IsFalse(result.IsValid, "Validation must fail");
+					Assert.AreEqual("parent.Child", result.ErrorList[0].Target);
+
+					completedAction();
+				});
+			});
+		}
+
+		[TestMethod]
 		public void AddChildValidatable_ChildValidatableIsNull_NoErrorsAreAdded()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
