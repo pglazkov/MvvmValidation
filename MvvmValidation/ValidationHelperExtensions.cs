@@ -42,5 +42,44 @@ namespace MvvmValidation
 				return RuleResult.Valid();
 			});
 		}
+
+		/// <summary>
+		/// Creates a validation rule that validates the specified child <see cref="IValidatable"/> object and adds errors
+		/// to this object if invalid.
+		/// </summary>
+		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
+		/// <param name="childValidatableGetter">Expression for getting the <see cref="IValidatable"/> object to add as child.</param>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public static void AddChildValidatable(this ValidationHelper validator, Expression<Func<IValidatable>> childValidatableGetter)
+		{
+			Contract.Requires(validator != null);
+			Contract.Requires(childValidatableGetter != null);
+
+			var getter = childValidatableGetter.Compile();
+
+			validator.AddAsyncRule(childValidatableGetter, (Action<RuleResult> onCompleted) =>
+			{
+				var validatable = getter();
+
+				if (validatable != null)
+				{
+					validatable.Validate(result =>
+					{
+						var ruleResult = new RuleResult();
+
+						foreach (var error in result.ErrorList)
+						{
+							ruleResult.AddError(error.ErrorText);
+						}
+
+						onCompleted(ruleResult);
+					});
+				}
+				else
+				{
+					onCompleted(RuleResult.Valid());
+				}
+			});
+		}
 	}
 }

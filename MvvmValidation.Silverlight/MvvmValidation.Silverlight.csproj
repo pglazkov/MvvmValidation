@@ -168,6 +168,9 @@
     <Compile Include="..\MvvmValidation\Internal\ValidationRuleCollection.cs">
       <Link>Internal\ValidationRuleCollection.cs</Link>
     </Compile>
+    <Compile Include="..\MvvmValidation\IValidatable.cs">
+      <Link>IValidatable.cs</Link>
+    </Compile>
     <Compile Include="..\MvvmValidation\IValidationResultFormatter.cs">
       <Link>IValidationResultFormatter.cs</Link>
     </Compile>
@@ -227,7 +230,7 @@
       <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
         <SilverlightProjectProperties />
       </FlavorProperties>
-      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="56d2052d-459d-402a-8938-174dacdc66c5" />
+      <UserProperties ProjectLinkReference="56d2052d-459d-402a-8938-174dacdc66c5" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
