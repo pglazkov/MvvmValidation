@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>MvvmValidation</id>
+    <version>1.0</version>
+    <authors>Pavlo Glazkov</authors>
+    <owners>Pavlo Glazkov</owners>
+    <licenseUrl>http://mvvmvalidation.codeplex.com/license</licenseUrl>
+    <projectUrl>http://mvvmvalidation.codeplex.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>MVVM Validation is a lightweight framework that makes it easier for developers to implement validation in their WPF/Silverlight MVVM applications.</summary>
+		<description>A lightweight framework that saves you from all the boilerplate of maintaining error list for each of the validation targets (properties). It allows you to keep all your validation rules conveniently in one place. You just define a set of validation rules that need to be checked for each of the targets and later, when appropriate, it is easy to just validate a target and get the validation result back without worrying what rules need to be checked.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2011 Pavlo Glazkov</copyright>
+    <tags>mvvm validation silverlight wpf</tags>
+  </metadata>
+</package>

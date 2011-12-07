@@ -1,0 +1,12 @@
+﻿<Dictionary>
+	<Words>
+		<Recognized>
+			<Word>Mvvm</Word>
+		</Recognized>
+	</Words>
+	<Acronyms>
+		<CasingExceptions>
+			<Acronym>Mvvm</Acronym>
+		</CasingExceptions>
+	</Acronyms>
+</Dictionary>
