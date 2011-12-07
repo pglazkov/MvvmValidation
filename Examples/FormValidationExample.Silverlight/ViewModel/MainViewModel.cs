@@ -201,15 +201,17 @@ namespace FormValidationExample
 			                  	return RuleResult.Valid();
 			                  });
 
-			Validator.AddRule(() => InterestSelectorViewModel,
-			                  () =>
-			                  RuleResult.Assert(InterestSelectorViewModel.SelectedInterests.Count() >= 3,
-			                                    "Please select at least 3 interests"));
+			Validator.AddChildValidatable(() => InterestSelectorViewModel);
 		}
 
 		private void OnSelectedInterestsChanged(object sender, EventArgs e)
 		{
-			Validator.Validate(() => InterestSelectorViewModel);
+			var currentState = Validator.GetResult(() => InterestSelectorViewModel);
+
+			if (!currentState.IsValid)
+			{
+				Validator.ValidateAsync(() => InterestSelectorViewModel);
+			}
 		}
 
 		private void Submit()

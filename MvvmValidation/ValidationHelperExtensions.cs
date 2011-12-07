@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
@@ -63,8 +64,8 @@ namespace MvvmValidation
 			Contract.Requires(childValidatableGetter != null);
 
 			var getter = childValidatableGetter.Compile();
-
-			validator.AddAsyncRule(childValidatableGetter, (Action<RuleResult> onCompleted) =>
+			
+			validator.AddAsyncRule(PropertyName.For(childValidatableGetter), (Action<RuleResult> onCompleted) =>
 			{
 				var validatable = getter();
 
@@ -107,7 +108,7 @@ namespace MvvmValidation
 
 			var getter = validatableCollectionGetter.Compile();
 
-			validator.AddAsyncRule(validatableCollectionGetter, (Action<RuleResult> onCompleted) =>
+			validator.AddAsyncRule(PropertyName.For(validatableCollectionGetter), (Action<RuleResult> onCompleted) =>
 			{
 				var items = getter();
 
