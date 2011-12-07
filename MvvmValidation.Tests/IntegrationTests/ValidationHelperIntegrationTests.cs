@@ -411,6 +411,27 @@ namespace MvvmValidation.Tests.IntegrationTests
 				});
 			});
 		}
+
+		[TestMethod]
+		public void AddChildValidatable_ChildValidatableIsNull_NoErrorsAreAdded()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var parent = new ValidatableViewModel();
+
+				parent.Validator.AddChildValidatable(() => parent.Child);
+
+				// ACT
+				parent.Validator.ValidateAllAsync(result =>
+				{
+					// VERIFY
+					Assert.IsTrue(result.IsValid, "Validation must not fail");
+
+					completedAction();
+				});
+			});
+		}
 	}
 	// ReSharper restore InconsistentNaming
 }
