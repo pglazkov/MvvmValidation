@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -429,6 +430,69 @@ namespace MvvmValidation.Tests.IntegrationTests
 					Assert.IsTrue(result.IsValid, "Validation must not fail");
 
 					completedAction();
+				});
+			});
+		}
+
+		[TestMethod]
+		public void AddChildValidatableCollection_AddsRuleThatExecutedValidationOnAllValidatableChildren()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var parent = new ValidatableViewModel();
+				var child1 = new ValidatableViewModel();
+				var child2 = new ValidatableViewModel();
+				parent.Children = new List<IValidatable>
+				{
+					child1,
+					child2
+				};
+
+				child1.Validator.AddRequiredRule(() => child1.Foo, "Error1");
+				child2.Validator.AddRule(RuleResult.Valid);
+
+				parent.Validator.AddChildValidatableCollection(() => parent.Children);
+
+				// ACT
+				parent.Validator.ValidateAllAsync(result =>
+				{
+					// VERIFY
+					Assert.IsFalse(result.IsValid, "Validation must fail");
+					Assert.AreEqual("Error1", result.ErrorList[0].ErrorText);
+
+					completedAction();
+				});
+			});
+		}
+
+		[TestMethod]
+		public void AddChildValidatableCollection_ChildCollectionIsNullOrEmpty_NoErrorsAreAdded()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var parent = new ValidatableViewModel();
+
+				parent.Validator.AddChildValidatableCollection(() => parent.Children);
+
+				// ACT
+				parent.Validator.ValidateAllAsync(r1 =>
+				{
+					// VERIFY
+					Assert.IsTrue(r1.IsValid, "Validation must not fail");
+
+					// ARRANGE
+					parent.Children = new List<IValidatable>();
+
+					// ACT
+					parent.Validator.ValidateAllAsync(r2 =>
+					{
+						// VERIFY
+						Assert.IsTrue(r2.IsValid, "Validation must not fail.");
+
+						completedAction();
+					});
 				});
 			});
 		}
