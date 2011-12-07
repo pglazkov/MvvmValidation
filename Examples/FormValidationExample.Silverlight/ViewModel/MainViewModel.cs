@@ -31,7 +31,7 @@ namespace FormValidationExample
 			InterestSelectorViewModel = new InterestSelectorViewModel();
 			InterestSelectorViewModel.SelectedInterestsChanged += OnSelectedInterestsChanged;
 
-			SubmitCommant = new RelayCommand(Submit);
+			ValidateCommand = new RelayCommand(Validate);
 
 			ConfigureValidationRules();
 			Validator.ResultChanged += OnValidationResultChanged;
@@ -39,7 +39,7 @@ namespace FormValidationExample
 
 		private IUserRegistrationService UserRegistrationService { get; set; }
 
-		public ICommand SubmitCommant { get; private set; }
+		public ICommand ValidateCommand { get; private set; }
 
 		public string UserName
 		{
@@ -214,7 +214,7 @@ namespace FormValidationExample
 			}
 		}
 
-		private void Submit()
+		private void Validate()
 		{
 			Validator.ValidateAllAsync(OnValidateAllCompleted);
 		}

@@ -140,8 +140,8 @@
 							HorizontalAlignment="Right"
 							VerticalAlignment="Bottom"
 							Margin="0,10,0,0">
-						<Button Content="Submit (Validate)"
-								Command="{Binding SubmitCommant}"
+						<Button Content="Validate"
+								Command="{Binding ValidateCommand}"
 								Padding="10"/>
 					</Border>
 
