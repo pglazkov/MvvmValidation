@@ -64,11 +64,11 @@
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
-		
+
 		<Border x:Name="BackgroundOverlayBorder"
 				Background="#FF06C409"
 				Opacity="0" />
-		
+
 		<Border x:Name="border"
 				Width="600"
 				MinHeight="600"
@@ -102,8 +102,8 @@
 						   FontSize="20"
 						   Foreground="Gray" />
 
-				<View:FormView Grid.Row="1"
-							   Margin="0,20,0,0" />
+				<View:FormControl Grid.Row="1"
+								  Margin="0,20,0,0" />
 
 				<Grid Grid.Row="2">
 					<Grid.ColumnDefinitions>
