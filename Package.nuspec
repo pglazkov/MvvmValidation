@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>MvvmValidation</id>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <authors>Pavlo Glazkov</authors>
     <owners>Pavlo Glazkov</owners>
     <licenseUrl>http://mvvmvalidation.codeplex.com/license</licenseUrl>
