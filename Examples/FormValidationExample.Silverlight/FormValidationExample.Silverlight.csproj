@@ -93,8 +93,8 @@
     <Compile Include="ViewModel\InterestItemViewModel.cs" />
     <Compile Include="ViewModel\InterestSelectorViewModel.cs" />
     <Compile Include="Services\IUserRegistrationService.cs" />
-    <Compile Include="View\FormView.xaml.cs">
-      <DependentUpon>FormView.xaml</DependentUpon>
+    <Compile Include="View\FormControl.xaml.cs">
+      <DependentUpon>FormControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\InterestSelectorView.xaml.cs">
       <DependentUpon>InterestSelectorView.xaml</DependentUpon>
@@ -111,7 +111,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Page Include="View\FormView.xaml">
+    <Page Include="View\FormControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

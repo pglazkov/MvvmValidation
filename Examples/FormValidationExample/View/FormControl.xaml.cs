@@ -3,9 +3,9 @@ using System.Windows.Controls;
 
 namespace FormValidationExample.View
 {
-	public partial class FormView : UserControl
+	public partial class FormControl : UserControl
 	{
-		public FormView()
+		public FormControl()
 		{
 			InitializeComponent();
 		}
