@@ -21,5 +21,7 @@ namespace FormValidationExample.Infrastructure
 			add { NotifyDataErrorInfoAdapter.ErrorsChanged += value; }
 			remove { NotifyDataErrorInfoAdapter.ErrorsChanged -= value; }
 		}
+
+		
 	}
 }
