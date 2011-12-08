@@ -7,7 +7,6 @@ namespace MvvmValidation
 	/// <summary>
 	/// Represents an object that can be validated.
 	/// </summary>
-	[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Validatable")]
 	[ContractClass(typeof(IValidatableContract))]
 	public interface IValidatable
 	{

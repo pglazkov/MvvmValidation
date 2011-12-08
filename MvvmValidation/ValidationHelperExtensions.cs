@@ -52,8 +52,6 @@ namespace MvvmValidation
 		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
 		/// <param name="childValidatableGetter">Expression for getting the <see cref="IValidatable"/> object to add as child.</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Validatable")]
-		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "validatable")]
 		public static void AddChildValidatable(this ValidationHelper validator, Expression<Func<IValidatable>> childValidatableGetter)
 		{
 			Contract.Requires(validator != null);
@@ -93,8 +91,6 @@ namespace MvvmValidation
 		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
 		/// <param name="validatableCollectionGetter">Expression for getting the collection of <see cref="IValidatable"/> objects to add as child items.</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Validatable")]
-		[SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "validatable")]
 		public static void AddChildValidatableCollection(this ValidationHelper validator, Expression<Func<IEnumerable<IValidatable>>> validatableCollectionGetter)
 		{
 			Contract.Requires(validator != null);
