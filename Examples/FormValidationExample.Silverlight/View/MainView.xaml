@@ -4,11 +4,13 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:l="clr-namespace:FormValidationExample"
 			 xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-			 xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
-			 x:Name="userControl"
-			 x:Class="FormValidationExample.MainView"
+			 xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+             xmlns:View="clr-namespace:FormValidationExample.View"
+             xmlns:ViewModel="clr-namespace:FormValidationExample.ViewModel"
+             x:Name="userControl"
+			 x:Class="FormValidationExample.View.MainView"
 			 mc:Ignorable="d"
-			 d:DataContext="{d:DesignInstance l:MainViewModel}" RenderTransformOrigin="0.5,0.5">
+			 d:DataContext="{d:DesignInstance ViewModel:MainViewModel}" RenderTransformOrigin="0.5,0.5">
 	
 	
 	<Grid Background="Gray">		
@@ -96,7 +98,7 @@
 						   FontSize="20"
 						   Foreground="Gray" />
 
-				<l:FormView Grid.Row="1"
+				<View:FormView Grid.Row="1"
 							Margin="0,20,0,0" />
 
 				<Grid Grid.Row="2">
