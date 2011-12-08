@@ -5,7 +5,7 @@ using MvvmValidation;
 
 namespace FormValidationExample.Infrastructure
 {
-	public partial class ValidatableViewModelBase : ViewModelBase, IDataErrorInfo
+	public abstract partial class ValidatableViewModelBase : ViewModelBase, IDataErrorInfo, IValidatable
 	{
 		protected ValidationHelper Validator { get; private set; }
 
@@ -36,6 +36,11 @@ namespace FormValidationExample.Infrastructure
 		public string Error
 		{
 			get { return DataErrorInfoAdapter.Error; }
+		}
+
+		void IValidatable.Validate(Action<ValidationResult> onCompleted)
+		{
+			Validator.ValidateAllAsync(onCompleted);
 		}
 	}
 }

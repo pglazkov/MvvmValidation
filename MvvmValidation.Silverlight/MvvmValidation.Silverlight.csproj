@@ -168,6 +168,9 @@
     <Compile Include="..\MvvmValidation\Internal\ValidationRuleCollection.cs">
       <Link>Internal\ValidationRuleCollection.cs</Link>
     </Compile>
+    <Compile Include="..\MvvmValidation\IValidatable.cs">
+      <Link>IValidatable.cs</Link>
+    </Compile>
     <Compile Include="..\MvvmValidation\IValidationResultFormatter.cs">
       <Link>IValidationResultFormatter.cs</Link>
     </Compile>

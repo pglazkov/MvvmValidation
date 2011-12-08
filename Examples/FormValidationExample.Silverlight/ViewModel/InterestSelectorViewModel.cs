@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using FormValidationExample.Infrastructure;
+using MvvmValidation;
 
 namespace FormValidationExample
 {
@@ -21,6 +22,8 @@ namespace FormValidationExample
 				new InterestItemViewModel("Physics", this),
 				new InterestItemViewModel("Comics", this)
 			};
+
+			ConfigureValidationRules();
 		}
 
 		public IEnumerable<InterestItemViewModel> Interests { get; private set; }
@@ -28,6 +31,16 @@ namespace FormValidationExample
 		public IEnumerable<InterestItemViewModel> SelectedInterests
 		{
 			get { return Interests.Where(i => i.IsSelected).ToArray(); }
+		}
+
+		private void ConfigureValidationRules()
+		{
+			Validator.AddRule(() => RuleResult.Assert(SelectedInterests.Count() >= 3, "Please select at least 3 interests"));
+		}
+
+		public void OnInterestSelectionChanged()
+		{
+			OnSelectedInterestsChanged();
 		}
 
 		#region SelectedInterestsChanged Event
@@ -41,13 +54,9 @@ namespace FormValidationExample
 			{
 				handler(this, EventArgs.Empty);
 			}
-		} 
+		}
 
 		#endregion
 
-		public void NotifyInterestSelectionChanged()
-		{
-			OnSelectedInterestsChanged();
-		}
 	}
 }

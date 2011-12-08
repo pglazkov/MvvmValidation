@@ -22,7 +22,7 @@ namespace FormValidationExample
 			{
 				isSelected = value;
 				RaisePropertyChanged("IsSelected");
-				ParentSelector.NotifyInterestSelectionChanged();
+				ParentSelector.OnInterestSelectionChanged();
 			}
 		}
 	}
