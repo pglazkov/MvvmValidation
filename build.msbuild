@@ -19,16 +19,16 @@
 		<BuildFullDependsOn>
 			Clean;
 			BuildSolution;
-			StaticAnalysis;
+			CleanupAfterBuild;
 			UnitTest;
 			CreateNuGetPackage
 		</BuildFullDependsOn>
 		<CreateNuGetPackageDependsOn>
 			BuildSolution
 		</CreateNuGetPackageDependsOn>
-		<StaticAnalysisDependsOn>
+		<CleanupAfterBuildDependsOn>
 			BuildSolution
-		</StaticAnalysisDependsOn>
+		</CleanupAfterBuildDependsOn>
 		<UnitTestDependsOn>
 			BuildSolution
 		</UnitTestDependsOn>
@@ -55,7 +55,9 @@
 		</MSBuild>
 	</Target>
 
-	<Target Name="StaticAnalysis" DependsOnTargets="$(StaticAnalysisDependsOn)">
+	<Target Name="CleanupAfterBuild" DependsOnTargets="$(CleanupAfterBuildDependsOn)">
+		<!-- Delete code analysis files -->
+		
 		<CreateItem Include="$(OutputFolderPath)\**\*CodeAnalysisLog.xml">
 			<Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
 		</CreateItem>
