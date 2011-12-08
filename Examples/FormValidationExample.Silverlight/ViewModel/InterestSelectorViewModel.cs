@@ -5,7 +5,7 @@ using System.Linq;
 using FormValidationExample.Infrastructure;
 using MvvmValidation;
 
-namespace FormValidationExample
+namespace FormValidationExample.ViewModel
 {
 	public class InterestSelectorViewModel : ValidatableViewModelBase
 	{

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Windows.Controls;
 using FormValidationExample.Services;
+using FormValidationExample.ViewModel;
 
-namespace FormValidationExample
+namespace FormValidationExample.View
 {
 	public partial class MainView : UserControl
 	{

@@ -1,6 +1,7 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using GalaSoft.MvvmLight;
 
-namespace FormValidationExample
+namespace FormValidationExample.ViewModel
 {
 	public class InterestItemViewModel : ViewModelBase
 	{

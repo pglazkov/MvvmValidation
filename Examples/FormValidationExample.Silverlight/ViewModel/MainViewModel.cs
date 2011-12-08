@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,7 +8,7 @@ using FormValidationExample.Services;
 using GalaSoft.MvvmLight.Command;
 using MvvmValidation;
 
-namespace FormValidationExample
+namespace FormValidationExample.ViewModel
 {
 	public class MainViewModel : ValidatableViewModelBase
 	{
