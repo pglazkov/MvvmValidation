@@ -31,7 +31,7 @@ namespace FormValidationExample
 			InterestSelectorViewModel = new InterestSelectorViewModel();
 			InterestSelectorViewModel.SelectedInterestsChanged += OnSelectedInterestsChanged;
 
-			SubmitCommant = new RelayCommand(Submit);
+			ValidateCommand = new RelayCommand(Validate);
 
 			ConfigureValidationRules();
 			Validator.ResultChanged += OnValidationResultChanged;
@@ -39,7 +39,7 @@ namespace FormValidationExample
 
 		private IUserRegistrationService UserRegistrationService { get; set; }
 
-		public ICommand SubmitCommant { get; private set; }
+		public ICommand ValidateCommand { get; private set; }
 
 		public string UserName
 		{
@@ -201,18 +201,20 @@ namespace FormValidationExample
 			                  	return RuleResult.Valid();
 			                  });
 
-			Validator.AddRule(() => InterestSelectorViewModel,
-			                  () =>
-			                  RuleResult.Assert(InterestSelectorViewModel.SelectedInterests.Count() >= 3,
-			                                    "Please select at least 3 interests"));
+			Validator.AddChildValidatable(() => InterestSelectorViewModel);
 		}
 
 		private void OnSelectedInterestsChanged(object sender, EventArgs e)
 		{
-			Validator.Validate(() => InterestSelectorViewModel);
+			var currentState = Validator.GetResult(() => InterestSelectorViewModel);
+
+			if (!currentState.IsValid)
+			{
+				Validator.ValidateAsync(() => InterestSelectorViewModel);
+			}
 		}
 
-		private void Submit()
+		private void Validate()
 		{
 			Validator.ValidateAllAsync(OnValidateAllCompleted);
 		}
