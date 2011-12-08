@@ -1,10 +1,22 @@
-﻿namespace FormValidationExample.Infrastructure
+﻿using System.ComponentModel;
+
+namespace FormValidationExample.Infrastructure
 {
-	public partial class ValidatableViewModelBase
+	public partial class ValidatableViewModelBase : IDataErrorInfo
 	{
 		partial void OnCreated()
 		{
 			HookUpValidationNotification();
+		}
+
+		public string this[string columnName]
+		{
+			get { return DataErrorInfoAdapter[columnName]; }
+		}
+
+		public string Error
+		{
+			get { return DataErrorInfoAdapter.Error; }
 		}
 
 		private void HookUpValidationNotification()

@@ -1,11 +1,10 @@
 ﻿using System;
-using System.ComponentModel;
 using GalaSoft.MvvmLight;
 using MvvmValidation;
 
 namespace FormValidationExample.Infrastructure
 {
-	public abstract partial class ValidatableViewModelBase : ViewModelBase, IDataErrorInfo, IValidatable
+	public abstract partial class ValidatableViewModelBase : ViewModelBase, IValidatable
 	{
 		protected ValidationHelper Validator { get; private set; }
 
@@ -23,20 +22,11 @@ namespace FormValidationExample.Infrastructure
 			NotifyDataErrorInfoAdapter = new NotifyDataErrorInfoAdapter(Validator);
 #endif
 			DataErrorInfoAdapter = new DataErrorInfoAdapter(Validator);
+
 			OnCreated();
 		}
 
 		partial void OnCreated();
-
-		public string this[string columnName]
-		{
-			get { return DataErrorInfoAdapter[columnName]; }
-		}
-
-		public string Error
-		{
-			get { return DataErrorInfoAdapter.Error; }
-		}
 
 		void IValidatable.Validate(Action<ValidationResult> onCompleted)
 		{
