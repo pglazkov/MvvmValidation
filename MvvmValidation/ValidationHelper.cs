@@ -93,7 +93,7 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds a validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
 		/// </summary>
-		/// <param name="propertyExpression">The target property expression.</param>
+		/// <param name="propertyExpression">The target property expression. Example: AddRule(() => MyProperty, ...).</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
@@ -116,8 +116,8 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds a validation rule that validates two dependent properties.
 		/// </summary>
-		/// <param name="property1Expression">The first target property expression.</param>
-		/// <param name="property2Expression">The second target property expression.</param>
+		/// <param name="property1Expression">The first target property expression. Example: AddRule(() => MyProperty, ...).</param>
+		/// <param name="property2Expression">The second target property expression. Example: AddRule(..., () => MyProperty, ...).</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
@@ -142,7 +142,7 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds a validation rule that validates a collection of dependent properties.
 		/// </summary>
-		/// <param name="properties">The collection of target property expressions. </param>
+		/// <param name="properties">The collection of target property expressions. Example: AddRule(new [] { () => MyProperty1, () => MyProperty2, () => MyProperty3 }, ...).</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
@@ -195,7 +195,7 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
 		/// </summary>
-		/// <param name="propertyExpression">The target property expression.</param>
+		/// <param name="propertyExpression">The target property expression. Example: AddAsyncRule(() => MyProperty, ...).</param>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
@@ -222,8 +222,8 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates two dependent properties.
 		/// </summary>
-		/// <param name="property1Expression">The first target property expression.</param>
-		/// <param name="property2Expression">The second target property expression.</param>
+		/// <param name="property1Expression">The first target property expression. Example: AddRule(() => MyProperty, ...).</param>
+		/// <param name="property2Expression">The second target property expression. Example: AddRule(..., () => MyProperty, ...).</param>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
@@ -252,7 +252,7 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates a collection of dependent properties.
 		/// </summary>
-		/// <param name="properties">The collection of target property expressions. </param>
+		/// <param name="properties">The collection of target property expressions. Example: AddAsyncRule(new [] { () => MyProperty1, () => MyProperty2, () => MyProperty3 }, ...).</param>
 		/// <param name="validateAction">
 		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
