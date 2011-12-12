@@ -1,13 +1,13 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<PropertyGroup>
+		<Configuration>Release</Configuration>
 		<SourceDir>.\</SourceDir>
 		<SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
 		<OutputFolderPath>$(SourceDir)Output</OutputFolderPath>		
-		<UnitTestAssemblies>$(SourceDir)\**\bin\Debug\*.Tests.dll</UnitTestAssemblies>
+		<UnitTestAssemblies>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssemblies>
 		<MSTestPath>c:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE\</MSTestPath>
 		<MSTestOutputFileName>mstestresults.xml</MSTestOutputFileName>
-		<Configuration>Release</Configuration>
 	</PropertyGroup>
 
 	<ItemGroup>
