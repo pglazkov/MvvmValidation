@@ -61,6 +61,7 @@
     <Compile Include="Fakes\ValidatableViewModel.cs" />
     <Compile Include="IntegrationTests\ValidationHelperIntegrationTests.cs" />
     <Compile Include="Fakes\MockViewModel.cs" />
+    <Compile Include="NumberedListValidationResultFormatterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ValidationHelperTests.cs" />
     <Compile Include="Helpers\TestUtil.cs" />
