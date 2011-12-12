@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace MvvmValidation
@@ -28,15 +29,17 @@ namespace MvvmValidation
 				return string.Empty;
 			}
 
-			if (validationResult.ErrorList.Count == 1)
+			var distinctErrorMessages = validationResult.ErrorList.Select(e => e.ErrorText).Distinct().ToArray();
+
+			if (distinctErrorMessages.Length == 1)
 			{
-				return validationResult.ErrorList[0].ErrorText;
+				return distinctErrorMessages[0];
 			}
 
 			var result = new StringBuilder();
-			for (int i = 1; i < validationResult.ErrorList.Count + 1; i++)
+			for (int i = 1; i < distinctErrorMessages.Length + 1; i++)
 			{
-				result.AppendFormat(CultureInfo.InvariantCulture, "{0}. {1}", i, validationResult.ErrorList[i - 1].ErrorText);
+				result.AppendFormat(CultureInfo.InvariantCulture, "{0}. {1}", i, distinctErrorMessages[i - 1]);
 				result.AppendLine();
 			}
 
