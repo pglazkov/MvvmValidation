@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MvvmValidation.Tests.Fakes
 {
@@ -18,9 +19,9 @@ namespace MvvmValidation.Tests.Fakes
 
 		public IEnumerable<IValidatable> Children { get; set; }
 
-		public void Validate(Action<ValidationResult> onCompleted)
+		public Task<ValidationResult> Validate()
 		{
-			Validator.ValidateAllAsync(onCompleted);
+			return Validator.ValidateAllAsync();
 		}
 	}
 }

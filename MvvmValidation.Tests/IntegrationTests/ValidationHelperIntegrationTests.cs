@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmValidation.Tests.Fakes;
@@ -44,19 +45,21 @@ namespace MvvmValidation.Tests.IntegrationTests
 					Assert.IsTrue(isUiThread, "ValidationResultChanged must be executed on UI thread");
 				};
 
-				validation.ValidateAllAsync(r =>
+				var ui = TaskScheduler.FromCurrentSynchronizationContext();
+
+				validation.ValidateAllAsync().ContinueWith(r =>
 				{
 					var isUiThread = dispatcher.Thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
 
 					Assert.IsTrue(isUiThread, "Validation callback must be executed on UI thread");
 
-					Assert.IsFalse(r.IsValid, "Validation must fail according to the validaton rule");
+					Assert.IsFalse(r.Result.IsValid, "Validation must fail according to the validaton rule");
 					Assert.IsFalse(validation.GetResult().IsValid, "Validation must fail according to the validaton rule");
 
 					Assert.IsTrue(ruleExecuted, "Rule must be executed before validation completed callback is executed.");
 
 					completedAction();
-				});
+				}, ui);
 			});
 		}
 
@@ -89,10 +92,10 @@ namespace MvvmValidation.Tests.IntegrationTests
 						});
 					});
 
-				validation.ValidateAsync(() => vm.Bar, r =>
+				validation.ValidateAsync(() => vm.Bar).ContinueWith(r =>
 				{
-					Assert.IsFalse(r.IsValid, "Validation must fail");
-					Assert.IsTrue(r.ErrorList.Count == 2, "There must be 2 errors: one for each dependant property");
+					Assert.IsFalse(r.Result.IsValid, "Validation must fail");
+					Assert.IsTrue(r.Result.ErrorList.Count == 2, "There must be 2 errors: one for each dependant property");
 
 					testCompleted();
 				});
@@ -133,12 +136,12 @@ namespace MvvmValidation.Tests.IntegrationTests
 					setResultDelegate(RuleResult.Valid());
 				}));
 
-				validation.ValidateAllAsync(r =>
+				validation.ValidateAllAsync().ContinueWith(r =>
 				{
 					Assert.IsTrue(rule1Executed);
 					Assert.IsTrue(rule2Executed);
 					Assert.IsTrue(rule3Executed);
-					Assert.IsTrue(r.IsValid);
+					Assert.IsTrue(r.Result.IsValid);
 
 					completedAction();
 				});
@@ -178,12 +181,12 @@ namespace MvvmValidation.Tests.IntegrationTests
 					setResultDelegate(RuleResult.Valid());
 				}));
 
-				validation.ValidateAllAsync(r =>
+				validation.ValidateAllAsync().ContinueWith(r =>
 				{
 					Assert.IsTrue(rule1Executed);
 					Assert.IsTrue(rule2Executed);
 					Assert.IsTrue(rule3Executed);
-					Assert.IsTrue(r.IsValid);
+					Assert.IsTrue(r.Result.IsValid);
 
 					completedAction();
 				});
@@ -259,7 +262,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				});
 
-				validation.ValidateAllAsync(r => completedAction());
+				validation.ValidateAllAsync().ContinueWith(r => completedAction());
 			});
 		}
 
@@ -352,7 +355,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				// ACT
 
-				validation.ValidateAllAsync(result =>
+				validation.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
 
@@ -365,7 +368,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[TestMethod]
-		[ExpectedException(typeof(ValidationException))]
 		public void ValidatedAsync_AsyncRuleDoesnotCallCallback_ThrowsAnExceptionAfterTimeout()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -383,8 +385,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 										});
 
 				// ACT
+				var ui = TaskScheduler.FromCurrentSynchronizationContext();
 
-				validation.ValidateAllAsync(result => completedAction());
+				validation.ValidateAllAsync().ContinueWith(result =>
+				{
+					Assert.IsTrue(result.IsFaulted, "Validation task must fail.");
+					Assert.IsNotNull(result.Exception, "Task.Exception property must contain exception that occured during validation");
+
+					completedAction();
+				}, ui);
 			});
 		}
 
@@ -402,11 +411,11 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.AddChildValidatable(() => parent.Child);
 
 				// ACT
-				parent.Validator.ValidateAllAsync(result =>
+				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsFalse(result.IsValid, "Validation must fail");
-					Assert.AreEqual("Error1", result.ErrorList[0].ErrorText);
+					Assert.IsFalse(result.Result.IsValid, "Validation must fail");
+					Assert.AreEqual("Error1", result.Result.ErrorList[0].ErrorText);
 
 					completedAction();
 				});
@@ -427,11 +436,11 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.AddChildValidatable(() => parent.Child);
 
 				// ACT
-				parent.Validator.ValidateAllAsync(result =>
+				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsFalse(result.IsValid, "Validation must fail");
-					Assert.AreEqual("parent.Child", result.ErrorList[0].Target);
+					Assert.IsFalse(result.Result.IsValid, "Validation must fail");
+					Assert.AreEqual("parent.Child", result.Result.ErrorList[0].Target);
 
 					completedAction();
 				});
@@ -449,10 +458,10 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.AddChildValidatable(() => parent.Child);
 
 				// ACT
-				parent.Validator.ValidateAllAsync(result =>
+				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsTrue(result.IsValid, "Validation must not fail");
+					Assert.IsTrue(result.Result.IsValid, "Validation must not fail");
 
 					completedAction();
 				});
@@ -480,11 +489,11 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.AddChildValidatableCollection(() => parent.Children);
 
 				// ACT
-				parent.Validator.ValidateAllAsync(result =>
+				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsFalse(result.IsValid, "Validation must fail");
-					Assert.AreEqual("Error1", result.ErrorList[0].ErrorText);
+					Assert.IsFalse(result.Result.IsValid, "Validation must fail");
+					Assert.AreEqual("Error1", result.Result.ErrorList[0].ErrorText);
 
 					completedAction();
 				});
@@ -502,19 +511,19 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.AddChildValidatableCollection(() => parent.Children);
 
 				// ACT
-				parent.Validator.ValidateAllAsync(r1 =>
+				parent.Validator.ValidateAllAsync().ContinueWith(r1 =>
 				{
 					// VERIFY
-					Assert.IsTrue(r1.IsValid, "Validation must not fail");
+					Assert.IsTrue(r1.Result.IsValid, "Validation must not fail");
 
 					// ARRANGE
 					parent.Children = new List<IValidatable>();
 
 					// ACT
-					parent.Validator.ValidateAllAsync(r2 =>
+					parent.Validator.ValidateAllAsync().ContinueWith(r2 =>
 					{
 						// VERIFY
-						Assert.IsTrue(r2.IsValid, "Validation must not fail.");
+						Assert.IsTrue(r2.Result.IsValid, "Validation must not fail.");
 
 						completedAction();
 					});

@@ -12,7 +12,7 @@ namespace MvvmValidation
 	/// <summary>
 	/// Contains extensions methods for <see cref="ValidationHelper"/>.
 	/// </summary>
-	public static class ValidationHelperExtensions
+	public static partial class ValidationHelperExtensions
 	{
 		/// <summary>
 		/// Adds a rule that checks that the property represented by <paramref name="propertyExpression"/> is not
@@ -65,8 +65,14 @@ namespace MvvmValidation
 
 				if (validatable != null)
 				{
+#if SILVERLIGHT_4
 					validatable.Validate(result =>
 					{
+#else
+					validatable.Validate().ContinueWith(r =>
+					{
+						var result = r.Result;
+#endif
 						var ruleResult = new RuleResult();
 
 						foreach (var error in result.ErrorList)
@@ -117,8 +123,14 @@ namespace MvvmValidation
 						var syncEvent = new ManualResetEvent(false);
 						syncEvents.Add(syncEvent);
 
+#if SILVERLIGHT_4
 						item.Validate(r =>
 						{
+#else
+						item.Validate().ContinueWith(tr =>
+						{
+							var r = tr.Result;
+#endif
 							results.Add(r);
 							syncEvent.Set();
 						});

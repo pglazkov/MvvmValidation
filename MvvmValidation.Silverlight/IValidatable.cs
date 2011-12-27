@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-using System.Threading.Tasks;
 
 namespace MvvmValidation
 {
@@ -14,17 +12,17 @@ namespace MvvmValidation
 		/// <summary>
 		/// Validates the object asyncrhonously.
 		/// </summary>
-		/// <returns>Task that represents the validation operation.</returns>
-		Task<ValidationResult> Validate();
+		/// <param name="onCompleted">A callback function that should be called when validation is completed.</param>
+		void Validate(Action<ValidationResult> onCompleted);
 	}
 
 	// ReSharper disable InconsistentNaming
 	[ContractClassFor(typeof(IValidatable))]
 	abstract class IValidatableContract : IValidatable
 	{
-		public Task<ValidationResult> Validate()
+		public void Validate(Action<ValidationResult> onCompleted)
 		{
-			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
+			Contract.Requires(onCompleted != null);
 
 			throw new NotImplementedException();
 		}
