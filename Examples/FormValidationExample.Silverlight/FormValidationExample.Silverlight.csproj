@@ -12,7 +12,7 @@
     <RootNamespace>FormValidationExample</RootNamespace>
     <AssemblyName>FormValidationExample</AssemblyName>
     <TargetFrameworkIdentifier>Silverlight</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <SilverlightVersion>$(TargetFrameworkVersion)</SilverlightVersion>
     <SilverlightApplication>true</SilverlightApplication>
     <SupportedCultures>
@@ -31,6 +31,7 @@
     <ThrowErrorsInValidation>true</ThrowErrorsInValidation>
     <LinkedServerProject>
     </LinkedServerProject>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <!-- This property group is only here to support building this project using the 
        MSBuild 3.5 toolset. In order to work correctly with this older toolset, it needs 
@@ -66,8 +67,8 @@
     <Reference Include="GalaSoft.MvvmLight.SL4">
       <HintPath>..\..\packages\MvvmLight.3.0.3\lib\SL4\GalaSoft.MvvmLight.SL4.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Microsoft.Expression.Interactions">
+      <HintPath>..\Lib\Silverlight\Microsoft.Expression.Interactions.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System.Reactive">
@@ -130,12 +131,11 @@
     <Compile Include="Infrastructure\ValidatableViewModelBase.Silverlight.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\MvvmValidation.Silverlight\MvvmValidation.Silverlight.csproj">
-      <Project>{BE1CBB49-B796-4A61-B79F-DA7BCC6C9C5D}</Project>
-      <Name>MvvmValidation.Silverlight</Name>
+    <ProjectReference Include="..\..\MvvmValidation.Silverlight5\MvvmValidation.Silverlight5.csproj">
+      <Project>{769CD3A0-6485-4897-9018-3B6B601550DB}</Project>
+      <Name>MvvmValidation.Silverlight5</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

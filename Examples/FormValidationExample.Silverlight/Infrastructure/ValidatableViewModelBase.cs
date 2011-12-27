@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using MvvmValidation;
 
@@ -28,9 +29,9 @@ namespace FormValidationExample.Infrastructure
 
 		partial void OnCreated();
 
-		void IValidatable.Validate(Action<ValidationResult> onCompleted)
+		Task<ValidationResult> IValidatable.Validate()
 		{
-			Validator.ValidateAllAsync(onCompleted);
+			return Validator.ValidateAllAsync();
 		}
 	}
 }

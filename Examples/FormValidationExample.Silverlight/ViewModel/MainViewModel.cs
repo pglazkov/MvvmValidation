@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using FormValidationExample.Infrastructure;
 using FormValidationExample.Services;
@@ -215,7 +216,9 @@ namespace FormValidationExample.ViewModel
 
 		private void Validate()
 		{
-			Validator.ValidateAllAsync(OnValidateAllCompleted);
+			var uiThread = TaskScheduler.FromCurrentSynchronizationContext();
+
+			Validator.ValidateAllAsync().ContinueWith(r => OnValidateAllCompleted(r.Result), uiThread);
 		}
 
 		private void OnValidateAllCompleted(ValidationResult validationResult)
