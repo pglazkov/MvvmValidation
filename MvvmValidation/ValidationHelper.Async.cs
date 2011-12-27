@@ -19,6 +19,7 @@ namespace MvvmValidation
 		public Task<ValidationResult> ValidateAsync(Expression<Func<object>> propertyPathExpression)
 		{
 			Contract.Requires(propertyPathExpression != null);
+			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
 
 			return ValidateInternalAsync(PropertyName.For(propertyPathExpression));
 		}
@@ -32,6 +33,7 @@ namespace MvvmValidation
 		public Task<ValidationResult> ValidateAsync(object target)
 		{
 			Contract.Requires(target != null);
+			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
 
 			return ValidateInternalAsync(target);
 		}
@@ -42,11 +44,15 @@ namespace MvvmValidation
 		/// <returns>Task that represents the validation operation.</returns>
 		public Task<ValidationResult> ValidateAllAsync()
 		{
+			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
+
 			return ValidateInternalAsync(null);
 		}
 
 		private Task<ValidationResult> ValidateInternalAsync(object target)
 		{
+			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
+
 			if (isValidationSuspanded)
 			{
 				return Task.Factory.StartNew(() => ValidationResult.Valid);
@@ -57,6 +63,8 @@ namespace MvvmValidation
 
 		private Task<ValidationResult> ExecuteValidationRulesAsync(object target)
 		{
+			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
+
 			return Task.Factory.StartNew(() =>
 			{
 				try
