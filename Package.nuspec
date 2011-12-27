@@ -14,5 +14,8 @@
 		<releaseNotes></releaseNotes>
 		<copyright>Copyright 2011 Pavlo Glazkov</copyright>
 		<tags>mvvm validation silverlight wpf</tags>
+		<references>
+			<reference file="MvvmValidation.dll" />
+		</references>
 	</metadata>
 </package>
