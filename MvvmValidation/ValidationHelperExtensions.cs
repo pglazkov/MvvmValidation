@@ -122,7 +122,6 @@ namespace MvvmValidation
 					{
 						var syncEvent = new ManualResetEvent(false);
 						syncEvents.Add(syncEvent);
-
 #if SILVERLIGHT_4
 						item.Validate(r =>
 						{
