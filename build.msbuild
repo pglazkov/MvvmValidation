@@ -85,7 +85,7 @@
 
 	<Target Name="CreateNuGetPackage"
 					DependsOnTargets="$(CreateNuGetPackageDependsOn)">
-		<Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath $(OutputFolderPath) -OutputDirectory $(OutputFolderPath) -Exclude **\Tests\** -Exclude **\CodeContracts\** -Exclude **\*.pdb"/>
+		<Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath $(OutputFolderPath) -OutputDirectory $(OutputFolderPath) -Exclude **\Tests\** -Exclude **\*.pdb"/>
 	</Target>
 
 	
