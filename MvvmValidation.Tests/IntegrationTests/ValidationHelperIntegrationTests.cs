@@ -530,6 +530,34 @@ namespace MvvmValidation.Tests.IntegrationTests
 				});
 			});
 		}
+
+		[TestMethod]
+		public void ValidateAsync_WithCallback_ValidationOccuredAndCallbackIsCalledOnUIThread()
+		{
+			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
+			{
+				var vm = new DummyViewModel();
+				vm.Foo = null;
+				bool ruleExecuted = false;
+
+				var validation = new ValidationHelper();
+
+				validation.AddAsyncRule(setResult =>
+				{
+					ruleExecuted = true;
+					setResult(RuleResult.Invalid("Error1"));
+				});
+
+				validation.ValidateAllAsync(result =>
+				{
+					Assert.IsTrue(ruleExecuted, "Validation rule must be executed before validation callback is called.");
+					Assert.AreEqual(dispatcher.Thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId,
+					                "Validation callback must be called on UI thread.");
+
+					completedAction();
+				});
+			});
+		}
 	}
 	// ReSharper restore InconsistentNaming
 }
