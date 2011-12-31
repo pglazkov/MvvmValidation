@@ -127,6 +127,7 @@
     <Compile Include="IValidatable.cs" />
     <Compile Include="ValidationException.cs" />
     <Compile Include="ValidationHelper.Async.cs" />
+    <Compile Include="ValidationHelper.Obsolete.cs" />
     <Compile Include="ValidationHelperExtensions.cs" />
     <Compile Include="ValidationResultExtensions.cs" />
     <Compile Include="Internal\CurrentDispatcher.cs" />
