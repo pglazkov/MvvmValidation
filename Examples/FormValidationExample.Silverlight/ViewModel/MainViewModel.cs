@@ -22,9 +22,17 @@ namespace FormValidationExample.ViewModel
 		private string userName;
 		private string validationErrorsString;
 
-		public MainViewModel(IUserRegistrationService userRegistrationService)
+	    public MainViewModel()
+            : this(null)
+	    {
+	    }
+
+	    public MainViewModel(IUserRegistrationService userRegistrationService)
 		{
-			Contract.Requires(userRegistrationService != null);
+            if (userRegistrationService == null && IsInDesignMode)
+            {
+                userRegistrationService = new UserRegistrationService();
+            }
 
 			UserRegistrationService = userRegistrationService;
 

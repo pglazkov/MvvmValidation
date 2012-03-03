@@ -5,13 +5,15 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ViewModel="clr-namespace:FormValidationExample.ViewModel"
              mc:Ignorable="d"
-			 d:DataContext="{d:DesignInstance ViewModel:InterestSelectorViewModel}"
-			 x:Name="root">
+			 d:DataContext="{d:DesignInstance ViewModel:InterestSelectorViewModel, IsDesignTimeCreatable=True}"
+			 x:Name="root" 
+             d:DesignWidth="262" 
+             d:DesignHeight="216">
 
 	<UserControl.Resources>
-		<DataTemplate x:Key="InterestItemTemplate">
-			<Grid d:DataContext="{d:DesignInstance ViewModel:InterestItemViewModel}"
-				  Margin="0,0,0,5">
+		<DataTemplate x:Key="InterestItemTemplate"
+                      DataType="ViewModel:InterestItemViewModel">
+			<Grid Margin="0,0,0,5">
 				<CheckBox Content="{Binding Name}"
 						  IsChecked="{Binding IsSelected, Mode=TwoWay}" />
 			</Grid>
