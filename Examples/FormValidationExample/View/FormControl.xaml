@@ -7,7 +7,9 @@
              xmlns:View="clr-namespace:FormValidationExample.View"
              xmlns:ViewModel="clr-namespace:FormValidationExample.ViewModel"
              mc:Ignorable="d"
-			 d:DataContext="{d:DesignInstance ViewModel:MainViewModel}">
+			 d:DataContext="{d:DesignInstance ViewModel:MainViewModel, IsDesignTimeCreatable=True}" 
+             d:DesignWidth="528" 
+             d:DesignHeight="387">
 
 	<UserControl.Resources>
 		<Style x:Key="LabelTextBlockStyle"
