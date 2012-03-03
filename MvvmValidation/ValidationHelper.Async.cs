@@ -20,7 +20,7 @@ namespace MvvmValidation
 		{
 			Contract.Requires(propertyPathExpression != null);
 			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
-
+            
 			return ValidateInternalAsync(PropertyName.For(propertyPathExpression));
 		}
 
