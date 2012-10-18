@@ -500,6 +500,43 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 		}
 
+        [TestMethod]
+        public void AddChildValidatableCollection_MoreThan64Items_DoesNotFail()
+        {
+            TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+            {
+                // ARRANGE
+                var parent = new ValidatableViewModel();
+
+                var children = new List<IValidatable>();
+
+                for (int i = 0; i < 65; i++)
+                {
+                    var child = new ValidatableViewModel();
+                    child.Validator.AddRule(RuleResult.Valid);
+
+                    children.Add(child);
+                }
+
+                parent.Children = children;
+
+                parent.Validator.AddChildValidatableCollection(() => parent.Children);
+
+                // ACT
+                parent.Validator.ValidateAllAsync().ContinueWith(result =>
+                {
+                    // VERIFY
+                    uiThreadDispatcher.BeginInvoke(new Action(() =>
+                    {
+                        Assert.IsNull(result.Exception, "No exceptions should be thrown");
+                        Assert.IsTrue(result.Result.IsValid, "Validation must pass");
+
+                        completedAction();
+                    }));
+                });
+            });
+        }
+
 		[TestMethod]
 		public void AddChildValidatableCollection_ChildCollectionIsNullOrEmpty_NoErrorsAreAdded()
 		{
