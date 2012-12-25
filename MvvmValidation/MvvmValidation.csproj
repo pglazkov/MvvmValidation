@@ -123,8 +123,10 @@
     <Compile Include="AsyncRuleValidateAction.cs" />
     <Compile Include="DataErrorInfoAdapter.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="IAsyncValidationRule.cs" />
     <Compile Include="Internal\CollectionUtils.cs" />
     <Compile Include="IValidatable.cs" />
+    <Compile Include="IValidationRule.cs" />
     <Compile Include="ValidationException.cs" />
     <Compile Include="ValidationHelper.Async.cs" />
     <Compile Include="ValidationHelper.Obsolete.cs" />

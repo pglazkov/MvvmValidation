@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace MvvmValidation.Internal
 {
-	internal class ValidationRule
+	internal class ValidationRule : IAsyncValidationRule
 	{
 		public ValidationRule(IValidationTarget target, Func<RuleResult> validateDelegate,
 		                      AsyncRuleValidateAction asyncValidateAction)

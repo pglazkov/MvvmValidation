@@ -441,5 +441,28 @@ namespace MvvmValidation.Tests
 			// ACT
 			validation.ValidateAll();
 		}
+
+        [TestMethod]
+        public void RemoveRule_ReExecuteValidation_RemovedRuleDoesNotExecute()
+        {
+            // ARRANGE
+            var validation = new ValidationHelper();
+
+            validation.AddRule(RuleResult.Valid);
+            var invalidRule = validation.AddRule(() => RuleResult.Invalid("error"));
+
+            var validationResult = validation.ValidateAll();
+
+            Assert.IsFalse(validationResult.IsValid);
+            
+
+            // ACT
+            validation.RemoveRule(invalidRule);
+
+            validationResult = validation.ValidateAll();
+
+            // VERIFY
+            Assert.IsTrue(validationResult.IsValid);
+        }
 	}
 }

@@ -11,7 +11,7 @@ namespace MvvmValidation
     /// <summary>
     /// Contains extensions methods for <see cref="ValidationHelper"/>.
     /// </summary>
-    public static class ValidationHelperExtensions
+    public static partial class ValidationHelperExtensions
     {
         /// <summary>
         /// Adds a rule that checks that the property represented by <paramref name="propertyExpression"/> is not

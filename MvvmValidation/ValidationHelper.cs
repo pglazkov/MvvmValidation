@@ -67,12 +67,14 @@ namespace MvvmValidation
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddRule(object target, Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule(object target, Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(target != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRuleCore(new GenericValidationTarget(target), validateDelegate, null);
+			var rule = AddRuleCore(new GenericValidationTarget(target), validateDelegate, null);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -83,11 +85,13 @@ namespace MvvmValidation
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddRule(Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule(Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(validateDelegate != null);
 
-			AddRuleCore(new UndefinedValidationTarget(), validateDelegate, null);
+			var rule = AddRuleCore(new UndefinedValidationTarget(), validateDelegate, null);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -105,12 +109,14 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddRule(Expression<Func<object>> propertyExpression, Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule(Expression<Func<object>> propertyExpression, Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new[] { propertyExpression }, validateDelegate);
+			var rule = AddRule(new[] { propertyExpression }, validateDelegate);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -129,14 +135,16 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-							Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
+									   Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateDelegate != null);
 
-			AddRule(new[] { property1Expression, property2Expression }, validateDelegate);
+			var rule = AddRule(new[] { property1Expression, property2Expression }, validateDelegate);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -149,7 +157,7 @@ namespace MvvmValidation
 		/// a collection of errors (in not passed).
 		/// </param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddRule(IEnumerable<Expression<Func<object>>> properties, Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule(IEnumerable<Expression<Func<object>>> properties, Func<RuleResult> validateDelegate)
 		{
 			Contract.Requires(properties != null);
 			Contract.Requires(properties.Any());
@@ -157,7 +165,9 @@ namespace MvvmValidation
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
 
-			AddRuleCore(target, validateDelegate, null);
+			var rule = AddRuleCore(target, validateDelegate, null);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -169,12 +179,14 @@ namespace MvvmValidation
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddAsyncRule(object target, AsyncRuleValidateAction validateAction)
+		public IAsyncValidationRule AddAsyncRule(object target, AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(target != null);
 			Contract.Requires(validateAction != null);
 
-			AddRuleCore(new GenericValidationTarget(target), null, validateAction);
+			var rule = AddRuleCore(new GenericValidationTarget(target), null, validateAction);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -185,11 +197,13 @@ namespace MvvmValidation
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
 		/// a collection of errors (in not passed).
 		/// </param>
-		public void AddAsyncRule(AsyncRuleValidateAction validateAction)
+		public IAsyncValidationRule AddAsyncRule(AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(validateAction != null);
 
-			AddRuleCore(new UndefinedValidationTarget(), null, validateAction);
+			var rule = AddRuleCore(new UndefinedValidationTarget(), null, validateAction);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -211,12 +225,14 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateAction validateAction)
+		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
+			var rule = AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -239,14 +255,16 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-								 AsyncRuleValidateAction validateAction)
+		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
+												 AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(property1Expression != null);
 			Contract.Requires(property2Expression != null);
 			Contract.Requires(validateAction != null);
 
-			AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
+			var rule = AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
+
+			return rule;
 		}
 
 		/// <summary>
@@ -259,7 +277,7 @@ namespace MvvmValidation
 		/// a collection of errors (in not passed).
 		/// </param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public void AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateAction validateAction)
+		public IAsyncValidationRule AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateAction validateAction)
 		{
 			Contract.Requires(properties != null);
 			Contract.Requires(properties.Any());
@@ -267,15 +285,34 @@ namespace MvvmValidation
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
 
-			AddRuleCore(target, null, validateAction);
+			var rule = AddRuleCore(target, null, validateAction);
+
+			return rule;
 		}
 
-		private void AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
-								 AsyncRuleValidateAction asyncValidateAction)
+		/// <summary>
+		/// Removes the specified <paramref name="rule"/>.
+		/// </summary>
+		/// <param name="rule">Validation rule instance.</param>
+		public void RemoveRule(IValidationRule rule)
+		{
+			Contract.Requires(rule != null);
+
+			var typedRule = rule as ValidationRule;
+
+			Contract.Assert(typedRule != null);
+
+			UnregisterValidationRule(typedRule);
+		}
+
+		private IAsyncValidationRule AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
+												 AsyncRuleValidateAction asyncValidateAction)
 		{
 			var rule = new ValidationRule(target, validateDelegate, asyncValidateAction);
 
 			RegisterValidationRule(rule);
+
+			return rule;
 		}
 
 		private static IValidationTarget CreatePropertyValidationTarget(IEnumerable<Expression<Func<object>>> properties)
@@ -299,6 +336,11 @@ namespace MvvmValidation
 		private void RegisterValidationRule(ValidationRule rule)
 		{
 			ValidationRules.Add(rule);
+		}
+
+		private void UnregisterValidationRule(ValidationRule rule)
+		{
+			ValidationRules.Remove(rule);
 		}
 
 		#endregion
