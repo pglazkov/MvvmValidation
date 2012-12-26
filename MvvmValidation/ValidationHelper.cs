@@ -315,6 +315,14 @@ namespace MvvmValidation
 			UnregisterValidationRule(typedRule);
 		}
 
+		/// <summary>
+		/// Removes all validation rules.
+		/// </summary>
+		public void RemoveAllRules()
+		{
+			UnregisterAllValidationRules();
+		}
+
 		private IAsyncValidationRule AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
 												 AsyncRuleValidateAction asyncValidateAction)
 		{
@@ -351,6 +359,11 @@ namespace MvvmValidation
 		private void UnregisterValidationRule(ValidationRule rule)
 		{
 			ValidationRules.Remove(rule);
+		}
+
+		private void UnregisterAllValidationRules()
+		{
+			ValidationRules.Clear();
 		}
 
 		#endregion
