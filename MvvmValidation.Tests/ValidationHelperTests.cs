@@ -162,10 +162,10 @@ namespace MvvmValidation.Tests
 			var validation = new ValidationHelper();
 			var dummy = new DummyViewModel();
 			validation.AddRule(() => dummy.Foo, () => dummy.Bar,
-			                   () =>
-			                   {
-			                   	return RuleResult.Invalid("Error");
-			                   });
+							   () =>
+							   {
+								   return RuleResult.Invalid("Error");
+							   });
 
 			// Act
 			var result = validation.ValidateAll();
@@ -186,7 +186,7 @@ namespace MvvmValidation.Tests
 			var dummy = new DummyViewModel();
 
 			validation.AddRule(() => dummy.Foo,
-			                   () => RuleResult.Invalid("Error"));
+							   () => RuleResult.Invalid("Error"));
 
 			var eventFiredTimes = 0;
 
@@ -212,7 +212,7 @@ namespace MvvmValidation.Tests
 			validation.AddRule(() => dummy.Foo,
 							   () => RuleResult.Invalid("Error"));
 			validation.AddRule(() => dummy.Foo,
-			                   RuleResult.Valid);
+							   RuleResult.Valid);
 			validation.AddRule(() => dummy.Bar,
 								RuleResult.Valid);
 			validation.AddRule(() => RuleResult.Invalid("Error"));
@@ -241,15 +241,15 @@ namespace MvvmValidation.Tests
 
 			var fooResult = RuleResult.Valid();
 
-// ReSharper disable AccessToModifiedClosure // Intended
+			// ReSharper disable AccessToModifiedClosure // Intended
 			validation.AddRule(() => dummy.Foo, () => fooResult);
-// ReSharper restore AccessToModifiedClosure
+			// ReSharper restore AccessToModifiedClosure
 
 			var onResultChanged = new Action<ValidationResultChangedEventArgs>(r => { });
 
-// ReSharper disable AccessToModifiedClosure // Intended
+			// ReSharper disable AccessToModifiedClosure // Intended
 			validation.ResultChanged += (o, e) => onResultChanged(e);
-// ReSharper restore AccessToModifiedClosure
+			// ReSharper restore AccessToModifiedClosure
 
 
 			// ACT & VERIFY
@@ -342,17 +342,17 @@ namespace MvvmValidation.Tests
 			bool secondRuleExecuted = false;
 
 			validation.AddRule(() => dummy.Foo,
-			                   () =>
-			                   {
-			                   	firstRuleExecuted = true;
-			                   	return RuleResult.Invalid("Error1");
-			                   });
+							   () =>
+							   {
+								   firstRuleExecuted = true;
+								   return RuleResult.Invalid("Error1");
+							   });
 			validation.AddRule(() => dummy.Foo,
-			                   () =>
-			                   {
-			                   	secondRuleExecuted = true;
-			                   	return RuleResult.Invalid("Error2");
-			                   });
+							   () =>
+							   {
+								   secondRuleExecuted = true;
+								   return RuleResult.Invalid("Error2");
+							   });
 
 			// ACT
 
@@ -437,32 +437,49 @@ namespace MvvmValidation.Tests
 
 			// Add an async rule
 			validation.AddAsyncRule(onCompleted => onCompleted(RuleResult.Invalid("Error")));
-		
+
 			// ACT
 			validation.ValidateAll();
 		}
 
-        [TestMethod]
-        public void RemoveRule_ReExecuteValidation_RemovedRuleDoesNotExecute()
-        {
-            // ARRANGE
-            var validation = new ValidationHelper();
+		[TestMethod]
+		public void RemoveRule_ReExecuteValidation_RemovedRuleDoesNotExecute()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
 
-            validation.AddRule(RuleResult.Valid);
-            var invalidRule = validation.AddRule(() => RuleResult.Invalid("error"));
+			validation.AddRule(RuleResult.Valid);
+			var invalidRule = validation.AddRule(() => RuleResult.Invalid("error"));
 
-            var validationResult = validation.ValidateAll();
+			var validationResult = validation.ValidateAll();
 
-            Assert.IsFalse(validationResult.IsValid);
-            
+			Assert.IsFalse(validationResult.IsValid);
 
-            // ACT
-            validation.RemoveRule(invalidRule);
 
-            validationResult = validation.ValidateAll();
+			// ACT
+			validation.RemoveRule(invalidRule);
 
-            // VERIFY
-            Assert.IsTrue(validationResult.IsValid);
-        }
+			validationResult = validation.ValidateAll();
+
+			// VERIFY
+			Assert.IsTrue(validationResult.IsValid);
+		}
+
+		[TestMethod]
+		public void RemoveAllRules_HadTwoNegativeRulesRegistered_ValidationSucceds()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			validation.AddRule(() => RuleResult.Invalid("error1"));
+			validation.AddRule(() => RuleResult.Invalid("error2"));
+
+			// ACT
+			validation.RemoveAllRules();
+
+			var validationResult = validation.ValidateAll();
+
+			// VERIFY
+			Assert.IsTrue(validationResult.IsValid, "Validation should not produce any errors after all rules were removed.");
+		}
 	}
 }
