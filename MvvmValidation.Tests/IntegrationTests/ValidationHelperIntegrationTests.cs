@@ -595,6 +595,106 @@ namespace MvvmValidation.Tests.IntegrationTests
 				});
 			});
 		}
+
+		[TestMethod]
+		public void ValidateAllAsync_SimilteniousCalls_DoesNotFail()
+		{
+			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
+			{
+				const int numThreadsPerIternation = 4;
+				const int iterationCount = 10;
+				const int numThreads = numThreadsPerIternation * iterationCount;
+				var resetEvent = new ManualResetEvent(false);
+				int toProcess = numThreads;
+
+				var validation = new ValidationHelper();
+
+				for (int i = 0; i < iterationCount; i++)
+				{
+					var target1 = new object();
+					var target2 = new object();
+
+					validation.AddAsyncRule(setResult =>
+					{
+						setResult(RuleResult.Invalid("Error1"));
+					});
+
+					validation.AddAsyncRule(target1, setResult =>
+					{
+						setResult(RuleResult.Valid());
+					});
+
+					validation.AddRule(target2, () =>
+					{
+						return RuleResult.Invalid("Error2");
+					});
+
+					validation.AddRule(target2, RuleResult.Valid);
+
+					Action<Action> testThreadBody = exercise =>
+					{
+						try
+						{
+							exercise();
+
+							if (Interlocked.Decrement(ref toProcess) == 0)
+								resetEvent.Set();
+						}
+						catch (Exception ex)
+						{
+							dispatcher.BeginInvoke(new Action(() =>
+							{
+								throw new AggregateException(ex);
+							}));
+						}
+					};
+
+					var thread1 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.ValidateAllAsync().Wait();
+						});
+					});
+
+					var thread2 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.ValidateAllAsync().Wait();
+						});
+					});
+
+					var thread3 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.Validate(target2);
+						});
+					});
+
+					var thread4 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.Validate(target2);
+						});
+					});
+
+					thread1.Start();
+					thread2.Start();
+					thread3.Start();
+					thread4.Start();
+				}
+
+				ThreadPool.QueueUserWorkItem(_ =>
+				{
+					resetEvent.WaitOne();
+					completedAction();
+				});
+
+			});
+		}
 	}
 	// ReSharper restore InconsistentNaming
 }
