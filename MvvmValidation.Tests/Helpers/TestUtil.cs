@@ -11,7 +11,7 @@ namespace MvvmValidation.Tests.Helpers
 		public static void ExecuteWithDispatcher(Action<Dispatcher, Action> testBodyDelegate, int timeoutMilliseconds = 20000, string timeoutMessage = "Test did not complete in the spefied timeout")
 		{
 			var uiThreadDispatcher = Dispatcher.CurrentDispatcher;
-			CurrentDispatcher.Instance = uiThreadDispatcher;
+			ThreadingHelpers.UISynchronizationContext = new DispatcherSynchronizationContext(uiThreadDispatcher);
 
 			var frame = new DispatcherFrame();
 

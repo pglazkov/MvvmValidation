@@ -13,8 +13,8 @@ namespace MvvmValidation.Tests
 		[TestInitialize]
 		public void TestInitialize()
 		{
-			var uiThreadDispatcher = Dispatcher.CurrentDispatcher;
-			CurrentDispatcher.Instance = uiThreadDispatcher;
+			//var uiThreadDispatcher = Dispatcher.CurrentDispatcher;
+			//ThreadingHelpers.UISynchronizationContext = new DispatcherSynchronizationContext(uiThreadDispatcher);
 		}
 
 		[TestMethod]
@@ -27,7 +27,8 @@ namespace MvvmValidation.Tests
 			vm.StringProperty = null;
 
 			// Assert
-			Assert.IsFalse(string.IsNullOrEmpty(vm["StringProperty"]));
+			
+			Assert.IsTrue(vm.GetErrors("StringProperty").Cast<string>().Any());
 		}
 
 		[TestMethod]
@@ -40,7 +41,7 @@ namespace MvvmValidation.Tests
 			vm.StringProperty = "Not empty string";
 
 			// Assert
-			Assert.IsTrue(string.IsNullOrEmpty(vm["StringProperty"]));
+			Assert.IsFalse(vm.GetErrors("StringProperty").Cast<string>().Any());
 		}
 
 		[TestMethod]
@@ -54,8 +55,8 @@ namespace MvvmValidation.Tests
 			vm.RangeEnd = 1;
 
 			// Assert
-			Assert.IsFalse(string.IsNullOrEmpty(vm["RangeStart"]));
-			Assert.IsFalse(string.IsNullOrEmpty(vm["RangeEnd"]));
+			Assert.IsTrue(!string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.IsTrue(!string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
 		[TestMethod]
@@ -69,8 +70,8 @@ namespace MvvmValidation.Tests
 			vm.RangeEnd = 10;
 
 			// Assert
-			Assert.IsTrue(string.IsNullOrEmpty(vm["RangeStart"]));
-			Assert.IsTrue(string.IsNullOrEmpty(vm["RangeEnd"]));
+			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
 		[TestMethod]
@@ -84,15 +85,15 @@ namespace MvvmValidation.Tests
 			vm.RangeEnd = 1;
 
 			// Assert
-			Assert.IsFalse(string.IsNullOrEmpty(vm["RangeStart"]));
-			Assert.IsFalse(string.IsNullOrEmpty(vm["RangeEnd"]));
+			Assert.IsFalse(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.IsFalse(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 
 			// Act
 			vm.RangeEnd = 11;
 
 			// Assert
-			Assert.IsTrue(string.IsNullOrEmpty(vm["RangeStart"]));
-			Assert.IsTrue(string.IsNullOrEmpty(vm["RangeEnd"]));
+			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
 		[TestMethod]
@@ -105,7 +106,7 @@ namespace MvvmValidation.Tests
 			vm.StringProperty = null;
 
 			// Assert
-			Assert.IsFalse(string.IsNullOrEmpty(vm[""]));
+			Assert.IsFalse(string.IsNullOrEmpty(vm.GetErrors("").Cast<string>().FirstOrDefault()));
 		}
 
 		[TestMethod]
@@ -122,8 +123,8 @@ namespace MvvmValidation.Tests
 			}
 
 			// Verify
-			Assert.IsTrue(string.IsNullOrEmpty(vm["RangeStart"]));
-			Assert.IsTrue(string.IsNullOrEmpty(vm["RangeEnd"]));
+			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
 		[TestMethod]

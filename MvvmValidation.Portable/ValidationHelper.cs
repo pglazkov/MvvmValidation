@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -353,17 +354,26 @@ namespace MvvmValidation
 
 		private void RegisterValidationRule(ValidationRule rule)
 		{
-			ValidationRules.Add(rule);
+			lock (syncRoot)
+			{
+				ValidationRules.Add(rule);
+			}
 		}
 
 		private void UnregisterValidationRule(ValidationRule rule)
 		{
-			ValidationRules.Remove(rule);
+			lock (syncRoot)
+			{
+				ValidationRules.Remove(rule);
+			}
 		}
 
 		private void UnregisterAllValidationRules()
 		{
-			ValidationRules.Clear();
+			lock (syncRoot)
+			{
+				ValidationRules.Clear();
+			}
 		}
 
 		#endregion
@@ -411,35 +421,46 @@ namespace MvvmValidation
 
 		private ValidationResult GetResultInternal(object target)
 		{
-			ValidationResult result = ValidationResult.Valid;
-
-			IDictionary<ValidationRule, RuleResult> ruleResultMap;
-
-			if (ruleValidationResultMap.TryGetValue(target, out ruleResultMap))
+			lock (syncRoot)
 			{
-				foreach (var ruleValidationResult in ruleResultMap.Values)
+				ValidationResult result = ValidationResult.Valid;
+
+				IDictionary<ValidationRule, RuleResult> ruleResultMap;
+
+				if (ruleValidationResultMap.TryGetValue(target, out ruleResultMap))
 				{
-					result = result.Combine(new ValidationResult(target, ruleValidationResult.Errors));
+					foreach (var ruleValidationResult in ruleResultMap.Values)
+					{
+						result = result.Combine(new ValidationResult(target, ruleValidationResult.Errors));
+					}
 				}
+				return result;
 			}
-			return result;
+			
 		}
 
 		private ValidationResult GetResultInternal()
 		{
-			ValidationResult result = ValidationResult.Valid;
-
-			foreach (var ruleResultsMapPair in ruleValidationResultMap)
+			lock (syncRoot)
 			{
-				var ruleTarget = ruleResultsMapPair.Key;
-				var ruleResultsMap = ruleResultsMapPair.Value;
+				ValidationResult result = ValidationResult.Valid;
 
-				foreach (var validationResult in ruleResultsMap.Values)
+				lock (ruleValidationResultMap)
 				{
-					result = result.Combine(new ValidationResult(ruleTarget, validationResult.Errors));
+					foreach (var ruleResultsMapPair in ruleValidationResultMap)
+					{
+						var ruleTarget = ruleResultsMapPair.Key;
+						var ruleResultsMap = ruleResultsMapPair.Value;
+
+						foreach (var validationResult in ruleResultsMap.Values)
+						{
+							result = result.Combine(new ValidationResult(ruleTarget, validationResult.Errors));
+						}
+					}
 				}
+				
+				return result;
 			}
-			return result;
 		}
 
 		#endregion
@@ -486,30 +507,33 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
 
-			if (isValidationSuspanded)
+			lock (syncRoot)
 			{
-				return ValidationResult.Valid;
-			}
+				if (isValidationSuspanded)
+				{
+					return ValidationResult.Valid;
+				}
 
-			var rulesToExecute = GetRulesForTarget(target).ToArray();
+				var rulesToExecute = GetRulesForTarget(target);
 
-			if (rulesToExecute.Any(r => !r.SupportsSyncValidation))
-			{
-				throw new InvalidOperationException("There are asynchronous rules that cannot be executed synchronously. Please use ValidateAsync method to execute validation instead.");
-			}
+				if (rulesToExecute.Any(r => !r.SupportsSyncValidation))
+				{
+					throw new InvalidOperationException("There are asynchronous rules that cannot be executed synchronously. Please use ValidateAsync method to execute validation instead.");
+				}
 
-			try
-			{
-				ValidationResult validationResult = ExecuteValidationRules(rulesToExecute);
-				return validationResult;
-			}
-			catch (Exception ex)
-			{
-				throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
+				try
+				{
+					ValidationResult validationResult = ExecuteValidationRules(rulesToExecute);
+					return validationResult;
+				}
+				catch (Exception ex)
+				{
+					throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
+				}
 			}
 		}
 
-		private ValidationResult ExecuteValidationRules(IEnumerable<ValidationRule> rulesToExecute)
+		private ValidationResult ExecuteValidationRules(ReadOnlyCollection<ValidationRule> rulesToExecute)
 		{
 			var result = new ValidationResult();
 
@@ -542,13 +566,16 @@ namespace MvvmValidation
 			return result;
 		}
 
-		private IEnumerable<ValidationRule> GetRulesForTarget(object target)
+		private ReadOnlyCollection<ValidationRule> GetRulesForTarget(object target)
 		{
-			Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
+			lock (syncRoot)
+			{
+				Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
 
-			var result = ValidationRules.Where(ruleFilter);
+				var result = new ReadOnlyCollection<ValidationRule>(ValidationRules.Where(ruleFilter).ToList());
 
-			return result;
+				return result;
+			}
 		}
 
 		private RuleResult ExecuteRuleCore(ValidationRule rule)
@@ -670,9 +697,15 @@ namespace MvvmValidation
 		/// </summary>
 		public event EventHandler<ValidationResultChangedEventArgs> ResultChanged;
 
-		private void NotifyResultChanged(object target, ValidationResult newResult)
+		private void NotifyResultChanged(object target, ValidationResult newResult, bool useSyncContext = true)
 		{
-			EventHandler<ValidationResultChangedEventArgs> handler = ResultChanged;
+			if (ThreadingHelpers.UISynchronizationContext != null && useSyncContext)
+			{
+				ThreadingHelpers.UISynchronizationContext.Post(_ => NotifyResultChanged(target, newResult, false), null);
+				return;
+			}
+
+			var handler = ResultChanged;
 			if (handler != null)
 			{
 				handler(this, new ValidationResultChangedEventArgs(target, newResult));
