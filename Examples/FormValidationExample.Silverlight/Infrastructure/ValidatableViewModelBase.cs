@@ -11,8 +11,9 @@ namespace FormValidationExample.Infrastructure
 
 #if SILVERLIGHT 
 		private NotifyDataErrorInfoAdapter NotifyDataErrorInfoAdapter { get; set; }
-#endif
+#else
 		private DataErrorInfoAdapter DataErrorInfoAdapter { get; set; }
+#endif
 
 
 		public ValidatableViewModelBase()
@@ -21,8 +22,9 @@ namespace FormValidationExample.Infrastructure
 
 #if SILVERLIGHT
 			NotifyDataErrorInfoAdapter = new NotifyDataErrorInfoAdapter(Validator);
-#endif
+#else
 			DataErrorInfoAdapter = new DataErrorInfoAdapter(Validator);
+#endif
 
 			OnCreated();
 		}

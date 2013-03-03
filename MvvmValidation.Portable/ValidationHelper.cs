@@ -533,7 +533,7 @@ namespace MvvmValidation
 			}
 		}
 
-		private ValidationResult ExecuteValidationRules(ReadOnlyCollection<ValidationRule> rulesToExecute)
+		private ValidationResult ExecuteValidationRules(IEnumerable<ValidationRule> rulesToExecute, SynchronizationContext syncContext = null)
 		{
 			var result = new ValidationResult();
 
@@ -546,14 +546,14 @@ namespace MvvmValidation
 				{
 					// Assume that the rule is valid at this point because we are not interested in this error until
 					// previous rule is fixed.
-					SaveRuleValidationResultAndNotifyIfNeeded(validationRule, RuleResult.Valid());
+					SaveRuleValidationResultAndNotifyIfNeeded(validationRule, RuleResult.Valid(), syncContext);
 
 					continue;
 				}
 
 				RuleResult ruleResult = ExecuteRuleCore(validationRule);
 
-				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult);
+				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult, syncContext);
 
 				AddErrorsFromRuleResult(result, validationRule, ruleResult);
 
@@ -636,7 +636,7 @@ namespace MvvmValidation
 			return ruleFilter;
 		}
 
-		private void SaveRuleValidationResultAndNotifyIfNeeded(ValidationRule rule, RuleResult ruleResult)
+		private void SaveRuleValidationResultAndNotifyIfNeeded(ValidationRule rule, RuleResult ruleResult, SynchronizationContext syncContext)
 		{
 			lock (syncRoot)
 			{
@@ -653,7 +653,7 @@ namespace MvvmValidation
 						targetRuleMap[rule] = ruleResult;
 
 						// Notify that validation result for the target has changed
-						NotifyResultChanged(ruleTarget, GetResult(ruleTarget));
+						NotifyResultChanged(ruleTarget, GetResult(ruleTarget), syncContext);
 					}
 				}
 			}
@@ -697,11 +697,13 @@ namespace MvvmValidation
 		/// </summary>
 		public event EventHandler<ValidationResultChangedEventArgs> ResultChanged;
 
-		private void NotifyResultChanged(object target, ValidationResult newResult, bool useSyncContext = true)
+		private void NotifyResultChanged(object target, ValidationResult newResult, SynchronizationContext syncContext, bool useSyncContext = true)
 		{
-			if (ThreadingHelpers.UISynchronizationContext != null && useSyncContext)
+			syncContext = syncContext ?? ThreadingHelpers.UISynchronizationContext;
+
+			if (useSyncContext && syncContext != null)
 			{
-				ThreadingHelpers.UISynchronizationContext.Post(_ => NotifyResultChanged(target, newResult, false), null);
+				syncContext.Post(_ => NotifyResultChanged(target, newResult, syncContext, useSyncContext: false), null);
 				return;
 			}
 

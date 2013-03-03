@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Threading;
 
 namespace MvvmValidation
 {
@@ -16,13 +17,35 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="validator">The adaptee.</param>
 		public NotifyDataErrorInfoAdapter(ValidationHelper validator)
+			: this(validator, SynchronizationContext.Current)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="NotifyDataErrorInfoAdapter"/> class.
+		/// </summary>
+		/// <param name="validator">The adaptee.</param>
+		/// <param name="errorsChangedNotificationContext">Synchronization context that should be used to raise the <see cref="ErrorsChanged"/> event on.</param>
+		public NotifyDataErrorInfoAdapter(ValidationHelper validator, SynchronizationContext errorsChangedNotificationContext)
 		{
 			Contract.Requires(validator != null);
 
 			Validator = validator;
 
-			Validator.ResultChanged +=
-				(o, e) => OnErrorsChanged(new DataErrorsChangedEventArgs(e.Target as string));
+			Validator.ResultChanged += (o,e) => OnValidatorResultChanged(o,e, errorsChangedNotificationContext);
+
+		}
+
+		private void OnValidatorResultChanged(object sender, ValidationResultChangedEventArgs e, SynchronizationContext syncContext)
+		{
+			if (syncContext != null)
+			{
+				syncContext.Post(_ => OnValidatorResultChanged(sender, e, null), null);
+
+				return;
+			}
+
+			OnErrorsChanged(e.Target as string);
 		}
 
 		private ValidationHelper Validator { get; set; }
@@ -60,12 +83,12 @@ namespace MvvmValidation
 
 		#endregion
 
-		private void OnErrorsChanged(DataErrorsChangedEventArgs e)
+		private void OnErrorsChanged(string propertyName)
 		{
 			EventHandler<DataErrorsChangedEventArgs> handler = ErrorsChanged;
 			if (handler != null)
 			{
-				handler(this, e);
+				handler(this, new DataErrorsChangedEventArgs(propertyName));
 			}
 		}
 	}
