@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MvvmValidation.Internal;
@@ -67,17 +68,20 @@ namespace MvvmValidation
 
 			return Task.Factory.StartNew(() =>
 			{
-				try
+				lock (syncRoot)
 				{
-					var rulesToExecute = GetRulesForTarget(target);
+					try
+					{
+						var rulesToExecute = GetRulesForTarget(target);
 
-					ValidationResult result = ExecuteValidationRules(rulesToExecute);
+						ValidationResult result = ExecuteValidationRules(rulesToExecute);
 
-					return result;
-				}
-				catch(Exception ex)
-				{
-					throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
+						return result;
+					}
+					catch (Exception ex)
+					{
+						throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
+					}
 				}
 			});
 		}
