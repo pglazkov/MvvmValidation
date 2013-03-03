@@ -1,2 +1,0 @@
-Do not delete this file. 
-It is needed because otherwise source control (Mercurial) will not see this folder (because it is empty), but it is actually not since it holds references to files in another project.

@@ -2,9 +2,8 @@
 
 namespace MvvmValidation.Tests.Fakes
 {
-	public class DummyViewModel : ViewModelBase
+	public class DummyViewModel : ValidatableViewModel
 	{
-		public string Foo { get; set; }
 		public string Bar { get; set; }
 	}
 }

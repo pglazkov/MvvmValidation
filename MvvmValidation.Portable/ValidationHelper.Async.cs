@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using MvvmValidation.Internal;
 
@@ -66,6 +67,8 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
 
+			var syncContext = SynchronizationContext.Current;
+
 			return Task.Factory.StartNew(() =>
 			{
 				lock (syncRoot)
@@ -74,7 +77,7 @@ namespace MvvmValidation
 					{
 						var rulesToExecute = GetRulesForTarget(target);
 
-						ValidationResult result = ExecuteValidationRules(rulesToExecute);
+						ValidationResult result = ExecuteValidationRules(rulesToExecute, syncContext);
 
 						return result;
 					}

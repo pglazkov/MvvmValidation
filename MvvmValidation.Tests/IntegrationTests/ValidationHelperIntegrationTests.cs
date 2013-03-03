@@ -597,6 +597,46 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[TestMethod]
+		public void ErrorChanged_RaisedOnUIThread()
+		{
+			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
+			{
+				var vm = new DummyViewModel();
+				var syncEvent = new ManualResetEvent(false);
+
+				vm.Validator.AddAsyncRule(() => vm.Foo, setResult =>
+					{
+						var t = new Thread(() => setResult(RuleResult.Invalid("Test")));
+
+						t.Start();
+					});
+
+				vm.ErrorsChanged += (o, e) =>
+					{
+						var threadId = Thread.CurrentThread.ManagedThreadId;
+
+						dispatcher.BeginInvoke(new Action(() =>
+							{
+								Assert.AreEqual(dispatcher.Thread.ManagedThreadId, threadId, "ErrorsChanged event must be raised on the UI thread.");
+								syncEvent.Set();
+							}));
+					};
+				
+				vm.Validate();
+
+				ThreadPool.QueueUserWorkItem(_ =>
+					{
+						if (!syncEvent.WaitOne(TimeSpan.FromSeconds(5)))
+						{
+							dispatcher.BeginInvoke(new Action(() => Assert.Fail("ErrorsChanged was not raised within specified timeout (5 sec)")));
+						}
+
+						completedAction();
+					});
+			});
+		}
+
+		[TestMethod]
 		public void ValidateAllAsync_SimilteniousCalls_DoesNotFail()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
