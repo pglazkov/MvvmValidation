@@ -1,0 +1,13 @@
+﻿<Dictionary>
+	<Words>
+		<Recognized>
+			<Word>Mvvm</Word>
+			<Word>validatable</Word>
+		</Recognized>
+	</Words>
+	<Acronyms>
+		<CasingExceptions>
+			<Acronym>Mvvm</Acronym>
+		</CasingExceptions>
+	</Acronyms>
+</Dictionary>
