@@ -26,12 +26,5 @@ namespace MvvmValidation.Internal
 		}
 
 		#endregion
-
-		public void NotifyValidtionCompleted(ValidationResult validationResult)
-		{
-			Contract.Requires(validationResult != null);
-
-			throw new NotImplementedException();
-		}
 	}
 }

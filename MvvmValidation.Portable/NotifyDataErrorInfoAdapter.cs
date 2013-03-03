@@ -41,7 +41,7 @@ namespace MvvmValidation
 			var validationResult = Validator.GetResult(propertyName);
 
 			// Return all the errors as a single string because most UI implementations display only first error
-			return validationResult.IsValid ? null : new[] { validationResult.ToString() };
+			return validationResult.IsValid ? Enumerable.Empty<string>() : new[] { validationResult.ToString() };
 		}
 
 		/// <summary>

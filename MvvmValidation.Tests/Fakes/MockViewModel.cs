@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.ComponentModel;
 
 namespace MvvmValidation.Tests.Fakes
 {
-	public class MockViewModel : ViewModelBase, IDataErrorInfo
+	public class MockViewModel : ViewModelBase, INotifyDataErrorInfo
 	{
 		private int intProperty;
 		private int rangeEnd;
@@ -20,7 +21,7 @@ namespace MvvmValidation.Tests.Fakes
 		}
 
 		public ValidationHelper Validation { get; set; }
-		private DataErrorInfoAdapter DataErrorInfoValidationAdapter { get; set; }
+		private NotifyDataErrorInfoAdapter DataErrorInfoValidationAdapter { get; set; }
 
 		public string StringProperty
 		{
@@ -115,19 +116,26 @@ namespace MvvmValidation.Tests.Fakes
 
 		public Action SyncValidationRuleExecutedAsyncroniouslyDelegate { get; set; }
 
-		#region IDataErrorInfo Members
+		#region INotifyDataErrorInfo Members
 
-		public string this[string columnName]
+		public IEnumerable GetErrors(string propertyName)
 		{
-			get { return DataErrorInfoValidationAdapter[columnName]; }
+			return DataErrorInfoValidationAdapter.GetErrors(propertyName);
 		}
 
-		public string Error
+		public bool HasErrors
 		{
-			get { return DataErrorInfoValidationAdapter.Error; }
+			get { return DataErrorInfoValidationAdapter.HasErrors; }
+		}
+
+		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged
+		{
+			add { DataErrorInfoValidationAdapter.ErrorsChanged += value; }
+			remove { DataErrorInfoValidationAdapter.ErrorsChanged -= value; }
 		}
 
 		#endregion
+
 
 		private void SetupValidation()
 		{
@@ -162,7 +170,7 @@ namespace MvvmValidation.Tests.Fakes
 				});
 
 			Validation = validationRules;
-			DataErrorInfoValidationAdapter = new DataErrorInfoAdapter(Validation);
+			DataErrorInfoValidationAdapter = new NotifyDataErrorInfoAdapter(Validation);
 		}
 	}
 }

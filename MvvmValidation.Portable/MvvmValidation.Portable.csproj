@@ -99,6 +99,7 @@
     <Compile Include="Internal\PropertyCollectionValidationTarget.cs" />
     <Compile Include="Internal\PropertyName.cs" />
     <Compile Include="Internal\PropertyValidationTarget.cs" />
+    <Compile Include="Internal\ThreadingHelpers.cs" />
     <Compile Include="Internal\UndefinedValidationTarget.cs" />
     <Compile Include="Internal\ValidationRule.cs" />
     <Compile Include="Internal\ValidationRuleCollection.cs" />
