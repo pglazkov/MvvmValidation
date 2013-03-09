@@ -109,7 +109,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\MvvmValidation\Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -124,97 +124,92 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\MvvmValidation\AsyncRuleValidateAction.cs">
+    <Compile Include="..\MvvmValidation.Portable\AsyncRuleValidateAction.cs">
       <Link>AsyncRuleValidateAction.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\IAsyncValidationRule.cs">
+      <Link>IAsyncValidationRule.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\CollectionUtils.cs">
+      <Link>Internal\CollectionUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\DelegateDisposable.cs">
+      <Link>Internal\DelegateDisposable.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\GenericValidationTarget.cs">
+      <Link>Internal\GenericValidationTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\IValidationTarget.cs">
+      <Link>Internal\IValidationTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\IValidationTargetContract.cs">
+      <Link>Internal\IValidationTargetContract.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\PropertyCollectionValidationTarget.cs">
+      <Link>Internal\PropertyCollectionValidationTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\PropertyName.cs">
+      <Link>Internal\PropertyName.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\PropertyValidationTarget.cs">
+      <Link>Internal\PropertyValidationTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\UndefinedValidationTarget.cs">
+      <Link>Internal\UndefinedValidationTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\ValidationRule.cs">
+      <Link>Internal\ValidationRule.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\ValidationRuleCollection.cs">
+      <Link>Internal\ValidationRuleCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\IValidationResultFormatter.cs">
+      <Link>IValidationResultFormatter.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\IValidationRule.cs">
+      <Link>IValidationRule.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\NumberedListValidationResultFormatter.cs">
+      <Link>NumberedListValidationResultFormatter.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\RuleResult.cs">
+      <Link>RuleResult.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\RuleResultExtensions.cs">
+      <Link>RuleResultExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationError.cs">
+      <Link>ValidationError.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationErrorCollection.cs">
+      <Link>ValidationErrorCollection.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationException.cs">
+      <Link>ValidationException.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationHelper.cs">
+      <Link>ValidationHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationHelperExtensions.cs">
+      <Link>ValidationHelperExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationResult.cs">
+      <Link>ValidationResult.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationResultChangedEventArgs.cs">
+      <Link>ValidationResultChangedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationResultExtensions.cs">
+      <Link>ValidationResultExtensions.cs</Link>
     </Compile>
     <Compile Include="..\MvvmValidation\DataErrorInfoAdapter.cs">
       <Link>DataErrorInfoAdapter.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\IAsyncValidationRule.cs">
-      <Link>IAsyncValidationRule.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\CollectionUtils.cs">
-      <Link>Internal\CollectionUtils.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\CurrentDispatcher.cs">
-      <Link>Internal\CurrentDispatcher.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\DelegateDisposable.cs">
-      <Link>Internal\DelegateDisposable.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\GenericValidationTarget.cs">
-      <Link>Internal\GenericValidationTarget.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\IValidationTarget.cs">
-      <Link>Internal\IValidationTarget.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\IValidationTargetContract.cs">
-      <Link>Internal\IValidationTargetContract.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\PropertyCollectionValidationTarget.cs">
-      <Link>Internal\PropertyCollectionValidationTarget.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\PropertyName.cs">
-      <Link>Internal\PropertyName.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\PropertyValidationTarget.cs">
-      <Link>Internal\PropertyValidationTarget.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\ThreadingUtils.cs">
-      <Link>Internal\ThreadingUtils.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\UndefinedValidationTarget.cs">
-      <Link>Internal\UndefinedValidationTarget.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\ValidationRule.cs">
-      <Link>Internal\ValidationRule.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\Internal\ValidationRuleCollection.cs">
-      <Link>Internal\ValidationRuleCollection.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\IValidationResultFormatter.cs">
-      <Link>IValidationResultFormatter.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\IValidationRule.cs">
-      <Link>IValidationRule.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\NumberedListValidationResultFormatter.cs">
-      <Link>NumberedListValidationResultFormatter.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\RuleResult.cs">
-      <Link>RuleResult.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\RuleResultExtensions.cs">
-      <Link>RuleResultExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationError.cs">
-      <Link>ValidationError.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationErrorCollection.cs">
-      <Link>ValidationErrorCollection.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationException.cs">
-      <Link>ValidationException.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationHelper.cs">
-      <Link>ValidationHelper.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationHelperExtensions.cs">
-      <Link>ValidationHelperExtensions.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationResult.cs">
-      <Link>ValidationResult.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationResultChangedEventArgs.cs">
-      <Link>ValidationResultChangedEventArgs.cs</Link>
-    </Compile>
-    <Compile Include="..\MvvmValidation\ValidationResultExtensions.cs">
-      <Link>ValidationResultExtensions.cs</Link>
     </Compile>
     <Compile Include="..\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Internal\ThreadingUtils.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="NotifyDataErrorInfoAdapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -222,14 +217,14 @@
     <Compile Include="ValidationHelperExtensions.Silverlight4.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\MvvmValidation\Key.snk">
-      <Link>Key.snk</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="..\MvvmValidation\CodeAnalysisDictionary.xml">
+    <CodeAnalysisDictionary Include="..\MvvmValidation.Portable\CodeAnalysisDictionary.xml">
       <Link>CodeAnalysisDictionary.xml</Link>
     </CodeAnalysisDictionary>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Key.snk">
+      <Link>Key.snk</Link>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.CSharp.targets" />
   <ProjectExtensions>
@@ -237,7 +232,7 @@
       <FlavorProperties GUID="{A1591282-1198-4647-A2B1-27E5FF5F6F3B}">
         <SilverlightProjectProperties />
       </FlavorProperties>
-      <UserProperties ProjectLinkReference="56d2052d-459d-402a-8938-174dacdc66c5" ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" />
+      <UserProperties ProjectLinkerExcludeFilter="\\?desktop(\\.*)?$;\\?silverlight(\\.*)?$;\.desktop;\.silverlight;\.xaml;^service references(\\.*)?$;\.clientconfig;^web references(\\.*)?$" ProjectLinkReference="56d2052d-459d-402a-8938-174dacdc66c5" />
     </VisualStudio>
   </ProjectExtensions>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
