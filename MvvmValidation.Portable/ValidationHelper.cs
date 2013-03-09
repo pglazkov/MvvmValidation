@@ -699,7 +699,7 @@ namespace MvvmValidation
 
 		private void NotifyResultChanged(object target, ValidationResult newResult, SynchronizationContext syncContext, bool useSyncContext = true)
 		{
-			syncContext = syncContext ?? ThreadingHelpers.UISynchronizationContext;
+			syncContext = syncContext ?? SynchronizationContext.Current;
 
 			if (useSyncContext && syncContext != null)
 			{
