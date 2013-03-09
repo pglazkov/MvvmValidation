@@ -6,10 +6,10 @@
 		<SourceDir>.\</SourceDir>
 		<SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
 		<OutputFolderPath>$(SourceDir)Output</OutputFolderPath>
-		<MainAssemblyWithVersion>$(OutputFolderPath)\lib\net40-client\MvvmValidation.dll</MainAssemblyWithVersion>
+		<MainAssemblyWithVersion>$(OutputFolderPath)\lib\portable-windows8+net40+sl5+windowsphone8\MvvmValidation.Portable.dll</MainAssemblyWithVersion>
 		<UnitTestAssemblies>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssemblies>
 		<MSTestPath>c:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\</MSTestPath>
-		<MSTestOutputFileName>mstestresults.xml</MSTestOutputFileName>
+		<MSTestOutputFileName>mstestresults.xml</MSTestOutputFileName>		
 	</PropertyGroup>
 
 	<ItemGroup>
