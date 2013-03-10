@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildFull">
 	<Import Project="Tools\Build\MSBuild.Community.Tasks.Targets"/>
 
 	<PropertyGroup>
