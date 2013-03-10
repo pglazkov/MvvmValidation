@@ -2,11 +2,23 @@
 	<Import Project="Tools\Build\MSBuild.Community.Tasks.Targets"/>
 
 	<PropertyGroup>
+		<Major>1</Major>
+		<Minor>1</Minor>
+		<Patch>0</Patch>
+		<PreReleaseString>beta</PreReleaseString>
+
+		<VersionInfoString Condition="$(PreReleaseString) != ''">$(Major).$(Minor).$(Patch)-$(PreReleaseString)</VersionInfoString>
+		<VersionInfoString Condition="$(PreReleaseString) == ''">$(Major).$(Minor).$(Patch)</VersionInfoString>
+	</PropertyGroup>
+	
+	<PropertyGroup>
 		<Configuration>Release</Configuration>
 		<SourceDir>.\</SourceDir>
 		<SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
 		<OutputFolderPath>$(SourceDir)Output</OutputFolderPath>
+		<VersionInfoPath>$(SourceDir)VersionInfo.cs</VersionInfoPath>
 		<MainAssemblyWithVersion>$(OutputFolderPath)\lib\portable-windows8+net40+sl5+windowsphone8\MvvmValidation.Portable.dll</MainAssemblyWithVersion>
+		<NuGetPreRelaseVersionSuffix>-beta</NuGetPreRelaseVersionSuffix>
 		<UnitTestAssemblies>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssemblies>
 		<MSTestPath>c:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\</MSTestPath>
 		<MSTestOutputFileName>mstestresults.xml</MSTestOutputFileName>		
@@ -26,19 +38,27 @@
 			ZipOutput;
 			CreateNuGetPackage
 		</BuildFullDependsOn>
-		<UpdateNuSpecDependsOn>
-			BuildSolution
-		</UpdateNuSpecDependsOn>
+		
+		<BuildSolutionDependsOn>
+			UpdateVersion
+		</BuildSolutionDependsOn>
+		
+		<UpdateVersionDependsOn>
+			
+		</UpdateVersionDependsOn>
+		
 		<CreateNuGetPackageDependsOn>
-			BuildSolution;
-			UpdateNuSpec
+			BuildSolution			
 		</CreateNuGetPackageDependsOn>
+		
 		<CleanupAfterBuildDependsOn>
 			BuildSolution
 		</CleanupAfterBuildDependsOn>
+		
 		<UnitTestDependsOn>
 			BuildSolution
 		</UnitTestDependsOn>
+		
 		<ZipOutputDependsOn>
 			BuildSolution
 		</ZipOutputDependsOn>
@@ -59,7 +79,7 @@
 		<MakeDir Directories="%(OutputFolder.FullPath)" ContinueOnError="true"/>
 	</Target>
 
-	<Target Name="BuildSolution">
+	<Target Name="BuildSolution" DependsOnTargets="$(BuildSolutionDependsOn)">
 		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false"  Properties="Configuration=$(Configuration);BuildInParallel=True">
 			<Output ItemName="BuildOutput" TaskParameter="TargetOutputs"/>
 		</MSBuild>
@@ -93,15 +113,25 @@
 		<Exec Command="&quot;$(MSTestPath)mstest.exe&quot; $(testList) /resultsfile:&quot;%(TestsDirectory.fullpath)\$(MSTestOutputFileName)&quot;" WorkingDirectory="$(SourceDir)" ContinueOnError="false" />
 	</Target>
 
-	<Target Name="UpdateNuSpec"
-					DependsOnTargets="$(UpdateNuSpecDependsOn)">
-		<GetAssemblyIdentity AssemblyFiles="$(MainAssemblyWithVersion)">
-			<Output TaskParameter="Assemblies" ItemName="MainAssemblyInfo"/>
-		</GetAssemblyIdentity>
+	<Target Name="UpdateVersion"
+					DependsOnTargets="$(UpdateVersionDependsOn)">
+
+		<Message Text="Version: $(VersionInfoString)"/>
+		
+		<AssemblyInfo CodeLanguage="CS"
+									OutputFile="$(VersionInfoPath)"
+									AssemblyVersion="$(Major).$(Minor).$(Patch)"
+									AssemblyFileVersion="$(Major).$(Minor).$(Patch)"
+									AssemblyInformationalVersion="$(VersionInfoString)"/>
+
 		<XmlUpdate
         XmlFileName="Package.nuspec"
         XPath="package/metadata/version"
-        Value="%(MainAssemblyInfo.Version)"/>
+        Value="$(VersionInfoString)"/>
+		
+		<!--<GetAssemblyIdentity AssemblyFiles="$(MainAssemblyWithVersion)">
+			<Output TaskParameter="Assemblies" ItemName="MainAssemblyInfo"/>
+		</GetAssemblyIdentity>-->
 	</Target>
 
 
@@ -116,13 +146,13 @@
 			<ZipOutputFiles Include="$(OutputFolderPath)\lib\**\*.*" />
 		</ItemGroup>
 
-		<GetAssemblyIdentity AssemblyFiles="$(MainAssemblyWithVersion)">
+		<!--<GetAssemblyIdentity AssemblyFiles="$(MainAssemblyWithVersion)">
 			<Output TaskParameter="Assemblies" ItemName="MainAssemblyInfo"/>
-		</GetAssemblyIdentity>
+		</GetAssemblyIdentity>-->
 
 		<Zip Files="@(ZipOutputFiles)"
          WorkingDirectory="$(OutputFolderPath)"
-		     ZipFileName="$(OutputFolderPath)\MvvmValidation.%(MainAssemblyInfo.Version).zip" />
+		     ZipFileName="$(OutputFolderPath)\MvvmValidation.$(VersionInfoString).zip" />
 	</Target>
 
 </Project>
