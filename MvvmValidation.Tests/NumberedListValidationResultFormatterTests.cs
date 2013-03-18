@@ -1,12 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Xunit;
 
 namespace MvvmValidation.Tests
 {
 	// ReSharper disable InconsistentNaming
-	[TestClass]
 	public class NumberedListValidationResultFormatterTests
 	{
-		[TestMethod]
+		[Fact]
 		public void Format_SeveralErrorsWithSameMessageButDifferentTarges_OutputsOnlyOneMessage()
 		{
 			// ARRANGE
@@ -21,7 +20,7 @@ namespace MvvmValidation.Tests
 			var actualFormattedString = formatter.Format(validationResult);
 
 			// VERIFY
-			Assert.AreEqual(expectedFormattedString, actualFormattedString);
+			Assert.Equal(expectedFormattedString, actualFormattedString);
 		}
 	}
 	// ReSharper restore InconsistentNaming

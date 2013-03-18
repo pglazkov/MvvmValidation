@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MvvmValidation.Internal;
+using Xunit;
 
 namespace MvvmValidation.Tests.Helpers
 {
@@ -19,9 +18,9 @@ namespace MvvmValidation.Tests.Helpers
 			Observable.Timer(TimeSpan.FromMilliseconds(timeoutMilliseconds)).Subscribe(_ =>
 			{
 				uiThreadDispatcher.BeginInvoke(new Action(() =>
-				{
-					Assert.Fail(timeoutMessage);
-				}));
+					{
+						Assert.True(false, timeoutMessage);
+					}));
 			});
 
 

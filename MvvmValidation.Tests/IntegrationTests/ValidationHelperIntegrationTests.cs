@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MvvmValidation.Tests.Fakes;
 using MvvmValidation.Tests.Helpers;
+using Xunit;
 
 namespace MvvmValidation.Tests.IntegrationTests
 {
 	// ReSharper disable InconsistentNaming
-	[TestClass]
 	public class ValidationHelperIntegrationTests
 	{
-		[TestMethod]
+		[Fact]
 		public void AsyncValidation_GeneralSmokeTest()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -27,7 +25,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				// OK, this is really strange, but if Action<bool> is not mentioned anywhere in the project, then ReSharter would fail to build and run the test... 
 				// So including the following line to fix it.
 				Action<RuleResult> dummy = null;
-				Assert.IsNull(dummy); // Getting rid of the "unused variable" warning.
+				Assert.Null(dummy); // Getting rid of the "unused variable" warning.
 
 				validation.AddAsyncRule(setResult => ThreadPool.QueueUserWorkItem(_ =>
 				{
@@ -38,11 +36,11 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				validation.ResultChanged += (o, e) =>
 				{
-					Assert.IsTrue(ruleExecuted, "Validation rule must be executed before ValidationCompleted event is fired.");
+					Assert.True(ruleExecuted, "Validation rule must be executed before ValidationCompleted event is fired.");
 
 					var isUiThread = dispatcher.Thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
 
-					Assert.IsTrue(isUiThread, "ValidationResultChanged must be executed on UI thread");
+					Assert.True(isUiThread, "ValidationResultChanged must be executed on UI thread");
 				};
 
 				var ui = TaskScheduler.FromCurrentSynchronizationContext();
@@ -51,12 +49,12 @@ namespace MvvmValidation.Tests.IntegrationTests
 				{
 					var isUiThread = dispatcher.Thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId;
 
-					Assert.IsTrue(isUiThread, "Validation callback must be executed on UI thread");
+					Assert.True(isUiThread, "Validation callback must be executed on UI thread");
 
-					Assert.IsFalse(r.Result.IsValid, "Validation must fail according to the validaton rule");
-					Assert.IsFalse(validation.GetResult().IsValid, "Validation must fail according to the validaton rule");
+					Assert.False(r.Result.IsValid, "Validation must fail according to the validaton rule");
+					Assert.False(validation.GetResult().IsValid, "Validation must fail according to the validaton rule");
 
-					Assert.IsTrue(ruleExecuted, "Rule must be executed before validation completed callback is executed.");
+					Assert.True(ruleExecuted, "Rule must be executed before validation completed callback is executed.");
 
 					completedAction();
 				}, ui);
@@ -66,7 +64,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		/// <summary>
 		/// Asyncs the validation_ dependant properties_ if one invalid second is invalid too.
 		/// </summary>
-		[TestMethod]
+		[Fact]
 		public void AsyncValidation_DependantProperties_IfOneInvalidSecondIsInvalidToo()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, testCompleted) =>
@@ -94,15 +92,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				validation.ValidateAsync(() => vm.Bar).ContinueWith(r =>
 				{
-					Assert.IsFalse(r.Result.IsValid, "Validation must fail");
-					Assert.IsTrue(r.Result.ErrorList.Count == 2, "There must be 2 errors: one for each dependant property");
+					Assert.False(r.Result.IsValid, "Validation must fail");
+					Assert.True(r.Result.ErrorList.Count == 2, "There must be 2 errors: one for each dependant property");
 
 					testCompleted();
 				});
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AsyncValidation_SeveralAsyncRules_AllExecutedBeforeValidationCompleted()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -138,17 +136,17 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				validation.ValidateAllAsync().ContinueWith(r =>
 				{
-					Assert.IsTrue(rule1Executed);
-					Assert.IsTrue(rule2Executed);
-					Assert.IsTrue(rule3Executed);
-					Assert.IsTrue(r.Result.IsValid);
+					Assert.True(rule1Executed);
+					Assert.True(rule2Executed);
+					Assert.True(rule3Executed);
+					Assert.True(r.Result.IsValid);
 
 					completedAction();
 				});
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AsyncValidation_MixedAsyncAndNotAsyncRules_AllExecutedBeforeValidationCompleted()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -183,17 +181,17 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				validation.ValidateAllAsync().ContinueWith(r =>
 				{
-					Assert.IsTrue(rule1Executed);
-					Assert.IsTrue(rule2Executed);
-					Assert.IsTrue(rule3Executed);
-					Assert.IsTrue(r.Result.IsValid);
+					Assert.True(rule1Executed);
+					Assert.True(rule2Executed);
+					Assert.True(rule3Executed);
+					Assert.True(r.Result.IsValid);
 
 					completedAction();
 				});
 			});
 		}
 
-		//[TestMethod]
+		//[Fact]
 		//[ExpectedException(typeof(InvalidOperationException))]
 		//public void SyncValidation_ThereAreAsyncRules_ThrowsInvalidOperationException()
 		//{
@@ -217,7 +215,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		//    });
 		//}
 
-		[TestMethod]
+		[Fact]
 		public void SyncValidation_SeveralRulesForOneTarget_ValidWhenAllRulesAreValid()
 		{
 			var vm = new DummyViewModel();
@@ -235,10 +233,10 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 			var r = validation.Validate(vm);
 
-			Assert.IsFalse(r.IsValid);
+			Assert.False(r.IsValid);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AsyncValidation_SyncRule_ExecutedAsyncroniously()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -250,7 +248,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				validation.AddRule(() =>
 				{
-					Assert.IsFalse(dispatcher.Thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId,
+					Assert.False(dispatcher.Thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId,
 					               "Rule must be executed in a background thread.");
 
 					if (string.IsNullOrEmpty(vm.Foo))
@@ -266,7 +264,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AsyncValidation_InvalidValue_CallsValidationRuleInBackgroundThreadAndReportsInvalidOnUIThread()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -286,7 +284,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 					if (validationExecutionThreadID == uiThreadDispatcher.Thread.ManagedThreadId)
 					{
-						Assert.Fail("Validation rule must be called on a different thread than UI thread.");
+						Assert.True(false, "Validation rule must be called on a different thread than UI thread.");
 					}
 				};
 
@@ -304,20 +302,20 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 					if (validationCompletedThreadID != uiThreadDispatcher.Thread.ManagedThreadId)
 					{
-						Assert.Fail("ValidationCompleted must be called on the UI thread.");
+						Assert.True(false, "ValidationCompleted must be called on the UI thread.");
 					}
 
 					if (!validationRuleCalled)
 					{
-						Assert.Fail("Validation rule hasn't been called before validation completed.");
+						Assert.True(false, "Validation rule hasn't been called before validation completed.");
 					}
 
 					if (validationExecutionThreadID == validationCompletedThreadID)
 					{
-						Assert.Fail("Validation execution thread must be a different thread than validation completed thread");
+						Assert.True(false, "Validation execution thread must be a different thread than validation completed thread");
 					}
 
-					Assert.IsFalse(e.NewResult.IsValid, "Validation must fail");
+					Assert.False(e.NewResult.IsValid, "Validation must fail");
 
 					completedAction();
 				};
@@ -327,7 +325,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ValidateAsync_MultipleRulesForSameTarget_DoesNotExecuteRulesIfPerviousFailed()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -359,15 +357,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 				{
 					// VERIFY
 
-					Assert.IsTrue(firstRuleExecuted, "First rule must have been executed");
-					Assert.IsFalse(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
+					Assert.True(firstRuleExecuted, "First rule must have been executed");
+					Assert.False(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
 
 					completedAction();
 				});
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ValidatedAsync_AsyncRuleDoesnotCallCallback_ThrowsAnExceptionAfterTimeout()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -389,15 +387,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				validation.ValidateAllAsync().ContinueWith(result =>
 				{
-					Assert.IsTrue(result.IsFaulted, "Validation task must fail.");
-					Assert.IsNotNull(result.Exception, "Task.Exception property must contain exception that occured during validation");
+					Assert.True(result.IsFaulted, "Validation task must fail.");
+					Assert.NotNull(result.Exception);
 
 					completedAction();
 				}, ui);
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AddChildValidatable_AddsRuleThatExecutedValidationOnChild()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -414,15 +412,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsFalse(result.Result.IsValid, "Validation must fail");
-					Assert.AreEqual("Error1", result.Result.ErrorList[0].ErrorText);
+					Assert.False(result.Result.IsValid, "Validation must fail");
+					Assert.Equal("Error1", result.Result.ErrorList[0].ErrorText);
 
 					completedAction();
 				});
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AddChildValidatable_AddsRuleWithProperTarget()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -439,15 +437,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsFalse(result.Result.IsValid, "Validation must fail");
-					Assert.AreEqual("parent.Child", result.Result.ErrorList[0].Target);
+					Assert.False(result.Result.IsValid, "Validation must fail");
+					Assert.Equal("parent.Child", result.Result.ErrorList[0].Target);
 
 					completedAction();
 				});
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AddChildValidatable_ChildValidatableIsNull_NoErrorsAreAdded()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -461,14 +459,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsTrue(result.Result.IsValid, "Validation must not fail");
+					Assert.True(result.Result.IsValid, "Validation must not fail");
 
 					completedAction();
 				});
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AddChildValidatableCollection_AddsRuleThatExecutedValidationOnAllValidatableChildren()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -492,15 +490,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.ValidateAllAsync().ContinueWith(result =>
 				{
 					// VERIFY
-					Assert.IsFalse(result.Result.IsValid, "Validation must fail");
-					Assert.AreEqual("Error1", result.Result.ErrorList[0].ErrorText);
+					Assert.False(result.Result.IsValid, "Validation must fail");
+					Assert.Equal("Error1", result.Result.ErrorList[0].ErrorText);
 
 					completedAction();
 				});
 			});
 		}
 
-        [TestMethod]
+        [Fact]
         public void AddChildValidatableCollection_MoreThan64Items_DoesNotFail()
         {
             TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -528,8 +526,8 @@ namespace MvvmValidation.Tests.IntegrationTests
                     // VERIFY
                     uiThreadDispatcher.BeginInvoke(new Action(() =>
                     {
-                        Assert.IsNull(result.Exception, "No exceptions should be thrown");
-                        Assert.IsTrue(result.Result.IsValid, "Validation must pass");
+                        Assert.Null(result.Exception);
+                        Assert.True(result.Result.IsValid, "Validation must pass");
 
                         completedAction();
                     }));
@@ -537,7 +535,7 @@ namespace MvvmValidation.Tests.IntegrationTests
             });
         }
 
-		[TestMethod]
+		[Fact]
 		public void AddChildValidatableCollection_ChildCollectionIsNullOrEmpty_NoErrorsAreAdded()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
@@ -551,7 +549,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				parent.Validator.ValidateAllAsync().ContinueWith(r1 =>
 				{
 					// VERIFY
-					Assert.IsTrue(r1.Result.IsValid, "Validation must not fail");
+					Assert.True(r1.Result.IsValid, "Validation must not fail");
 
 					// ARRANGE
 					parent.Children = new List<IValidatable>();
@@ -560,7 +558,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					parent.Validator.ValidateAllAsync().ContinueWith(r2 =>
 					{
 						// VERIFY
-						Assert.IsTrue(r2.Result.IsValid, "Validation must not fail.");
+						Assert.True(r2.Result.IsValid, "Validation must not fail.");
 
 						completedAction();
 					});
@@ -568,7 +566,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ValidateAsync_WithCallback_ValidationOccuredAndCallbackIsCalledOnUIThread()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -587,16 +585,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				validation.ValidateAllAsync(result =>
 				{
-					Assert.IsTrue(ruleExecuted, "Validation rule must be executed before validation callback is called.");
-					Assert.AreEqual(dispatcher.Thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId,
-					                "Validation callback must be called on UI thread.");
+					Assert.True(ruleExecuted, "Validation rule must be executed before validation callback is called.");
+					Assert.Equal(dispatcher.Thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId);
 
 					completedAction();
 				});
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ErrorChanged_RaisedOnUIThread()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -617,7 +614,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 						dispatcher.BeginInvoke(new Action(() =>
 							{
-								Assert.AreEqual(dispatcher.Thread.ManagedThreadId, threadId, "ErrorsChanged event must be raised on the UI thread.");
+								Assert.Equal(dispatcher.Thread.ManagedThreadId, threadId);
 								syncEvent.Set();
 							}));
 					};
@@ -628,7 +625,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 					{
 						if (!syncEvent.WaitOne(TimeSpan.FromSeconds(5)))
 						{
-							dispatcher.BeginInvoke(new Action(() => Assert.Fail("ErrorsChanged was not raised within specified timeout (5 sec)")));
+							dispatcher.BeginInvoke(new Action(() => Assert.True(false, "ErrorsChanged was not raised within specified timeout (5 sec)")));
 						}
 
 						completedAction();
@@ -636,7 +633,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ValidateAllAsync_SimilteniousCalls_DoesNotFail()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>

@@ -1,23 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
+using Xunit;
 
 namespace MvvmValidation.Tests
 {
-	[TestClass]
 	public class ValidationHelperTests
 	{
-		[TestInitialize]
-		public void TestInitialize()
-		{
-			//var uiThreadDispatcher = Dispatcher.CurrentDispatcher;
-			//ThreadingHelpers.UISynchronizationContext = new DispatcherSynchronizationContext(uiThreadDispatcher);
-		}
-
-		[TestMethod]
+		[Fact]
 		public void StringProperty_InvalidValue_HasValidationError()
 		{
 			// Arrange
@@ -28,10 +18,10 @@ namespace MvvmValidation.Tests
 
 			// Assert
 			
-			Assert.IsTrue(vm.GetErrors("StringProperty").Cast<string>().Any());
+			Assert.True(vm.GetErrors("StringProperty").Cast<string>().Any());
 		}
 
-		[TestMethod]
+		[Fact]
 		public void StringProperty_ValidValue_DoesNotHaveValidationError()
 		{
 			// Arrange
@@ -41,10 +31,10 @@ namespace MvvmValidation.Tests
 			vm.StringProperty = "Not empty string";
 
 			// Assert
-			Assert.IsFalse(vm.GetErrors("StringProperty").Cast<string>().Any());
+			Assert.False(vm.GetErrors("StringProperty").Cast<string>().Any());
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RangeProperties_InvalidRange_BothPropertiesHaveValidationError()
 		{
 			// Arrange
@@ -55,11 +45,11 @@ namespace MvvmValidation.Tests
 			vm.RangeEnd = 1;
 
 			// Assert
-			Assert.IsTrue(!string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
-			Assert.IsTrue(!string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
+			Assert.True(!string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.True(!string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RangeProperties_ValidRange_NonOfThePropertiesHaveValidationError()
 		{
 			// Arrange
@@ -70,11 +60,11 @@ namespace MvvmValidation.Tests
 			vm.RangeEnd = 10;
 
 			// Assert
-			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
-			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
+			Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RangeProperties_ChangeFromInvalidToValid_ValidationErrorsDisappear()
 		{
 			// Arrange
@@ -85,18 +75,18 @@ namespace MvvmValidation.Tests
 			vm.RangeEnd = 1;
 
 			// Assert
-			Assert.IsFalse(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
-			Assert.IsFalse(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
+			Assert.False(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.False(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 
 			// Act
 			vm.RangeEnd = 11;
 
 			// Assert
-			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
-			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
+			Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
-		[TestMethod]
+		[Fact]
 		public void GetValidationResultFor_EmptyString_GetsErrorsForEntireObject()
 		{
 			// Arrange
@@ -106,10 +96,10 @@ namespace MvvmValidation.Tests
 			vm.StringProperty = null;
 
 			// Assert
-			Assert.IsFalse(string.IsNullOrEmpty(vm.GetErrors("").Cast<string>().FirstOrDefault()));
+			Assert.False(string.IsNullOrEmpty(vm.GetErrors("").Cast<string>().FirstOrDefault()));
 		}
 
-		[TestMethod]
+		[Fact]
 		public void SuppressValidation_SetInvalidValue_ThereAreNoErrors()
 		{
 			// Arrange
@@ -123,11 +113,11 @@ namespace MvvmValidation.Tests
 			}
 
 			// Verify
-			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
-			Assert.IsTrue(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
+			Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+			Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
 		}
 
-		[TestMethod]
+		[Fact]
 		public void CombineRuleResults_ResultContainsErrorsFromAllCombinedResults()
 		{
 			// Arrange
@@ -150,13 +140,13 @@ namespace MvvmValidation.Tests
 			var result = validation.ValidateAll();
 
 			// Assert
-			Assert.IsFalse(result.IsValid, "The validation must fail");
-			Assert.AreEqual(2, result.ErrorList.Count, "There must be 2 errors");
-			Assert.IsTrue(result.ErrorList.Any(e => e.ErrorText == "Error1"));
-			Assert.IsTrue(result.ErrorList.Any(e => e.ErrorText == "Error2"));
+			Assert.False(result.IsValid, "The validation must fail");
+			Assert.Equal(2, result.ErrorList.Count);
+			Assert.True(result.ErrorList.Any(e => e.ErrorText == "Error1"));
+			Assert.True(result.ErrorList.Any(e => e.ErrorText == "Error2"));
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ValidationCompleted_ValidateRuleWithMultipleTargets_ResultContainsErrorsForAllTargsts()
 		{
 			// Arrange
@@ -172,14 +162,14 @@ namespace MvvmValidation.Tests
 			var result = validation.ValidateAll();
 
 			// Assert
-			Assert.IsFalse(result.IsValid);
+			Assert.False(result.IsValid);
 
-			Assert.IsTrue(result.ErrorList.Count == 2, "There must be two errors: one for each property target");
-			Assert.IsTrue(Equals(result.ErrorList[0].Target, "dummy.Foo"), "Target for the first error must be dummy.Foo");
-			Assert.IsTrue(Equals(result.ErrorList[1].Target, "dummy.Bar"), "Target for the second error must be dummy.Bar");
+			Assert.True(result.ErrorList.Count == 2, "There must be two errors: one for each property target");
+			Assert.True(Equals(result.ErrorList[0].Target, "dummy.Foo"), "Target for the first error must be dummy.Foo");
+			Assert.True(Equals(result.ErrorList[1].Target, "dummy.Bar"), "Target for the second error must be dummy.Bar");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ValidationResultChanged_ValidateExecutedForOneRule_FiresOneTime()
 		{
 			// Arrange
@@ -200,10 +190,10 @@ namespace MvvmValidation.Tests
 			validation.ValidateAll();
 
 			// Verity
-			Assert.AreEqual(1, eventFiredTimes, "Event should have been fired");
+			Assert.Equal(1, eventFiredTimes);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ResultChanged_ValidateExecutedForSeveralRules_FiresForEachTarget()
 		{
 			// Arrange
@@ -230,10 +220,10 @@ namespace MvvmValidation.Tests
 			validation.ValidateAll();
 
 			// Verify
-			Assert.AreEqual(expectedTimesToFire, eventFiredTimes);
+			Assert.Equal(expectedTimesToFire, eventFiredTimes);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ResultChanged_CorrectingValidationError_EventIsFiredForWithValidResultAfterCorrection()
 		{
 			// ARRANGE
@@ -261,7 +251,7 @@ namespace MvvmValidation.Tests
 
 			onResultChanged = r =>
 			{
-				Assert.IsFalse(r.NewResult.IsValid, "ResultChanged must be fired with invalid result first.");
+				Assert.False(r.NewResult.IsValid, "ResultChanged must be fired with invalid result first.");
 			};
 			validation.ValidateAll();
 
@@ -272,13 +262,13 @@ namespace MvvmValidation.Tests
 
 			onResultChanged = r =>
 			{
-				Assert.IsTrue(r.NewResult.IsValid, "ResultChanged must be fired with valid result after succesfull validation.");
+				Assert.True(r.NewResult.IsValid, "ResultChanged must be fired with valid result after succesfull validation.");
 			};
 
 			validation.ValidateAll();
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ResultChanged_RuleErrorsChangedButRuleValidityDidNotChange_EventStillFires()
 		{
 			// ARRANGE
@@ -329,10 +319,10 @@ namespace MvvmValidation.Tests
 			validation.ValidateAll();
 
 			// VERIFY
-			Assert.AreEqual(expectedResultChangedCalls, resultChangedCalledTimes, "ResultChanged event must be fired for every change of result");
+			Assert.Equal(expectedResultChangedCalls, resultChangedCalledTimes);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void Validate_MultipleRulesForSameTarget_DoesNotExecuteRulesIfPerviousFailed()
 		{
 			// ARRANGE
@@ -361,11 +351,11 @@ namespace MvvmValidation.Tests
 
 			// VERIFY
 
-			Assert.IsTrue(firstRuleExecuted, "First rule must have been executed");
-			Assert.IsFalse(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
+			Assert.True(firstRuleExecuted, "First rule must have been executed");
+			Assert.False(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void Validate_MultipleRulesForSameTarget_ClearsResultsBeforeValidation()
 		{
 			// ARRANGE
@@ -398,12 +388,12 @@ namespace MvvmValidation.Tests
 
 			var result = validation.GetResult(() => dummy.Foo);
 
-			Assert.IsFalse(result.IsValid);
-			Assert.AreEqual(1, result.ErrorList.Count, "There must be only one error for the first failed rule.");
-			Assert.AreEqual("Error1", result.ErrorList[0].ErrorText);
+			Assert.False(result.IsValid);
+			Assert.Equal(1, result.ErrorList.Count);
+			Assert.Equal("Error1", result.ErrorList[0].ErrorText);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AddRequiredRule_AddsRuleThatChecksTheObjectNotNullOrEmptyString()
 		{
 			// ARRANGE
@@ -416,18 +406,17 @@ namespace MvvmValidation.Tests
 			var result = validation.ValidateAll();
 
 			// VERIFY
-			Assert.IsFalse(result.IsValid, "Validation must fail");
+			Assert.False(result.IsValid, "Validation must fail");
 
 			// ACT
 			dummy.Foo = "abc";
 			var resultAfterCorrection = validation.ValidateAll();
 
 			// VERIFY
-			Assert.IsTrue(resultAfterCorrection.IsValid, "The result must be valid after the correction of the error");
+			Assert.True(resultAfterCorrection.IsValid, "The result must be valid after the correction of the error");
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(InvalidOperationException))]
+		[Fact]
 		public void Validate_ThereAreAsyncRules_ThrowsException()
 		{
 			// ARRANGE
@@ -440,10 +429,14 @@ namespace MvvmValidation.Tests
 			validation.AddAsyncRule(onCompleted => onCompleted(RuleResult.Invalid("Error")));
 
 			// ACT
-			validation.ValidateAll();
+			Assert.Throws<InvalidOperationException>(() =>
+				{
+					validation.ValidateAll();
+				});
+
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RemoveRule_ReExecuteValidation_RemovedRuleDoesNotExecute()
 		{
 			// ARRANGE
@@ -454,7 +447,7 @@ namespace MvvmValidation.Tests
 
 			var validationResult = validation.ValidateAll();
 
-			Assert.IsFalse(validationResult.IsValid);
+			Assert.False(validationResult.IsValid);
 
 
 			// ACT
@@ -463,10 +456,10 @@ namespace MvvmValidation.Tests
 			validationResult = validation.ValidateAll();
 
 			// VERIFY
-			Assert.IsTrue(validationResult.IsValid);
+			Assert.True(validationResult.IsValid);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RemoveAllRules_HadTwoNegativeRulesRegistered_ValidationSucceds()
 		{
 			// ARRANGE
@@ -480,7 +473,7 @@ namespace MvvmValidation.Tests
 			var validationResult = validation.ValidateAll();
 
 			// VERIFY
-			Assert.IsTrue(validationResult.IsValid, "Validation should not produce any errors after all rules were removed.");
+			Assert.True(validationResult.IsValid, "Validation should not produce any errors after all rules were removed.");
 		}
 	}
 }
