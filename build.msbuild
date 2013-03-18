@@ -1,6 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildFull">
 	<Import Project="Tools\Build\MSBuild.Community.Tasks.Targets"/>
 
+	<UsingTask AssemblyFile=".\packages\xunit.2.0.0-alpha-build1611\lib\net45\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
+	
 	<PropertyGroup>
 		<Major>1</Major>
 		<Minor>1</Minor>
@@ -19,13 +21,12 @@
 		<VersionInfoPath>$(SourceDir)VersionInfo.cs</VersionInfoPath>
 		<MainAssemblyWithVersion>$(OutputFolderPath)\lib\portable-windows8+net40+sl5+windowsphone8\MvvmValidation.Portable.dll</MainAssemblyWithVersion>
 		<NuGetPreRelaseVersionSuffix>-beta</NuGetPreRelaseVersionSuffix>
-		<UnitTestAssemblies>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssemblies>
-		<MSTestPath>c:\Program Files (x86)\Microsoft Visual Studio 11.0\Common7\IDE\</MSTestPath>
-		<MSTestOutputFileName>mstestresults.xml</MSTestOutputFileName>		
+		<UnitTestAssembliesPath>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssembliesPath>
+		<UnitTestHtmlReportPath>$(SourceDir)TestReport.html</UnitTestHtmlReportPath>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<TestsDirectory Include="$(OutputFolderPath)\Tests" />
+		<UnitTestAssemblies Include="$(UnitTestAssembliesPath)" />
 		<OutputFolder Include="$(OutputFolderPath)"/>
 	</ItemGroup>
 
@@ -99,18 +100,7 @@
 	</Target>
 
 	<Target Name="UnitTest" DependsOnTargets="$(UnitTestDependsOn)">
-		<CreateItem Include="$(UnitTestAssemblies)">
-			<Output TaskParameter="Include" ItemName="AssembliesToTest" />
-		</CreateItem>
-		<CreateItem Include="%(TestsDirectory.fullpath)\**\*.*">
-			<Output TaskParameter="Include" ItemName="ItemsToCleanup"/>
-		</CreateItem>
-		<Delete Files="%(ItemsToCleanup.FullPath)" ContinueOnError="false" />
-		<MakeDir Directories="%(TestsDirectory.fullpath)" Condition="!Exists('%(TestsDirectory.fullpath)')" />
-		<CreateProperty Value="@(AssembliesToTest ->'/testcontainer:&quot;%(fullpath)&quot;',' ')">
-			<Output TaskParameter="Value" PropertyName="testList" />
-		</CreateProperty>
-		<Exec Command="&quot;$(MSTestPath)mstest.exe&quot; $(testList) /resultsfile:&quot;%(TestsDirectory.fullpath)\$(MSTestOutputFileName)&quot;" WorkingDirectory="$(SourceDir)" ContinueOnError="false" />
+		<xunit Assemblies="@(UnitTestAssemblies)" Html="$(UnitTestHtmlReportPath)" />
 	</Target>
 
 	<Target Name="UpdateVersion"
@@ -128,10 +118,6 @@
         XmlFileName="Package.nuspec"
         XPath="package/metadata/version"
         Value="$(VersionInfoString)"/>
-		
-		<!--<GetAssemblyIdentity AssemblyFiles="$(MainAssemblyWithVersion)">
-			<Output TaskParameter="Assemblies" ItemName="MainAssemblyInfo"/>
-		</GetAssemblyIdentity>-->
 	</Target>
 
 
@@ -145,10 +131,6 @@
 		<ItemGroup>
 			<ZipOutputFiles Include="$(OutputFolderPath)\lib\**\*.*" />
 		</ItemGroup>
-
-		<!--<GetAssemblyIdentity AssemblyFiles="$(MainAssemblyWithVersion)">
-			<Output TaskParameter="Assemblies" ItemName="MainAssemblyInfo"/>
-		</GetAssemblyIdentity>-->
 
 		<Zip Files="@(ZipOutputFiles)"
          WorkingDirectory="$(OutputFolderPath)"
