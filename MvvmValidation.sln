@@ -23,8 +23,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Tests", "Mvv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormValidationExample.Silverlight", "Examples\FormValidationExample.Silverlight\FormValidationExample.Silverlight.csproj", "{3870EB67-7EF0-4645-B3C8-8D04477A82A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormValidationExample.Web", "Examples\FormValidationExample.Web\FormValidationExample.Web.csproj", "{C68B482B-9213-4D2A-9E4A-2913B894750A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormValidationExample", "Examples\FormValidationExample\FormValidationExample.csproj", "{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Portable", "MvvmValidation.Portable\MvvmValidation.Portable.csproj", "{6C8F3CB8-EA5F-4E72-B804-A10081DF47E5}"
@@ -87,16 +85,6 @@ Global
 		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|x86.ActiveCfg = Release|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C68B482B-9213-4D2A-9E4A-2913B894750A}.Release|x86.ActiveCfg = Release|Any CPU
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}.Debug|Mixed Platforms.Build.0 = Debug|x86
@@ -124,7 +112,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9D98F797-07E1-4936-9349-E874572DBCD1} = {1EC81A79-B894-4B22-B163-68FFDA3389FF}
 		{3870EB67-7EF0-4645-B3C8-8D04477A82A5} = {AD568145-6ABE-441A-B4F1-364204B15F3B}
-		{C68B482B-9213-4D2A-9E4A-2913B894750A} = {AD568145-6ABE-441A-B4F1-364204B15F3B}
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD} = {AD568145-6ABE-441A-B4F1-364204B15F3B}
 	EndGlobalSection
 EndGlobal
