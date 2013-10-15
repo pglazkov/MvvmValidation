@@ -86,7 +86,7 @@ namespace MvvmValidation
 						throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
 					}
 				}
-			});
+			}, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
 		}
 	}
 }
