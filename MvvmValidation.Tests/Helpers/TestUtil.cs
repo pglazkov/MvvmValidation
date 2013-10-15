@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Windows.Threading;
 using Xunit;
@@ -15,7 +16,15 @@ namespace MvvmValidation.Tests.Helpers
 			var frame = new DispatcherFrame();
 
 			// Set-up timer that will call Fail if the test is not completed in specified timeout
-			Observable.Timer(TimeSpan.FromMilliseconds(timeoutMilliseconds)).Subscribe(_ =>
+
+			TimeSpan timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
+
+			if (Debugger.IsAttached)
+			{
+				timeout = TimeSpan.FromDays(1);
+			}
+
+			Observable.Timer(timeout).Subscribe(_ =>
 			{
 				uiThreadDispatcher.BeginInvoke(new Action(() =>
 					{

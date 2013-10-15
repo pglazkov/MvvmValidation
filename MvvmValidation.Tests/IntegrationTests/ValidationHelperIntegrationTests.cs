@@ -396,6 +396,59 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[Fact]
+		public void ValidatedAsync_ExecutedInsideUIThreadTask_ValidationRunsInBackgroundThread()
+		{
+			// This test checks the situation described here:
+			// http://stackoverflow.com/questions/6800705/why-is-taskscheduler-current-the-default-taskscheduler
+			// In short: if a continuation of a task runs on the UI thread, then the tasks that you start using
+			// Task.Factory.StartNew will run also on the UI thread. This is unexpected an may cause a deadlock, or freezing UI.
+
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var validation = new ValidationHelper();
+
+				var dummy = new DummyViewModel();
+
+				int uiThreadId = Thread.CurrentThread.ManagedThreadId;
+				int validationThreadId = uiThreadId;
+				
+				validation.AddAsyncRule(() => dummy.Foo,
+					onCompleted =>
+					{
+						validationThreadId = Thread.CurrentThread.ManagedThreadId;
+
+						onCompleted(RuleResult.Valid());
+					});
+
+				// ACT
+
+				// Execute validation within a continuation of another task that runs on
+				// current synchronization context, so that the TaskScheduler.Current is set to the 
+				// UI context.
+				Task.Factory.StartNew(() => { }).ContinueWith(t =>
+				{
+					Task<ValidationResult> task = validation.ValidateAllAsync();
+
+					task.ContinueWith(result =>
+					{
+						// VERIFY
+
+						// Schedule the varification code with the dispatcher in order to take it
+						// out of the ContinueWith continuation. Otherwise the exceptions will be stored inside the task and 
+						// unit testing framework will not know about them.
+						uiThreadDispatcher.BeginInvoke(new Action(() =>
+						{
+							Assert.False(uiThreadId == validationThreadId, "Validation must be executed in a background thread, so that the UI thread is not blocked.");
+
+							completedAction();
+						}));
+					});
+				}, TaskScheduler.FromCurrentSynchronizationContext());
+			});
+		}
+
+		[Fact]
 		public void AddChildValidatable_AddsRuleThatExecutedValidationOnChild()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>

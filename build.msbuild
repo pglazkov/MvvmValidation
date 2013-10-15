@@ -7,7 +7,7 @@
 		<Major>1</Major>
 		<Minor>1</Minor>
 		<Patch>0</Patch>
-		<PreReleaseString>beta2</PreReleaseString>
+		<PreReleaseString>beta3</PreReleaseString>
 
 		<VersionInfoString Condition="$(PreReleaseString) != ''">$(Major).$(Minor).$(Patch)-$(PreReleaseString)</VersionInfoString>
 		<VersionInfoString Condition="$(PreReleaseString) == ''">$(Major).$(Minor).$(Patch)</VersionInfoString>
