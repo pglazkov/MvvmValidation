@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using MvvmValidation.Internal;
@@ -122,12 +123,12 @@ namespace MvvmValidation
 					var results = new List<ValidationResult>();
 
 					var syncEvent = new ManualResetEvent(false);
-					int[] numerOfThreadsNotYetCompleted = { 0 };
 
-					foreach (IValidatable item in items)
+					var itemsArray = items as IValidatable[] ?? items.ToArray();
+					int[] numerOfThreadsNotYetCompleted = { itemsArray.Length };
+
+					foreach (var item in itemsArray)
 					{
-						Interlocked.Increment(ref numerOfThreadsNotYetCompleted[0]);
-
 #if SILVERLIGHT_4
 						item.Validate(r =>
 						{
