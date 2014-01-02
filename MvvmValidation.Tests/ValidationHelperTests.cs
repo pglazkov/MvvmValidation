@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
 using Xunit;
 
@@ -460,6 +461,110 @@ namespace MvvmValidation.Tests
 		}
 
 		[Fact]
+		public void RemoveRule_ThisRuleHadValidationError_ErrorGetsRemovedAlso()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+
+			validation.AddRule(RuleResult.Valid);
+			var invalidRule = validation.AddRule(() => RuleResult.Invalid("error"));
+
+			var validationResult = validation.ValidateAll();
+
+			Assert.False(validationResult.IsValid);
+
+			// ACT
+			validation.RemoveRule(invalidRule);
+
+			validationResult = validation.GetResult();
+
+			// VERIFY
+			Assert.True(validationResult.IsValid);
+		}
+
+		[Fact]
+		public void RemoveRule_ThisRuleHadValidationError_ResultChangedEventIsFiredForCorrectTargetAndTargetIsValid()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+
+			validation.AddRule(RuleResult.Valid);
+			var invalidRule = validation.AddRule("test_target", () => RuleResult.Invalid("error"));
+
+			var validationResult = validation.ValidateAll();
+
+			Assert.False(validationResult.IsValid);
+
+			bool resultChangedEventFired = false;
+
+			validation.ResultChanged += (sender, args) =>
+			{
+				Assert.Equal("test_target", args.Target);
+				Assert.True(args.NewResult.IsValid);
+
+				resultChangedEventFired = true;
+			};
+
+			// ACT
+			validation.RemoveRule(invalidRule);
+
+			// VERIFY
+			Assert.True(resultChangedEventFired);
+		}
+
+		[Fact]
+		public void RemoveRule_ThereAreTwoFailedRules_RemoveOne_ResultChangedShouldBeFiredWithNewResultStillInvalid()
+		{
+			// ARRANGE
+			var dummy = new DummyViewModel();
+
+			var validation = new ValidationHelper();
+
+			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error2"));
+			var invalidRule = validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error"));
+
+			var validationResult = validation.ValidateAll();
+
+			Assert.False(validationResult.IsValid);
+
+			bool resultChangedEventFired = false;
+
+			validation.ResultChanged += (sender, args) =>
+			{
+				Assert.Equal(PropertyName.For(() => dummy.Foo), args.Target);
+				Assert.False(args.NewResult.IsValid);
+
+				resultChangedEventFired = true;
+			};
+
+			// ACT
+			validation.RemoveRule(invalidRule);
+
+			// VERIFY
+			Assert.True(resultChangedEventFired);
+		}
+
+		[Fact]
+		public void RemoveAllRules_HadTwoFailedRules_ErrorGetsRemovedAlso()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			validation.AddRule(() => RuleResult.Invalid("error1"));
+			validation.AddRule(() => RuleResult.Invalid("error2"));
+
+			var validationResult = validation.ValidateAll();
+
+			// ACT
+			validation.RemoveAllRules();
+
+			validationResult = validation.GetResult();
+
+			// VERIFY
+			Assert.True(validationResult.IsValid, "Validation should not produce any errors after all rules were removed.");
+		}
+
+
+		[Fact]
 		public void RemoveAllRules_HadTwoNegativeRulesRegistered_ValidationSucceds()
 		{
 			// ARRANGE
@@ -474,6 +579,32 @@ namespace MvvmValidation.Tests
 
 			// VERIFY
 			Assert.True(validationResult.IsValid, "Validation should not produce any errors after all rules were removed.");
+		}
+
+		[Fact]
+		public void RemoveAllRules_HadTwoNegativeRulesRegisteredForDifferentTargets_ResultChangedIsFiredForAllTargets()
+		{
+			// ARRANGE
+			var dummy = new DummyViewModel();
+
+			var validation = new ValidationHelper();
+			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error1"));
+			validation.AddRule(() => dummy.Bar, () => RuleResult.Invalid("error2"));
+
+			validation.ValidateAll();
+
+			int resultChangedFiredCount = 0;
+
+			validation.ResultChanged += (sender, args) =>
+			{
+				resultChangedFiredCount++;
+			};
+
+			// ACT
+			validation.RemoveAllRules();
+
+			// VERIFY
+			Assert.Equal(2, resultChangedFiredCount);
 		}
 	}
 }

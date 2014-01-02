@@ -311,9 +311,25 @@ namespace MvvmValidation
 
 			var typedRule = rule as ValidationRule;
 
-			Contract.Assert(typedRule != null);
+			Contract.Assert(typedRule != null, string.Format("Rule must be of type \"{0}\".", typeof(ValidationRule).FullName));
 
-			UnregisterValidationRule(typedRule);
+			lock (syncRoot)
+			{
+				UnregisterValidationRule(typedRule);
+
+				// Clear the results if any
+				foreach (var ruleResultsPair in ruleValidationResultMap)
+				{
+					bool removed = ruleResultsPair.Value.Remove(typedRule);
+
+					if (removed)
+					{
+						// Notify that validation result for the target has changed
+						NotifyResultChanged(ruleResultsPair.Key, GetResult(ruleResultsPair.Key), null, false);
+					}
+				}
+			}
+			
 		}
 
 		/// <summary>
@@ -321,7 +337,21 @@ namespace MvvmValidation
 		/// </summary>
 		public void RemoveAllRules()
 		{
-			UnregisterAllValidationRules();
+			lock (syncRoot)
+			{
+				UnregisterAllValidationRules();
+
+				var targets = ruleValidationResultMap.Keys.ToArray();
+
+				// Clear the results
+				ruleValidationResultMap.Clear();
+
+				// Notify that validation result has changed
+				foreach (var target in targets)
+				{
+					NotifyResultChanged(target, ValidationResult.Valid, null, false);
+				}
+			}
 		}
 
 		private IAsyncValidationRule AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
