@@ -606,5 +606,68 @@ namespace MvvmValidation.Tests
 			// VERIFY
 			Assert.Equal(2, resultChangedFiredCount);
 		}
+
+		[Fact]
+		public void Reset_AllTargetsBecomeValidAgain()
+		{
+			// ARRANGE
+			var dummy = new DummyViewModel();
+
+			var validation = new ValidationHelper();
+			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error1"));
+			validation.AddRule(() => dummy.Bar, () => RuleResult.Invalid("error2"));
+
+			validation.ValidateAll();
+
+			// ACT
+			validation.Reset();
+
+			// VERIFY
+			Assert.True(validation.GetResult().IsValid);
+			Assert.True(validation.GetResult(() => dummy.Foo).IsValid);
+			Assert.True(validation.GetResult(() => dummy.Bar).IsValid);
+		}
+
+		[Fact]
+		public void Reset_ResultChangedFiresForInvalidTargets()
+		{
+			// ARRANGE
+			var dummy = new DummyViewModel();
+
+			var validation = new ValidationHelper();
+			validation.AddRule(RuleResult.Valid);
+			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error1"));
+			validation.AddRule(() => dummy.Bar, () => RuleResult.Invalid("error2"));
+
+			validation.ValidateAll();
+
+			bool eventFiredForFoo = false;
+			bool evernFiredForBar = false;
+
+			validation.ResultChanged += (sender, args) =>
+			{
+				if (Equals(args.Target, PropertyName.For(() => dummy.Foo)))
+				{
+					eventFiredForFoo = true;
+				}
+				else if (Equals(args.Target, PropertyName.For(() => dummy.Bar)))
+				{
+					evernFiredForBar = true;
+				}
+				else
+				{
+					Assert.False(true, "ResultChanged event fired for an unexpected target.");
+				}
+
+				Assert.True(args.NewResult.IsValid);
+			};
+
+			// ACT
+			validation.Reset();
+
+			// VERIFY
+			Assert.True(eventFiredForFoo);
+			Assert.True(evernFiredForBar);
+		}
 	}
 }
