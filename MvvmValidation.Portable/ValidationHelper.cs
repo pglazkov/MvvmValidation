@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -319,7 +320,7 @@ namespace MvvmValidation
 
 			var typedRule = rule as ValidationRule;
 
-			Contract.Assert(typedRule != null, string.Format("Rule must be of type \"{0}\".", typeof(ValidationRule).FullName));
+			Contract.Assert(typedRule != null, string.Format(CultureInfo.InvariantCulture, "Rule must be of type \"{0}\".", typeof(ValidationRule).FullName));
 
 			lock (syncRoot)
 			{
