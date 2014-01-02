@@ -55,7 +55,7 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
 
-			if (isValidationSuspanded)
+			if (isValidationSuspended)
 			{
 				return Task.Factory.StartNew(() => ValidationResult.Valid);
 			}
