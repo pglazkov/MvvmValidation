@@ -28,7 +28,7 @@ namespace MvvmValidation
 			new Dictionary<object, IDictionary<ValidationRule, RuleResult>>();
 
 		private readonly object syncRoot = new object();
-		private bool isValidationSuspanded;
+		private bool isValidationSuspended;
 
 		#endregion
 
@@ -54,6 +54,14 @@ namespace MvvmValidation
 		/// If a rule did not complete in this timeout, then an exception will be thrown.
 		/// </summary>
 		public TimeSpan AsyncRuleExecutionTimeout { get; set; }
+
+		/// <summary>
+		/// Indicates whether the validation is currently suspended using the <see cref="SuppressValidation"/> method.
+		/// </summary>
+		public bool IsValidationSuspended
+		{
+			get { return isValidationSuspended; }
+		}
 
 		#endregion
 
@@ -539,7 +547,7 @@ namespace MvvmValidation
 
 			lock (syncRoot)
 			{
-				if (isValidationSuspanded)
+				if (isValidationSuspended)
 				{
 					return ValidationResult.Valid;
 				}
@@ -768,9 +776,9 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<IDisposable>() != null);
 
-			isValidationSuspanded = true;
+			isValidationSuspended = true;
 
-			return new DelegateDisposable(() => { isValidationSuspanded = false; });
+			return new DelegateDisposable(() => { isValidationSuspended = false; });
 		}
 
 		#endregion
