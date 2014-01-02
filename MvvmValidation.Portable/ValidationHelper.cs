@@ -782,6 +782,30 @@ namespace MvvmValidation
 			return new DelegateDisposable(() => { isValidationSuspended = false; });
 		}
 
+		/// <summary>
+		/// Resets the validation state. If there were any broken rules 
+		/// then the targets for those rules will become valid again and the <see cref="ResultChanged"/> event will be rised.
+		/// </summary>
+		public void Reset()
+		{
+			lock (syncRoot)
+			{
+				var targets = ruleValidationResultMap.Keys.ToArray();
+
+				foreach (var target in targets)
+				{
+					var resultForTarget = GetResultInternal(target);
+
+					ruleValidationResultMap.Remove(target);
+
+					if (!resultForTarget.IsValid)
+					{
+						NotifyResultChanged(target, ValidationResult.Valid, null, false);
+					}
+				}
+			}
+		}
+
 		#endregion
 	}
 }
