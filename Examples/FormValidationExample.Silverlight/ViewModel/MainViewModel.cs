@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -134,18 +135,13 @@ namespace FormValidationExample.ViewModel
 			Validator.AddRequiredRule(() => UserName, "User Name is required");
 
 			Validator.AddAsyncRule(() => UserName,
-			                       (Action<RuleResult> onCompleted) =>
-			                       {
-			                       	var asyncOperation = UserRegistrationService.IsUserNameAvailable(UserName);
+				async () =>
+				{
+					var isAvailable = await UserRegistrationService.IsUserNameAvailable(UserName).ToTask();
 
-			                       	asyncOperation.Subscribe(
-			                       		isAvailable =>
-			                       		{
-			                       			var ruleResult = RuleResult.Assert(isAvailable, string.Format("User Name {0} is taken. Please choose a different one.", UserName));
-
-			                       			onCompleted(ruleResult);
-			                       		});
-			                       });
+					return RuleResult.Assert(isAvailable,
+						string.Format("User Name {0} is taken. Please choose a different one.", UserName));
+				});
 
 			Validator.AddRequiredRule(() => FirstName, "First Name is required");
 
