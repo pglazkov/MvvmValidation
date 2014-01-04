@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
+using System.Threading.Tasks;
 using MvvmValidation.Internal;
 
 namespace MvvmValidation
@@ -62,7 +63,7 @@ namespace MvvmValidation
 
 			Func<IValidatable> getter = childValidatableGetter.Compile();
 
-			return validator.AddAsyncRule(PropertyName.For(childValidatableGetter), (Action<RuleResult> onCompleted) =>
+			return validator.AddAsyncRule(PropertyName.For(childValidatableGetter), () =>
 			{
 				IValidatable validatable = getter();
 
@@ -72,7 +73,7 @@ namespace MvvmValidation
 					validatable.Validate(result =>
 					{
 #else
-                    validatable.Validate().ContinueWith(r =>
+                    return validatable.Validate().ContinueWith(r =>
                     {
                         ValidationResult result = r.Result;
 #endif
@@ -83,13 +84,11 @@ namespace MvvmValidation
 							ruleResult.AddError(error.ErrorText);
 						}
 
-						onCompleted(ruleResult);
+						return ruleResult;
 					});
 				}
-				else
-				{
-					onCompleted(RuleResult.Valid());
-				}
+
+				return Task.Factory.StartNew(() => RuleResult.Valid());
 			});
 		}
 
@@ -109,11 +108,16 @@ namespace MvvmValidation
 
 			Func<IEnumerable<IValidatable>> getter = validatableCollectionGetter.Compile();
 
-			return validator.AddAsyncRule(PropertyName.For(validatableCollectionGetter), (Action<RuleResult> onCompleted) =>
+			return validator.AddAsyncRule(PropertyName.For(validatableCollectionGetter), () =>
 			{
 				IEnumerable<IValidatable> items = getter();
 
-				if (items != null)
+				if (items == null)
+				{
+					return Task.Factory.StartNew(() => RuleResult.Valid());
+				}
+
+				return Task.Factory.StartNew(() =>
 				{
 					var result = new RuleResult();
 
@@ -134,10 +138,10 @@ namespace MvvmValidation
 						{
 							Exception ex = null;
 #else
-                        item.Validate().ContinueWith(tr =>
-                        {
-                            ValidationResult r = tr.Result;
-                            AggregateException ex = tr.Exception;
+						item.Validate().ContinueWith(tr =>
+						{
+							ValidationResult r = tr.Result;
+							AggregateException ex = tr.Exception;
 #endif
 							lock (results)
 							{
@@ -171,12 +175,9 @@ namespace MvvmValidation
 						}
 					}
 
-					onCompleted(result);
-				}
-				else
-				{
-					onCompleted(RuleResult.Valid());
-				}
+					return result;
+				});
+				
 			});
 		}
 	}
