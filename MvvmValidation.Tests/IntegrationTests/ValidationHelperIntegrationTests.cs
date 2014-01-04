@@ -785,6 +785,21 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 			});
 		}
+
+		[Fact]
+		public async Task ValidateAsync_AsyncRuleRegisteredWithNewSyntax_RuleIsExecuted()
+		{
+			// ARRANGE
+			var validator = new ValidationHelper();
+
+			validator.AddAsyncRule(async () => await Task.Factory.StartNew(() => RuleResult.Invalid("error")));
+
+			// ACT
+			var result = await validator.ValidateAllAsync();
+
+			// VERIFY
+			Assert.False(result.IsValid);
+		}
 	}
 	// ReSharper restore InconsistentNaming
 }

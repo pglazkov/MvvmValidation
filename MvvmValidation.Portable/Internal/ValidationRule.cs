@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace MvvmValidation.Internal
 {
 	internal class ValidationRule : IAsyncValidationRule
 	{
 		public ValidationRule(IValidationTarget target, Func<RuleResult> validateDelegate,
-		                      AsyncRuleValidateAction asyncValidateAction)
+							  Func<Task<RuleResult>> asyncValidateAction)
 		{
 			Contract.Requires(target != null);
 			Contract.Requires(validateDelegate != null || asyncValidateAction != null);
 
 			Target = target;
 			ValidateDelegate = validateDelegate;
-			AsyncValidateAction = asyncValidateAction ?? (completed => completed(ValidateDelegate()));
+			AsyncValidateAction = asyncValidateAction ?? (() => Task.Factory.StartNew(() => ValidateDelegate()));
 		}
 
-		private AsyncRuleValidateAction AsyncValidateAction { get; set; }
+		private Func<Task<RuleResult>> AsyncValidateAction { get; set; }
 		private Func<RuleResult> ValidateDelegate { get; set; }
 
 		public bool SupportsSyncValidation
@@ -42,22 +42,9 @@ namespace MvvmValidation.Internal
 			return result;
 		}
 
-		public void EvaluateAsync(Action<RuleResult> completed)
+		public Task<RuleResult> EvaluateAsync()
 		{
-			Contract.Requires(completed != null);
-
-			if (AsyncValidateAction != null)
-			{
-				AsyncValidateAction(completed);
-			}
-			else
-			{
-				ThreadPool.QueueUserWorkItem(_ =>
-				{
-					RuleResult result = Evaluate();
-					completed(result);
-				});
-			}
+			return AsyncValidateAction();
 		}
 	}
 }

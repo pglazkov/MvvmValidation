@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
+using System.Threading.Tasks;
 using MvvmValidation.Internal;
 
 namespace MvvmValidation
@@ -185,17 +186,15 @@ namespace MvvmValidation
 			return rule;
 		}
 
+		#region Async Rules
+
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates the <paramref name="target"/> object.
 		/// </summary>
 		/// <param name="target">The validation target (object that is being validated by <paramref name="validateAction"/>).</param>
-		/// <param name="validateAction">
-		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
-		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
-		/// a collection of errors (in not passed).
-		/// </param>
+		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
-		public IAsyncValidationRule AddAsyncRule(object target, AsyncRuleValidateAction validateAction)
+		public IAsyncValidationRule AddAsyncRule(object target, Func<Task<RuleResult>> validateAction)
 		{
 			Contract.Requires(target != null);
 			Contract.Requires(validateAction != null);
@@ -208,19 +207,127 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds an asynchronious validation rule.
 		/// </summary>
-		/// <param name="validateAction">
-		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
-		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
-		/// a collection of errors (in not passed).
-		/// </param>
+		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
-		public IAsyncValidationRule AddAsyncRule(AsyncRuleValidateAction validateAction)
+		public IAsyncValidationRule AddAsyncRule(Func<Task<RuleResult>> validateAction)
 		{
 			Contract.Requires(validateAction != null);
 
 			var rule = AddRuleCore(new UndefinedValidationTarget(), null, validateAction);
 
 			return rule;
+		}
+
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
+		/// </summary>
+		/// <param name="propertyExpression">The target property expression. Example: AddAsyncRule(() => MyProperty, ...).</param>
+		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
+		/// <example>
+		/// <code>
+		/// AddRule(() => Foo, 
+		///			() => 
+		///         {
+		///				return ValidationServiceFacade.ValidateFooAsync(Foo)
+		///                 .ContinueWith(t => return RuleResult.Assert(t.Result.IsValid, "Foo must be greater than 10"));
+		///			})
+		/// </code>
+		/// </example>
+		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> propertyExpression, Func<Task<RuleResult>> validateAction)
+		{
+			Contract.Requires(propertyExpression != null);
+			Contract.Requires(validateAction != null);
+
+			var rule = AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
+
+			return rule;
+		}
+
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates two dependent properties.
+		/// </summary>
+		/// <param name="property1Expression">The first target property expression. Example: AddRule(() => MyProperty, ...).</param>
+		/// <param name="property2Expression">The second target property expression. Example: AddRule(..., () => MyProperty, ...).</param>
+		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
+		/// <example>
+		/// <code>
+		/// AddRule(() => Foo, () => Bar
+		///			() => 
+		///         {
+		///				return ValidationServiceFacade.ValidateFooAndBar(Foo, Bar)
+		///                       .ContinueWith(t => RuleResult.Assert(t.Result.IsValid, "Foo must be greater than 10"));
+		///			})
+		/// </code>
+		/// </example>
+		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
+												 Func<Task<RuleResult>> validateAction)
+		{
+			Contract.Requires(property1Expression != null);
+			Contract.Requires(property2Expression != null);
+			Contract.Requires(validateAction != null);
+
+			var rule = AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
+
+			return rule;
+		}
+
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates a collection of dependent properties.
+		/// </summary>
+		/// <param name="properties">The collection of target property expressions. Example: AddAsyncRule(new [] { () => MyProperty1, () => MyProperty2, () => MyProperty3 }, ...).</param>
+		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
+		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public IAsyncValidationRule AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, Func<Task<RuleResult>> validateAction)
+		{
+			Contract.Requires(properties != null);
+			Contract.Requires(properties.Any());
+			Contract.Requires(validateAction != null);
+
+			IValidationTarget target = CreatePropertyValidationTarget(properties);
+
+			var rule = AddRuleCore(target, null, validateAction);
+
+			return rule;
+		}
+
+		#endregion
+
+		#region Obsolete
+
+		/// <summary>
+		/// Adds an asynchronious validation rule that validates the <paramref name="target"/> object.
+		/// </summary>
+		/// <param name="target">The validation target (object that is being validated by <paramref name="validateAction"/>).</param>
+		/// <param name="validateAction">
+		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
+		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
+		[Obsolete("Use the overload that takes Func<Task<RuleResult>> as a second parameter instead.")]
+		public IAsyncValidationRule AddAsyncRule(object target, AsyncRuleValidateAction validateAction)
+		{
+			return AddAsyncRule(target, validateAction.ToTaskFunc());
+		}
+
+		/// <summary>
+		/// Adds an asynchronious validation rule.
+		/// </summary>
+		/// <param name="validateAction">
+		/// The validation delegate - a function that performs asyncrhonious validation and calls a continuation callback with an instance 
+		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
+		/// a collection of errors (in not passed).
+		/// </param>
+		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
+		[Obsolete("Use the overload that takes Func<Task<RuleResult>> as a parameter instead.")]
+		public IAsyncValidationRule AddAsyncRule(AsyncRuleValidateAction validateAction)
+		{
+			return AddAsyncRule(validateAction.ToTaskFunc());
 		}
 
 		/// <summary>
@@ -243,14 +350,11 @@ namespace MvvmValidation
 		/// </example>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> propertyExpression, AsyncRuleValidateAction validateAction)
+		[Obsolete("Use the overload that takes Func<Task<RuleResult>> as a second parameter instead.")]
+		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> propertyExpression,
+			AsyncRuleValidateAction validateAction)
 		{
-			Contract.Requires(propertyExpression != null);
-			Contract.Requires(validateAction != null);
-
-			var rule = AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
-
-			return rule;
+			return AddAsyncRule(propertyExpression, validateAction.ToTaskFunc());
 		}
 
 		/// <summary>
@@ -274,16 +378,12 @@ namespace MvvmValidation
 		/// </example>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> property1Expression, Expression<Func<object>> property2Expression,
-												 AsyncRuleValidateAction validateAction)
+		[Obsolete("Use the overload that takes Func<Task<RuleResult>> as a third parameter instead.")]
+		public IAsyncValidationRule AddAsyncRule(Expression<Func<object>> property1Expression,
+			Expression<Func<object>> property2Expression,
+			AsyncRuleValidateAction validateAction)
 		{
-			Contract.Requires(property1Expression != null);
-			Contract.Requires(property2Expression != null);
-			Contract.Requires(validateAction != null);
-
-			var rule = AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
-
-			return rule;
+			return AddAsyncRule(property1Expression, property2Expression, validateAction.ToTaskFunc());
 		}
 
 		/// <summary>
@@ -297,19 +397,15 @@ namespace MvvmValidation
 		/// </param>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IAsyncValidationRule AddAsyncRule(IEnumerable<Expression<Func<object>>> properties, AsyncRuleValidateAction validateAction)
+		[Obsolete("Use the overload that takes Func<Task<RuleResult>> as a second parameter instead.")]
+		public IAsyncValidationRule AddAsyncRule(IEnumerable<Expression<Func<object>>> properties,
+			AsyncRuleValidateAction validateAction)
 		{
-			Contract.Requires(properties != null);
-			Contract.Requires(properties.Any());
-			Contract.Requires(validateAction != null);
-
-			IValidationTarget target = CreatePropertyValidationTarget(properties);
-
-			var rule = AddRuleCore(target, null, validateAction);
-
-			return rule;
+			return AddAsyncRule(properties, validateAction.ToTaskFunc());
 		}
 
+		#endregion
+		
 		/// <summary>
 		/// Removes the specified <paramref name="rule"/>.
 		/// </summary>
@@ -364,7 +460,7 @@ namespace MvvmValidation
 		}
 
 		private IAsyncValidationRule AddRuleCore(IValidationTarget target, Func<RuleResult> validateDelegate,
-												 AsyncRuleValidateAction asyncValidateAction)
+												 Func<Task<RuleResult>> asyncValidateAction)
 		{
 			var rule = new ValidationRule(target, validateDelegate, asyncValidateAction);
 
@@ -625,9 +721,9 @@ namespace MvvmValidation
 			{
 				var completedEvent = new ManualResetEvent(false);
 
-				rule.EvaluateAsync(r =>
+				rule.EvaluateAsync().ContinueWith(t =>
 				{
-					result = r;
+					result = t.Result;
 					completedEvent.Set();
 				});
 
