@@ -121,6 +121,7 @@
     <Compile Include="AsyncRuleValidateAction.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IAsyncValidationRule.cs" />
+    <Compile Include="Internal\Annotations.cs" />
     <Compile Include="Internal\CollectionUtils.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />
     <Compile Include="Internal\GenericValidationTarget.cs" />

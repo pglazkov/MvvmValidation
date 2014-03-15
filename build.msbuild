@@ -4,10 +4,10 @@
 	<UsingTask AssemblyFile=".\packages\xunit.2.0.0-alpha-build1611\lib\net45\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
 	
 	<PropertyGroup>
-		<Major>1</Major>
-		<Minor>1</Minor>
+		<Major>2</Major>
+		<Minor>0</Minor>
 		<Patch>0</Patch>
-		<PreReleaseString>beta4</PreReleaseString>
+		<PreReleaseString></PreReleaseString>
 
 		<VersionInfoString Condition="$(PreReleaseString) != ''">$(Major).$(Minor).$(Patch)-$(PreReleaseString)</VersionInfoString>
 		<VersionInfoString Condition="$(PreReleaseString) == ''">$(Major).$(Minor).$(Patch)</VersionInfoString>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using MvvmValidation.Internal;
 
 namespace MvvmValidation
@@ -17,8 +18,8 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="propertyPathExpression">Expression for the property to validate. Example: ValidateAsync(() => MyProperty, ...).</param>
 		/// <returns>Task that represents the validation operation.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public Task<ValidationResult> ValidateAsync(Expression<Func<object>> propertyPathExpression)
+		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public Task<ValidationResult> ValidateAsync([NotNull] Expression<Func<object>> propertyPathExpression)
 		{
 			Contract.Requires(propertyPathExpression != null);
 			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
@@ -32,7 +33,8 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="target">The target object to validate.</param>
 		/// <returns>Task that represents the validation operation.</returns>
-		public Task<ValidationResult> ValidateAsync(object target)
+		[NotNull]
+		public Task<ValidationResult> ValidateAsync([NotNull] object target)
 		{
 			Contract.Requires(target != null);
 			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
@@ -44,6 +46,7 @@ namespace MvvmValidation
 		/// Executes validation using all validation rules asynchronously.
 		/// </summary>
 		/// <returns>Task that represents the validation operation.</returns>
+		[NotNull]
 		public Task<ValidationResult> ValidateAllAsync()
 		{
 			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
@@ -53,8 +56,6 @@ namespace MvvmValidation
 
 		private Task<ValidationResult> ValidateInternalAsync(object target)
 		{
-			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
-
 			if (isValidationSuspended)
 			{
 				return Task.Factory.StartNew(() => ValidationResult.Valid);
@@ -65,8 +66,6 @@ namespace MvvmValidation
 
 		private Task<ValidationResult> ExecuteValidationRulesAsync(object target)
 		{
-			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
-
 			var syncContext = SynchronizationContext.Current;
 
 			return Task.Factory.StartNew(() =>

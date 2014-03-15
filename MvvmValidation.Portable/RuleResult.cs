@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
+using JetBrains.Annotations;
 using MvvmValidation.Internal;
 
 namespace MvvmValidation
@@ -20,8 +20,12 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="error">The error text that describes why this rule is invalid.</param>
 		/// <returns>An instance of <see cref="RuleResult"/> that represents an invalid result.</returns>
-		public static RuleResult Invalid(string error)
+		[NotNull]
+		public static RuleResult Invalid([NotNull] string error)
 		{
+			Contract.Requires(!string.IsNullOrEmpty(error));
+			Contract.Ensures(Contract.Result<RuleResult>() != null);
+
 			return new RuleResult(error);
 		}
 
@@ -29,8 +33,11 @@ namespace MvvmValidation
 		/// Creates a "Valid" result.
 		/// </summary>
 		/// <returns>An instance of <see cref="RuleResult"/> that represents a valid outcome of the rule.</returns>
+		[NotNull]
 		public static RuleResult Valid()
 		{
+			Contract.Ensures(Contract.Result<RuleResult>() != null);
+
 			return new RuleResult();
 		}
 
@@ -41,8 +48,12 @@ namespace MvvmValidation
 		/// <param name="condition">The assertion.</param>
 		/// <param name="errorMessage">The error message in case if the <paramref name="condition"/> is not <c>true</c>.</param>
 		/// <returns>An instance of <see cref="RuleResult"/> that represents the result of the assertion.</returns>
-		public static RuleResult Assert(bool condition, string errorMessage)
+		[NotNull]
+		public static RuleResult Assert(bool condition, [NotNull] string errorMessage)
 		{
+			Contract.Requires(!string.IsNullOrEmpty(errorMessage));
+			Contract.Ensures(Contract.Result<RuleResult>() != null);
+
 			if (!condition)
 			{
 				return Invalid(errorMessage);
@@ -85,16 +96,22 @@ namespace MvvmValidation
 		/// <summary>
 		/// Gets the error messages in case if the target is invalid according to this validation rule.
 		/// </summary>
+		[NotNull]
 		public IEnumerable<string> Errors
 		{
-			get { return errors; }
+			get
+			{
+				Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
+
+				return errors;
+			}
 		}
 
 		/// <summary>
 		/// Adds an error to the result.
 		/// </summary>
 		/// <param name="error">The error message to add.</param>
-		public void AddError(string error)
+		public void AddError([NotNull] string error)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(error));
 

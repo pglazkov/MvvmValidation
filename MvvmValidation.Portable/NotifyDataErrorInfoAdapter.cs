@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -16,7 +17,7 @@ namespace MvvmValidation
 		/// Initializes a new instance of the <see cref="NotifyDataErrorInfoAdapter"/> class.
 		/// </summary>
 		/// <param name="validator">The adaptee.</param>
-		public NotifyDataErrorInfoAdapter(ValidationHelper validator)
+		public NotifyDataErrorInfoAdapter([NotNull] ValidationHelper validator)
 			: this(validator, SynchronizationContext.Current)
 		{
 		}
@@ -26,7 +27,7 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="validator">The adaptee.</param>
 		/// <param name="errorsChangedNotificationContext">Synchronization context that should be used to raise the <see cref="ErrorsChanged"/> event on.</param>
-		public NotifyDataErrorInfoAdapter(ValidationHelper validator, SynchronizationContext errorsChangedNotificationContext)
+		public NotifyDataErrorInfoAdapter([NotNull] ValidationHelper validator, [CanBeNull] SynchronizationContext errorsChangedNotificationContext)
 		{
 			Contract.Requires(validator != null);
 

@@ -126,6 +126,9 @@
     <Compile Include="..\MvvmValidation.Portable\IAsyncValidationRule.cs">
       <Link>IAsyncValidationRule.cs</Link>
     </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\Annotations.cs">
+      <Link>Internal\Annotations.cs</Link>
+    </Compile>
     <Compile Include="..\MvvmValidation.Portable\Internal\CollectionUtils.cs">
       <Link>Internal\CollectionUtils.cs</Link>
     </Compile>

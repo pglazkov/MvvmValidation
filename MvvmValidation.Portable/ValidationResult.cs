@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -34,6 +35,7 @@ namespace MvvmValidation
 		/// <summary>
 		/// Gets the list of errors if any. If valid, returns an empty collection.
 		/// </summary>
+		[NotNull]
 		public ValidationErrorCollection ErrorList { get; private set; }
 
 		/// <summary>
@@ -47,6 +49,7 @@ namespace MvvmValidation
 		/// <summary>
 		/// Gets an error by <paramref name="target"/>, or <c>null</c> if valid.
 		/// </summary>
+		[CanBeNull]
 		public string this[object target]
 		{
 			get
@@ -81,7 +84,8 @@ namespace MvvmValidation
 		/// <returns>
 		/// A string that represents this validation result.
 		/// </returns>
-		public string ToString(IValidationResultFormatter formatter)
+		[NotNull]
+		public string ToString([NotNull] IValidationResultFormatter formatter)
 		{
 			Contract.Requires(formatter != null);
 
