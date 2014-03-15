@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -16,7 +17,7 @@ namespace MvvmValidation
 		/// Initializes a new instance of the <see cref="DataErrorInfoAdapter"/> class.
 		/// </summary>
 		/// <param name="validator">The adaptee.</param>
-		public DataErrorInfoAdapter(ValidationHelper validator)
+		public DataErrorInfoAdapter([NotNull] ValidationHelper validator)
 		{
 			Contract.Requires(validator != null);
 

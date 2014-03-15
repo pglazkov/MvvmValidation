@@ -1,6 +1,6 @@
-using System;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -16,11 +16,12 @@ namespace MvvmValidation
 		/// <param name="firstRuleResult">The first validation result to merge.</param>
 		/// <param name="secondRuleResult">The second validation result to merge.</param>
 		/// <returns>A new instance of <see cref="RuleResult"/> that represents the merged result (the result that contains errors from both results whithout duplicates).</returns>
-		public static RuleResult Combine(this RuleResult firstRuleResult,
-												   RuleResult secondRuleResult)
+		[NotNull]
+		public static RuleResult Combine([NotNull] this RuleResult firstRuleResult, [NotNull] RuleResult secondRuleResult)
 		{
 			Contract.Requires(firstRuleResult != null);
 			Contract.Requires(secondRuleResult != null);
+			Contract.Ensures(Contract.Result<RuleResult>() != null);
 
 			var result = new RuleResult();
 

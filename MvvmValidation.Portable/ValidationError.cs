@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -9,9 +10,10 @@ namespace MvvmValidation
 	/// </summary>
 	public class ValidationError : IEquatable<ValidationError>
 	{
-		internal ValidationError(string errorText, object target)
+		internal ValidationError([NotNull] string errorText, [NotNull] object target)
 		{
 			Contract.Requires(!string.IsNullOrEmpty(errorText));
+			Contract.Requires(target != null);
 
 			ErrorText = errorText;
 			Target = target;
@@ -20,11 +22,13 @@ namespace MvvmValidation
 		/// <summary>
 		/// Gets the error message.
 		/// </summary>
+		[NotNull]
 		public string ErrorText { get; private set; }
 
 		/// <summary>
 		/// Gets the target of the error (a property name or any other arbitrary object).
 		/// </summary>
+		[NotNull]
 		public object Target { get; private set; }
 
 		#region IEquatable<ValidationError> Members
@@ -85,8 +89,8 @@ namespace MvvmValidation
 		{
 			unchecked
 			{
-				int result = (ErrorText != null ? ErrorText.GetHashCode() : 0);
-				result = (result * 397) ^ (Target != null ? Target.GetHashCode() : 0);
+				int result = ErrorText.GetHashCode();
+				result = (result * 397) ^ Target.GetHashCode();
 				result = (result * 397);
 				return result;
 			}

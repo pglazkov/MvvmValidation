@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -16,7 +17,7 @@ namespace MvvmValidation
 		/// <param name="onCompleted">Callback to execute when the asynchronous validation is completed. The callback will be executed on the UI thread.</param>
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		[Obsolete("Use method that returns Task<ValidationResult> instead.")]
-		public void ValidateAsync(Expression<Func<object>> propertyPathExpression, Action<ValidationResult> onCompleted)
+		public void ValidateAsync([NotNull] Expression<Func<object>> propertyPathExpression, Action<ValidationResult> onCompleted)
 		{
 			Contract.Requires(propertyPathExpression != null);
 
@@ -30,7 +31,7 @@ namespace MvvmValidation
 		/// <param name="target">The target object to validate.</param>
 		/// <param name="onCompleted">Callback to execute when the asynchronous validation is completed. The callback will be executed on the UI thread.</param>
 		[Obsolete("Use method that returns Task<ValidationResult> instead.")]
-		public void ValidateAsync(object target, Action<ValidationResult> onCompleted)
+		public void ValidateAsync([NotNull] object target, Action<ValidationResult> onCompleted)
 		{
 			Contract.Requires(target != null);
 

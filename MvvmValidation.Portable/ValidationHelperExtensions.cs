@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using MvvmValidation.Internal;
 
 namespace MvvmValidation
@@ -13,7 +14,7 @@ namespace MvvmValidation
 	/// <summary>
 	/// Contains extensions methods for <see cref="ValidationHelper"/>.
 	/// </summary>
-	public static partial class ValidationHelperExtensions
+	public static class ValidationHelperExtensions
 	{
 		/// <summary>
 		/// Adds a rule that checks that the property represented by <paramref name="propertyExpression"/> is not
@@ -23,12 +24,14 @@ namespace MvvmValidation
 		/// <param name="propertyExpression">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
 		/// <param name="errorMessage">Error message in case if the property is null or empty.</param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public static IValidationRule AddRequiredRule(this ValidationHelper validator, Expression<Func<object>> propertyExpression, string errorMessage)
+		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		public static IValidationRule AddRequiredRule([NotNull] this ValidationHelper validator,
+			[NotNull] Expression<Func<object>> propertyExpression, [NotNull] string errorMessage)
 		{
 			Contract.Requires(validator != null);
 			Contract.Requires(propertyExpression != null);
 			Contract.Requires(!string.IsNullOrEmpty(errorMessage));
+			Contract.Ensures(Contract.Result<IValidationRule>() != null);
 
 			Func<object> propertyGetter = propertyExpression.Compile();
 
@@ -54,12 +57,14 @@ namespace MvvmValidation
 		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
 		/// <param name="childValidatableGetter">Expression for getting the <see cref="IValidatable"/> object to add as child.</param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-		public static IAsyncValidationRule AddChildValidatable(this ValidationHelper validator, Expression<Func<IValidatable>> childValidatableGetter)
+		public static IAsyncValidationRule AddChildValidatable([NotNull] this ValidationHelper validator,
+			[NotNull] Expression<Func<IValidatable>> childValidatableGetter)
 		{
 			Contract.Requires(validator != null);
 			Contract.Requires(childValidatableGetter != null);
+			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
 
 			Func<IValidatable> getter = childValidatableGetter.Compile();
 
@@ -99,12 +104,14 @@ namespace MvvmValidation
 		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
 		/// <param name="validatableCollectionGetter">Expression for getting the collection of <see cref="IValidatable"/> objects to add as child items.</param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+		[NotNull, SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
 		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public static IAsyncValidationRule AddChildValidatableCollection(this ValidationHelper validator, Expression<Func<IEnumerable<IValidatable>>> validatableCollectionGetter)
+		public static IAsyncValidationRule AddChildValidatableCollection([NotNull] this ValidationHelper validator,
+			[NotNull] Expression<Func<IEnumerable<IValidatable>>> validatableCollectionGetter)
 		{
 			Contract.Requires(validator != null);
 			Contract.Requires(validatableCollectionGetter != null);
+			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
 
 			Func<IEnumerable<IValidatable>> getter = validatableCollectionGetter.Compile();
 

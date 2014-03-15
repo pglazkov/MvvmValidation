@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -19,11 +20,13 @@ namespace MvvmValidation
 		/// <summary>
 		/// Gets the target, for which the validation result has changed.
 		/// </summary>
+		[NotNull]
 		public object Target { get; private set; }
 
 		/// <summary>
 		/// Gets the new validation result.
 		/// </summary>
+		[NotNull]
 		public ValidationResult NewResult { get; private set; }
 	}
 }

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace MvvmValidation
 {
@@ -15,6 +16,7 @@ namespace MvvmValidation
 		/// Validates the object asyncrhonously.
 		/// </summary>
 		/// <returns>Task that represents the validation operation.</returns>
+		[NotNull]
 		Task<ValidationResult> Validate();
 	}
 
