@@ -669,5 +669,19 @@ namespace MvvmValidation.Tests
 			Assert.True(eventFiredForFoo);
 			Assert.True(evernFiredForBar);
 		}
+
+		[Fact]
+		public void Validate_ValidationResultIsValid_ToStringReturnsEmptyString()
+		{
+			// ARRANGE
+			var validation = new ValidationHelper();
+			validation.AddRule(RuleResult.Valid);
+
+			// ACT
+			var r = validation.ValidateAll();
+
+			// VERIFY
+			Assert.True(r.ToString() == string.Empty);
+		}
 	}
 }
