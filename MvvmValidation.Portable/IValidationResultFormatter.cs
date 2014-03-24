@@ -27,7 +27,7 @@ namespace MvvmValidation
 		public string Format(ValidationResult validationResult)
 		{
 			Contract.Requires(validationResult != null);
-			Contract.Ensures(!string.IsNullOrEmpty(Contract.Result<string>()));
+			Contract.Ensures(Contract.Result<string>() != null);
 
 			throw new NotImplementedException();
 		}
