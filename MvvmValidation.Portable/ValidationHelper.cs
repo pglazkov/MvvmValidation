@@ -435,15 +435,18 @@ namespace MvvmValidation
 			{
 				UnregisterValidationRule(typedRule);
 
-				// Clear the results if any
-				foreach (var ruleResultsPair in ruleValidationResultMap)
+				lock (ruleValidationResultMap)
 				{
-					bool removed = ruleResultsPair.Value.Remove(typedRule);
-
-					if (removed)
+					// Clear the results if any
+					foreach (var ruleResultsPair in ruleValidationResultMap)
 					{
-						// Notify that validation result for the target has changed
-						NotifyResultChanged(ruleResultsPair.Key, GetResult(ruleResultsPair.Key), null, false);
+						bool removed = ruleResultsPair.Value.Remove(typedRule);
+
+						if (removed)
+						{
+							// Notify that validation result for the target has changed
+							NotifyResultChanged(ruleResultsPair.Key, GetResult(ruleResultsPair.Key), null, false);
+						}
 					}
 				}
 			}
@@ -459,10 +462,15 @@ namespace MvvmValidation
 			{
 				UnregisterAllValidationRules();
 
-				var targets = ruleValidationResultMap.Keys.ToArray();
+				object[] targets;
 
-				// Clear the results
-				ruleValidationResultMap.Clear();
+				lock (ruleValidationResultMap)
+				{
+					targets = ruleValidationResultMap.Keys.ToArray();
+
+					// Clear the results
+					ruleValidationResultMap.Clear();
+				}
 
 				// Notify that validation result has changed
 				foreach (var target in targets)
@@ -572,10 +580,10 @@ namespace MvvmValidation
 
 		private ValidationResult GetResultInternal(object target)
 		{
-			lock (syncRoot)
-			{
-				ValidationResult result = ValidationResult.Valid;
+			ValidationResult result = ValidationResult.Valid;
 
+			lock (ruleValidationResultMap)
+			{
 				IDictionary<ValidationRule, RuleResult> ruleResultMap;
 
 				if (ruleValidationResultMap.TryGetValue(target, out ruleResultMap))
@@ -585,33 +593,31 @@ namespace MvvmValidation
 						result = result.Combine(new ValidationResult(target, ruleValidationResult.Errors));
 					}
 				}
-				return result;
 			}
+
+			return result;
 			
 		}
 
 		private ValidationResult GetResultInternal()
 		{
-			lock (syncRoot)
+			ValidationResult result = ValidationResult.Valid;
+
+			lock (ruleValidationResultMap)
 			{
-				ValidationResult result = ValidationResult.Valid;
-
-				lock (ruleValidationResultMap)
+				foreach (var ruleResultsMapPair in ruleValidationResultMap)
 				{
-					foreach (var ruleResultsMapPair in ruleValidationResultMap)
-					{
-						var ruleTarget = ruleResultsMapPair.Key;
-						var ruleResultsMap = ruleResultsMapPair.Value;
+					var ruleTarget = ruleResultsMapPair.Key;
+					var ruleResultsMap = ruleResultsMapPair.Value;
 
-						foreach (var validationResult in ruleResultsMap.Values)
-						{
-							result = result.Combine(new ValidationResult(ruleTarget, validationResult.Errors));
-						}
+					foreach (var validationResult in ruleResultsMap.Values)
+					{
+						result = result.Combine(new ValidationResult(ruleTarget, validationResult.Errors));
 					}
 				}
-				
-				return result;
 			}
+
+			return result;
 		}
 
 		#endregion
@@ -803,7 +809,10 @@ namespace MvvmValidation
 
 					if (!Equals(currentRuleResult, ruleResult))
 					{
-						targetRuleMap[rule] = ruleResult;
+						lock (ruleValidationResultMap)
+						{
+							targetRuleMap[rule] = ruleResult;
+						}
 
 						// Notify that validation result for the target has changed
 						NotifyResultChanged(ruleTarget, GetResult(ruleTarget), syncContext);
@@ -904,17 +913,20 @@ namespace MvvmValidation
 		{
 			lock (syncRoot)
 			{
-				var targets = ruleValidationResultMap.Keys.ToArray();
-
-				foreach (var target in targets)
+				lock (ruleValidationResultMap)
 				{
-					var resultForTarget = GetResultInternal(target);
+					var targets = ruleValidationResultMap.Keys.ToArray();
 
-					ruleValidationResultMap.Remove(target);
-
-					if (!resultForTarget.IsValid)
+					foreach (var target in targets)
 					{
-						NotifyResultChanged(target, ValidationResult.Valid, null, false);
+						var resultForTarget = GetResultInternal(target);
+
+						ruleValidationResultMap.Remove(target);
+
+						if (!resultForTarget.IsValid)
+						{
+							NotifyResultChanged(target, ValidationResult.Valid, null, false);
+						}
 					}
 				}
 			}
