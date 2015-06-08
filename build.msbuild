@@ -5,7 +5,7 @@
 	
 	<PropertyGroup>
 		<Major>2</Major>
-		<Minor>0</Minor>
+		<Minor>1</Minor>
 		<Patch>2</Patch>
 		<PreReleaseString></PreReleaseString>
 
@@ -19,7 +19,7 @@
 		<SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
 		<OutputFolderPath>$(SourceDir)Output</OutputFolderPath>
 		<VersionInfoPath>$(SourceDir)VersionInfo.cs</VersionInfoPath>
-		<MainAssemblyWithVersion>$(OutputFolderPath)\lib\portable-windows8+net40+sl5+windowsphone8\MvvmValidation.Portable.dll</MainAssemblyWithVersion>
+		<MainAssemblyWithVersion>$(OutputFolderPath)\lib\portable-win8+net45+sl5+wp8\MvvmValidation.dll</MainAssemblyWithVersion>
 		<NuGetPreRelaseVersionSuffix>-beta</NuGetPreRelaseVersionSuffix>
 		<UnitTestAssembliesPath>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssembliesPath>
 		<UnitTestHtmlReportPath>$(SourceDir)TestReport.html</UnitTestHtmlReportPath>
