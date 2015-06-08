@@ -122,14 +122,18 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IAsyncValidationRule.cs" />
     <Compile Include="Internal\Annotations.cs" />
+    <Compile Include="Internal\CallerInfoAttributes.cs" />
     <Compile Include="Internal\CollectionUtils.cs" />
+    <Compile Include="Internal\ContactExtensions.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />
     <Compile Include="Internal\GenericValidationTarget.cs" />
+    <Compile Include="Internal\Guard.cs" />
     <Compile Include="Internal\IValidationTarget.cs" />
     <Compile Include="Internal\IValidationTargetContract.cs" />
     <Compile Include="Internal\PropertyCollectionValidationTarget.cs" />
     <Compile Include="Internal\PropertyName.cs" />
     <Compile Include="Internal\PropertyValidationTarget.cs" />
+    <Compile Include="Internal\TaskEx.cs" />
     <Compile Include="Internal\UndefinedValidationTarget.cs" />
     <Compile Include="Internal\ValidationRule.cs" />
     <Compile Include="Internal\ValidationRuleCollection.cs" />
@@ -151,6 +155,7 @@
     <Compile Include="ValidationResult.cs" />
     <Compile Include="ValidationResultChangedEventArgs.cs" />
     <Compile Include="ValidationResultExtensions.cs" />
+    <Compile Include="ValidationScope.cs" />
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
@@ -159,8 +164,25 @@
     <None Include="..\Key.snk">
       <Link>Key.snk</Link>
     </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.IO">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\portable-net40+sl5+win8+wp8+wpa81\System.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\portable-net40+sl5+win8+wp8+wpa81\System.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks">
+      <HintPath>..\packages\Microsoft.Bcl.1.1.10\lib\portable-net40+sl5+win8+wp8+wpa81\System.Threading.Tasks.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
