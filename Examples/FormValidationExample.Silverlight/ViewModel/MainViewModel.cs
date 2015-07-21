@@ -15,9 +15,8 @@ namespace FormValidationExample.ViewModel
 	public class MainViewModel : ValidatableViewModelBase
 	{
 		private string email;
-		private string firstName;
+		private readonly NameInfo nameInfo = new NameInfo();
 		private bool? isValid;
-		private string lastName;
 		private string password;
 		private string passwordConfirmation;
 		private string userName;
@@ -55,10 +54,10 @@ namespace FormValidationExample.ViewModel
 
 		public string FirstName
 		{
-			get { return firstName; }
+			get { return nameInfo.FirstName; }
 			set
 			{
-				firstName = value;
+				nameInfo.FirstName = value;
 				RaisePropertyChanged("FirstName");
 				Validator.Validate(() => FirstName);
 			}
@@ -66,14 +65,14 @@ namespace FormValidationExample.ViewModel
 
 		public string LastName
 		{
-			get { return lastName; }
+			get { return nameInfo.LastName; }
 			set
 			{
-				lastName = value;
+				nameInfo.LastName = value;
 				RaisePropertyChanged("LastName");
 				Validator.Validate(() => LastName);
 			}
-		}
+ 		}
 
 		public string Email
 		{
