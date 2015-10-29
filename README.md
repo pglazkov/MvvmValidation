@@ -160,3 +160,8 @@ _INotifyDataErrorInfo_:
             remove { NotifyDataErrorInfoAdapter.ErrorsChanged -= value; }
         }
     }
+
+
+**For more examples download the source code and check out the example project.**
+
+![Sample UI Screenshot](/Examples/screenshot.png)
