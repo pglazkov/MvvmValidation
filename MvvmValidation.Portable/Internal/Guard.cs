@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
 
 namespace MvvmValidation.Internal
@@ -19,9 +19,6 @@ namespace MvvmValidation.Internal
 		/// </typeparam>
 		/// <param name="value">Value to check.</param>
 		/// <param name="argumentNameExpression">The expression for getting the argument name.</param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		/// <exception cref="ArgumentNullException">Expression resulted in a null value.</exception>
 		/// <example>
 		///     The following example shows how to validate that a
@@ -39,20 +36,16 @@ namespace MvvmValidation.Internal
 		/// </example>
 		[ContractArgumentValidator]
 		[ContractAnnotation("value:null => halt")]
-		public static void NotNull<TResult>(TResult value, Expression<Func<TResult>> argumentNameExpression,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+		public static void NotNull<TResult>(TResult value, Expression<Func<TResult>> argumentNameExpression)
 		{
 			if (ReferenceEquals(value, null))
 			{
 				string argName = GetArgName(argumentNameExpression);
-				string argumentNullMessage = string.Format("Value of argument \"{0}\" cannot be null.", argName);
-				string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath, callerLineNumber);
+				string argumentNullMessage = string.Format(CultureInfo.CurrentUICulture, "Value of argument \"{0}\" cannot be null.", argName);
 
 				BreakInDebuggerIfAttached();
 
-				throw new ArgumentNullException(argName, message);
+				throw new ArgumentNullException(argName, argumentNullMessage);
 			}
 			Contract.EndContractBlock();
 		}
@@ -62,27 +55,20 @@ namespace MvvmValidation.Internal
 		/// </summary>
 		/// <param name="value">Value to check.</param>
 		/// <param name="paramName">The argument name.</param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		/// <exception cref="ArgumentNullException">
 		///     <paramref name="value" /> is a null value.
 		/// </exception>
 		[ContractArgumentValidator]
 		[ContractAnnotation("value:null => halt")]
-		public static void NotNull<T>(T value, string paramName,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+		public static void NotNull<T>(T value, string paramName)
 		{
 			if (ReferenceEquals(value, null))
 			{
-				string argumentNullMessage = string.Format("Value of argument \"{0}\" cannot be null.", paramName);
-				string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath, callerLineNumber);
+				string argumentNullMessage = string.Format(CultureInfo.CurrentUICulture, "Value of argument \"{0}\" cannot be null.", paramName);
 
 				BreakInDebuggerIfAttached();
 
-				throw new ArgumentNullException(paramName, message);
+				throw new ArgumentNullException(paramName, argumentNullMessage);
 			}
 
 			Contract.EndContractBlock();
@@ -94,9 +80,6 @@ namespace MvvmValidation.Internal
 		/// </summary>
 		/// <param name="value">Value to check.</param>
 		/// <param name="argumentNameExpression">The expression for getting the argument name.</param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		/// <exception cref="ArgumentNullException">Expression resulted in a null value.</exception>
 		/// <exception cref="ArgumentException">Expression resulted in an empty string value.</exception>
 		/// <example>
@@ -113,25 +96,21 @@ namespace MvvmValidation.Internal
 		/// </example>
 		[ContractArgumentValidator]
 		[ContractAnnotation("value:null => halt")]
-		public static void NotNullOrEmpty(string value, Expression<Func<string>> argumentNameExpression,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+		public static void NotNullOrEmpty(string value, Expression<Func<string>> argumentNameExpression)
 		{
 			// ReSharper disable ExplicitCallerInfoArgument
-			NotNull(value, argumentNameExpression, callerMemberName, callerFilePath, callerLineNumber);
+			NotNull(value, argumentNameExpression);
 			// ReSharper restore ExplicitCallerInfoArgument
 
 			if (value.Length == 0)
 			{
 				string argName = GetArgName(argumentNameExpression);
 
-				string argumentNullMessage = string.Format("Value of argument \"{0}\" cannot be null or an empty string.", argName);
-				string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath, callerLineNumber);
+				string argumentNullMessage = string.Format(CultureInfo.CurrentUICulture, "Value of argument \"{0}\" cannot be null or an empty string.", argName);
 
 				BreakInDebuggerIfAttached();
 
-				throw new ArgumentException(message, argName);
+				throw new ArgumentException(argumentNullMessage, argName);
 			}
 
 			Contract.EndContractBlock();
@@ -143,30 +122,23 @@ namespace MvvmValidation.Internal
 		/// </summary>
 		/// <param name="value">The value to check.</param>
 		/// <param name="argumentName">The name of the argument that is being checked.</param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		/// <exception cref="ArgumentNullException">Value is a null value.</exception>
 		/// <exception cref="ArgumentException">Value is an empty string value.</exception>
 		[ContractArgumentValidator]
 		[ContractAnnotation("value:null => halt")]
-		public static void NotNullOrEmpty(string value, string argumentName,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+		public static void NotNullOrEmpty(string value, string argumentName)
 		{
 			// ReSharper disable ExplicitCallerInfoArgument
-			NotNull(value, argumentName, callerMemberName, callerFilePath, callerLineNumber);
+			NotNull(value, argumentName);
 			// ReSharper restore ExplicitCallerInfoArgument
 
 			if (value.Length == 0)
 			{
-				string argumentNullMessage = string.Format("Value of argument \"{0}\" cannot be null or an empty string.", argumentName);
-				string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath, callerLineNumber);
+				string argumentNullMessage = string.Format(CultureInfo.CurrentUICulture, "Value of argument \"{0}\" cannot be null or an empty string.", argumentName);
 
 				BreakInDebuggerIfAttached();
 
-				throw new ArgumentException(message, argumentName);
+				throw new ArgumentException(argumentNullMessage, argumentName);
 			}
 
 			Contract.EndContractBlock();
@@ -180,26 +152,17 @@ namespace MvvmValidation.Internal
 		/// <param name="message">
 		///     Message to include in the exception of the condition is <c>false</c>.
 		/// </param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		/// <exception cref="ArgumentNullException">Expression resulted in a null value.</exception>
 		[ContractArgumentValidator]
-		public static void Requires<TResult>(bool condition, Expression<Func<TResult>> argumentNameExpression, string message,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+		public static void Requires<TResult>(bool condition, Expression<Func<TResult>> argumentNameExpression, string message)
 		{
 			if (!condition)
 			{
 				string argName = GetArgName(argumentNameExpression);
 
-				string messageWithCallerInfo = FormatMessageWithCollerInfo(message, callerMemberName, callerFilePath,
-																		   callerLineNumber);
-
 				BreakInDebuggerIfAttached();
 
-				throw new ArgumentException(messageWithCallerInfo, argName);
+				throw new ArgumentException(message, argName);
 			}
 
 			Contract.EndContractBlock();
@@ -213,18 +176,12 @@ namespace MvvmValidation.Internal
 		/// <param name="message">
 		///     Message to include in the exception of the condition is <c>false</c>.
 		/// </param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		/// <exception cref="ArgumentOutOfRangeException">
 		///     <paramref name="condition" /> is <c>false</c>.
 		/// </exception>
 		[ContractArgumentValidator]
 		public static void NotOutOfRange<TResult>(bool condition, Expression<Func<TResult>> argumentNameExpression,
-			string message = null,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+			string message = null)
 		{
 			if (!condition)
 			{
@@ -232,15 +189,12 @@ namespace MvvmValidation.Internal
 
 				if (string.IsNullOrEmpty(message))
 				{
-					message = string.Format("Value of the \"{0}\" argument is out of range.", argName);
+					message = string.Format(CultureInfo.CurrentUICulture, "Value of the \"{0}\" argument is out of range.", argName);
 				}
-
-				string messageWithCallerInfo = FormatMessageWithCollerInfo(message, callerMemberName, callerFilePath,
-																		   callerLineNumber);
 
 				BreakInDebuggerIfAttached();
 
-				throw new ArgumentOutOfRangeException(argName, messageWithCallerInfo);
+				throw new ArgumentOutOfRangeException(argName, message);
 			}
 
 			Contract.EndContractBlock();
@@ -263,17 +217,11 @@ namespace MvvmValidation.Internal
 		/// </summary>
 		/// <param name="condition">The condition to assert.</param>
 		/// <param name="message">The message to show when the assertion fails.</param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		[ContractAnnotation("condition:false => halt")]
 		[Conditional("DEBUG")]
-		public static void DebugAssert(bool condition, [NotNull] string message,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+		public static void DebugAssert(bool condition, [NotNull] string message)
 		{
-			Assert(condition, message, callerMemberName, callerFilePath, callerLineNumber);
+			Assert(condition, message);
 		}
 
 		/// <summary>
@@ -281,14 +229,8 @@ namespace MvvmValidation.Internal
 		/// </summary>
 		/// <param name="condition">The condition to assert.</param>
 		/// <param name="message">The message to show when the assertion fails.</param>
-		/// <param name="callerMemberName">To be populated by the compiler.</param>
-		/// <param name="callerFilePath">To be populated by the compiler.</param>
-		/// <param name="callerLineNumber">To be populated by the compiler.</param>
 		[ContractAnnotation("condition:false => halt")]
-		public static void Assert(bool condition, [NotNull] string message,
-			[CallerMemberName] string callerMemberName = null,
-			[CallerFilePath] string callerFilePath = null,
-			[CallerLineNumber] int callerLineNumber = 0)
+		public static void Assert(bool condition, [NotNull] string message)
 		{
 			NotNullOrEmpty(message, "message");
 
@@ -299,36 +241,7 @@ namespace MvvmValidation.Internal
 
 			BreakInDebuggerIfAttached();
 
-			string formattedMessage = FormatMessageWithCollerInfo(message, callerMemberName, callerFilePath, callerLineNumber);
-
-			throw new InvalidOperationException(formattedMessage);
-		}
-
-		private static string FormatMessageWithCollerInfo(string message, string callerMemberName, string callerFilePath,
-			int callerLineNumber)
-		{
-			if (string.IsNullOrEmpty(callerMemberName) && string.IsNullOrEmpty(callerFilePath))
-			{
-				return message;
-			}
-
-			string result = message;
-
-			result = result + " [Member Name: ";
-
-			if (!string.IsNullOrEmpty(callerMemberName))
-			{
-				result = result + callerMemberName;
-			}
-
-			if (!string.IsNullOrEmpty(callerFilePath))
-			{
-				result = result + " at " + callerFilePath + " Line: " + callerLineNumber;
-			}
-
-			result = result + "]";
-
-			return result;
+			throw new InvalidOperationException(message);
 		}
 
 		[Conditional("DEBUG")]

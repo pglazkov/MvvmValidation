@@ -188,19 +188,5 @@ namespace MvvmValidation
 				
 			});
 		}
-
-		/// <summary>
-		/// Validates the property from which it is called.
-		/// </summary>
-		/// <param name="validationHelper">The validator instance.</param>
-		/// <param name="propertyName">The name of the property to validate (populated automatically by the compiler).</param>
-		/// <returns>The validation result.</returns>
-		public static ValidationResult ValidateThisProperty(this ValidationHelper validationHelper, [CallerMemberName] string propertyName = null)
-		{
-			Guard.NotNull(validationHelper, () => validationHelper);
-			Guard.NotNullOrEmpty(propertyName, () => propertyName);
-
-			return validationHelper.Validate(propertyName);
-		}
 	}
 }
