@@ -148,7 +148,6 @@
     <Compile Include="ValidationError.cs" />
     <Compile Include="ValidationErrorCollection.cs" />
     <Compile Include="ValidationException.cs" />
-    <Compile Include="ValidationHelper.Async.cs" />
     <Compile Include="ValidationHelper.cs" />
     <Compile Include="ValidationHelper.Obsolete.cs" />
     <Compile Include="ValidationHelperExtensions.cs" />

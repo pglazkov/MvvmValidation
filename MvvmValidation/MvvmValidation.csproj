@@ -198,9 +198,6 @@
     <Compile Include="..\MvvmValidation.Portable\ValidationException.cs">
       <Link>ValidationException.cs</Link>
     </Compile>
-    <Compile Include="..\MvvmValidation.Portable\ValidationHelper.Async.cs">
-      <Link>ValidationHelper.Async.cs</Link>
-    </Compile>
     <Compile Include="..\MvvmValidation.Portable\ValidationHelper.cs">
       <Link>ValidationHelper.cs</Link>
     </Compile>
