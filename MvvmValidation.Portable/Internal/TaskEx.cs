@@ -52,5 +52,14 @@ namespace MvvmValidation.Internal
 
 			return tcs.Task;
 		}
+
+		public static Task<T> FromResult<T>(T result)
+		{
+			var tcs = new TaskCompletionSource<T>();
+
+			tcs.TrySetResult(result);
+
+			return tcs.Task;
+		}
 	}
 }

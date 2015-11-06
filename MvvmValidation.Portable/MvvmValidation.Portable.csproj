@@ -126,6 +126,7 @@
     <Compile Include="Internal\CollectionUtils.cs" />
     <Compile Include="Internal\ContactExtensions.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />
+    <Compile Include="Internal\ExceptionUtils.cs" />
     <Compile Include="Internal\GenericValidationTarget.cs" />
     <Compile Include="Internal\Guard.cs" />
     <Compile Include="Internal\IValidationTarget.cs" />

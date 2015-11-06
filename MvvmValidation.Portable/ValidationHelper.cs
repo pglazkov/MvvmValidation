@@ -19,12 +19,6 @@ namespace MvvmValidation
 	/// </summary>
 	public partial class ValidationHelper
 	{
-		#region Constants
-
-		private static readonly TimeSpan DefaultAsyncRuleExecutionTimout = TimeSpan.FromSeconds(30);
-
-		#endregion
-
 		#region Fields
 
 		private readonly IDictionary<object, IDictionary<ValidationRule, RuleResult>> ruleValidationResultMap =
@@ -43,7 +37,6 @@ namespace MvvmValidation
 		public ValidationHelper()
 		{
 			ValidationRules = new ValidationRuleCollection();
-			AsyncRuleExecutionTimeout = DefaultAsyncRuleExecutionTimout;
 		}
 
 		#endregion
@@ -56,6 +49,7 @@ namespace MvvmValidation
 		/// Gets or sets a timeout that indicates how much time is allocated for an async rule to complete.
 		/// If a rule did not complete in this timeout, then an exception will be thrown.
 		/// </summary>
+		[Obsolete("This property has no effect anymore. The library always waits until the rule completes.")]
 		public TimeSpan AsyncRuleExecutionTimeout { get; set; }
 
 		/// <summary>
@@ -666,6 +660,8 @@ namespace MvvmValidation
 		{
 			Contract.Ensures(Contract.Result<ValidationResult>() != null);
 
+			ReadOnlyCollection<ValidationRule> rulesToExecute;
+
 			lock (syncRoot)
 			{
 				if (isValidationSuspended)
@@ -673,56 +669,101 @@ namespace MvvmValidation
 					return ValidationResult.Valid;
 				}
 
-				var rulesToExecute = GetRulesForTarget(target);
+				rulesToExecute = GetRulesForTarget(target);
 
 				if (rulesToExecute.Any(r => !r.SupportsSyncValidation))
 				{
 					throw new InvalidOperationException("There are asynchronous rules that cannot be executed synchronously. Please use ValidateAsync method to execute validation instead.");
 				}
+			}
 
-				try
-				{
-					ValidationResult validationResult = ExecuteValidationRules(rulesToExecute);
-					return validationResult;
-				}
-				catch (Exception ex)
-				{
-					throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
-				}
+			try
+			{
+				ValidationResult validationResult = ExecuteValidationRulesAsync(rulesToExecute).Result;
+				return validationResult;
+			}
+			catch (Exception ex)
+			{
+				throw new ValidationException("An exception occurred during validation. See inner exception for details.", ExceptionUtils.UnwrapException(ex));
 			}
 		}
 
-		private ValidationResult ExecuteValidationRules(IEnumerable<ValidationRule> rulesToExecute, SynchronizationContext syncContext = null)
+		private Task<ValidationResult> ExecuteValidationRulesAsync(IEnumerable<ValidationRule> rulesToExecute, SynchronizationContext syncContext = null)
 		{
+			syncContext = syncContext ?? SynchronizationContext.Current;
+
+			var resultTcs = new TaskCompletionSource<ValidationResult>();
 			var result = new ValidationResult();
-
 			var failedTargets = new HashSet<object>();
+			var rulesQueue = new Queue<ValidationRule>(rulesToExecute.ToArray());
 
-			foreach (ValidationRule validationRule in rulesToExecute)
+			Action executeRuleFromQueueRecursive = null;
+
+			executeRuleFromQueueRecursive = () =>
 			{
-				// Skip rule if the target is already invalid
-				if (failedTargets.Contains(validationRule.Target))
+				ExecuteNextRuleFromQueueAsync(rulesQueue, failedTargets, result, syncContext).ContinueWith(t =>
 				{
-					// Assume that the rule is valid at this point because we are not interested in this error until
-					// previous rule is fixed.
-					SaveRuleValidationResultAndNotifyIfNeeded(validationRule, RuleResult.Valid(), syncContext);
+					if (t.Exception != null)
+					{
+						resultTcs.TrySetException(t.Exception);
+						return;
+					}
 
-					continue;
-				}
+					if (t.IsCanceled)
+					{
+						resultTcs.TrySetCanceled();
+						return;
+					}
 
-				RuleResult ruleResult = ExecuteRuleCore(validationRule);
+					if (t.Result)
+					{
+						executeRuleFromQueueRecursive();
+						return;
+					}
 
-				SaveRuleValidationResultAndNotifyIfNeeded(validationRule, ruleResult, syncContext);
+					resultTcs.TrySetResult(result);
+				});
+			};
 
-				AddErrorsFromRuleResult(result, validationRule, ruleResult);
+			executeRuleFromQueueRecursive();
+
+			return resultTcs.Task;
+		}
+
+		private Task<bool> ExecuteNextRuleFromQueueAsync(Queue<ValidationRule> rulesQueue, ISet<object> failedTargets, ValidationResult validationResultAccumulator, SynchronizationContext syncContext)
+		{
+			if (rulesQueue.Count == 0)
+			{
+				return TaskEx.FromResult(false);
+			}
+
+			var rule = rulesQueue.Dequeue();
+
+			// Skip rule if the target is already invalid
+			if (failedTargets.Contains(rule.Target))
+			{
+				// Assume that the rule is valid at this point because we are not interested in this error until
+				// previous rule is fixed.
+				SaveRuleValidationResultAndNotifyIfNeeded(rule, RuleResult.Valid(), syncContext);
+
+				return TaskEx.FromResult(true);
+			}
+
+			return ExecuteRuleCoreAsync(rule).ContinueWith(t =>
+			{
+				RuleResult ruleResult = t.Result;
+
+				SaveRuleValidationResultAndNotifyIfNeeded(rule, ruleResult, syncContext);
+
+				AddErrorsFromRuleResult(validationResultAccumulator, rule, ruleResult);
 
 				if (!ruleResult.IsValid)
 				{
-					failedTargets.Add(validationRule.Target);
+					failedTargets.Add(rule.Target);
 				}
-			}
 
-			return result;
+				return true;
+			});
 		}
 
 		private ReadOnlyCollection<ValidationRule> GetRulesForTarget(object target)
@@ -737,33 +778,26 @@ namespace MvvmValidation
 			}
 		}
 
-		private RuleResult ExecuteRuleCore(ValidationRule rule)
+		private static Task<RuleResult> ExecuteRuleCoreAsync(ValidationRule rule)
 		{
-			RuleResult result = RuleResult.Valid();
+			Task<RuleResult> resultTask;
 
 			if (!rule.SupportsSyncValidation)
 			{
-				var completedEvent = new ManualResetEvent(false);
-
-				rule.EvaluateAsync().ContinueWith(t =>
-				{
-					result = t.Result;
-					completedEvent.Set();
-				});
-
-				var isCompleted = completedEvent.WaitOne(AsyncRuleExecutionTimeout);
-
-				if (!isCompleted)
-				{
-					throw new TimeoutException("Rule validation did not complete in specified timeout.");
-				}
+				resultTask = rule.EvaluateAsync();
 			}
 			else
 			{
-				result = rule.Evaluate();
+				var tcs = new TaskCompletionSource<RuleResult>();
+
+				var result = rule.Evaluate();
+
+				tcs.SetResult(result);
+
+				resultTask = tcs.Task;
 			}
 
-			return result;
+			return resultTask;
 		}
 
 		private static void AddErrorsFromRuleResult(ValidationResult resultToAddTo, ValidationRule validationRule,
@@ -896,34 +930,24 @@ namespace MvvmValidation
 		{
 			if (isValidationSuspended)
 			{
-				return Task.Factory.StartNew(() => ValidationResult.Valid);
+				return TaskEx.FromResult(ValidationResult.Valid);
 			}
 
-			return ExecuteValidationRulesAsync(target);
-		}
+			var rulesToExecute = GetRulesForTarget(target);
 
-		private Task<ValidationResult> ExecuteValidationRulesAsync(object target)
-		{
 			var syncContext = SynchronizationContext.Current;
 
-			return Task.Factory.StartNew(() =>
-			{
-				lock (syncRoot)
+			return Task.Factory.StartNew(() => ExecuteValidationRulesAsync(rulesToExecute, syncContext), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default)
+				.Unwrap()
+				.ContinueWith(t =>
 				{
-					try
+					if (t.Exception != null)
 					{
-						var rulesToExecute = GetRulesForTarget(target);
-
-						ValidationResult result = ExecuteValidationRules(rulesToExecute, syncContext);
-
-						return result;
+						throw new ValidationException("An exception occurred during validation. See inner exception for details.", ExceptionUtils.UnwrapException(t.Exception));
 					}
-					catch (Exception ex)
-					{
-						throw new ValidationException("An exception occurred during validation. See inner exception for details.", ex);
-					}
-				}
-			}, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+
+					return t.Result;
+				});
 		}
 
 		#endregion

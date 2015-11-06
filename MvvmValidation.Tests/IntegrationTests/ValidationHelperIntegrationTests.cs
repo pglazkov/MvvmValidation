@@ -191,51 +191,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 		}
 
-		//[Fact]
-		//[ExpectedException(typeof(InvalidOperationException))]
-		//public void SyncValidation_ThereAreAsyncRules_ThrowsInvalidOperationException()
-		//{
-		//    TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
-		//    {
-		//        var vm = new DummyViewModel();
-
-		//        var validation = new ValidationHelper();
-
-		//        validation.AddAsyncRule(vm,
-		//                                setResultDelegate =>
-		//                                ThreadPool.QueueUserWorkItem(_ =>
-		//                                                             setResultDelegate(RuleResult.Valid())));
-
-		//        validation.AddRule(vm, () =>
-		//        {
-		//            return RuleResult.Invalid("Rule 2 failed");
-		//        });
-
-		//        validation.ValidateAll();
-		//    });
-		//}
-
-		[Fact]
-		public void SyncValidation_SeveralRulesForOneTarget_ValidWhenAllRulesAreValid()
-		{
-			var vm = new DummyViewModel();
-
-			var validation = new ValidationHelper();
-
-			validation.AddRule(vm, RuleResult.Valid);
-
-			validation.AddRule(vm, () =>
-			{
-				return RuleResult.Invalid("Rule 2 failed");
-			});
-
-			validation.AddRule(vm, RuleResult.Valid);
-
-			var r = validation.Validate(vm);
-
-			Assert.False(r.IsValid);
-		}
-
 		[Fact]
 		public void AsyncValidation_SyncRule_ExecutedAsyncroniously()
 		{
@@ -326,7 +281,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[Fact]
-		public void ValidateAsync_MultipleRulesForSameTarget_DoesNotExecuteRulesIfPerviousFailed()
+		public void AsyncValidation_MultipleRulesForSameTarget_DoesNotExecuteRulesIfPerviousFailed()
 		{
 			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
 			{
@@ -366,37 +321,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[Fact]
-		public void ValidatedAsync_AsyncRuleDoesnotCallCallback_ThrowsAnExceptionAfterTimeout()
-		{
-			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
-			{
-				// ARRANGE
-				var validation = new ValidationHelper();
-				validation.AsyncRuleExecutionTimeout = TimeSpan.FromSeconds(0.1);
-
-				var dummy = new DummyViewModel();
-				
-				validation.AddAsyncRule(() => dummy.Foo,
-										onCompleted =>
-										{
-											// Do nothing
-										});
-
-				// ACT
-				var ui = TaskScheduler.FromCurrentSynchronizationContext();
-
-				validation.ValidateAllAsync().ContinueWith(result =>
-				{
-					Assert.True(result.IsFaulted, "Validation task must fail.");
-					Assert.NotNull(result.Exception);
-
-					completedAction();
-				}, ui);
-			});
-		}
-
-		[Fact]
-		public void ValidatedAsync_ExecutedInsideUIThreadTask_ValidationRunsInBackgroundThread()
+		public void AsyncValidation_ExecutedInsideUIThreadTask_ValidationRunsInBackgroundThread()
 		{
 			// This test checks the situation described here:
 			// http://stackoverflow.com/questions/6800705/why-is-taskscheduler-current-the-default-taskscheduler
@@ -446,6 +371,204 @@ namespace MvvmValidation.Tests.IntegrationTests
 					});
 				}, TaskScheduler.FromCurrentSynchronizationContext());
 			});
+		}
+
+		[Fact]
+		public void AsyncValidation_WithCallback_ValidationOccuredAndCallbackIsCalledOnUIThread()
+		{
+			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
+			{
+				var vm = new DummyViewModel();
+				vm.Foo = null;
+				bool ruleExecuted = false;
+
+				var validation = new ValidationHelper();
+
+				validation.AddAsyncRule(setResult =>
+				{
+					ruleExecuted = true;
+					setResult(RuleResult.Invalid("Error1"));
+				});
+
+				validation.ValidateAllAsync(result =>
+				{
+					Assert.True(ruleExecuted, "Validation rule must be executed before validation callback is called.");
+					Assert.Equal(dispatcher.Thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId);
+
+					completedAction();
+				});
+			});
+		}
+
+		[Fact]
+		public void AsyncValidation_SimilteniousCalls_DoesNotFail()
+		{
+			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
+			{
+				const int numThreadsPerIternation = 4;
+				const int iterationCount = 10;
+				const int numThreads = numThreadsPerIternation * iterationCount;
+				var resetEvent = new ManualResetEvent(false);
+				int toProcess = numThreads;
+
+				var validation = new ValidationHelper();
+
+				for (int i = 0; i < iterationCount; i++)
+				{
+					var target1 = new object();
+					var target2 = new object();
+
+					validation.AddAsyncRule(setResult =>
+					{
+						setResult(RuleResult.Invalid("Error1"));
+					});
+
+					validation.AddAsyncRule(target1, setResult =>
+					{
+						setResult(RuleResult.Valid());
+					});
+
+					validation.AddRule(target2, () =>
+					{
+						return RuleResult.Invalid("Error2");
+					});
+
+					validation.AddRule(target2, RuleResult.Valid);
+
+					Action<Action> testThreadBody = exercise =>
+					{
+						try
+						{
+							exercise();
+
+							if (Interlocked.Decrement(ref toProcess) == 0)
+								resetEvent.Set();
+						}
+						catch (Exception ex)
+						{
+							dispatcher.BeginInvoke(new Action(() =>
+							{
+								throw new AggregateException(ex);
+							}));
+						}
+					};
+
+					var thread1 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.ValidateAllAsync().Wait();
+						});
+					});
+
+					var thread2 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.ValidateAllAsync().Wait();
+						});
+					});
+
+					var thread3 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.Validate(target2);
+						});
+					});
+
+					var thread4 = new Thread(() =>
+					{
+						testThreadBody(() =>
+						{
+							validation.Validate(target2);
+						});
+					});
+
+					thread1.Start();
+					thread2.Start();
+					thread3.Start();
+					thread4.Start();
+				}
+
+				ThreadPool.QueueUserWorkItem(_ =>
+				{
+					resetEvent.WaitOne();
+					completedAction();
+				});
+
+			});
+		}
+
+		[Fact]
+		public async Task AsyncValidation_AsyncRuleRegisteredWithNewSyntax_RuleIsExecuted()
+		{
+			// ARRANGE
+			var validator = new ValidationHelper();
+
+			validator.AddAsyncRule(async () => await Task.Factory.StartNew(() => RuleResult.Invalid("error")));
+
+			// ACT
+			var result = await validator.ValidateAllAsync();
+
+			// VERIFY
+			Assert.False(result.IsValid);
+		}
+
+		[Fact]
+		public void AsyncValidation_RuleThrowsException_ExceptionIsPropogated()
+		{
+			// ARRANGE
+			var validator = new ValidationHelper();
+
+			validator.AddAsyncRule(async () =>
+			{
+				await Task.Factory.StartNew(() =>
+				{
+					throw new InvalidOperationException("Test");
+				}, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+
+				return RuleResult.Valid();
+			});
+
+			// ACT & VERIFY
+			Assert.Throws<ValidationException>(validator.ValidateAllAsync());
+		}
+
+		[Fact]
+		public void SyncValidation_SeveralRulesForOneTarget_ValidWhenAllRulesAreValid()
+		{
+			var vm = new DummyViewModel();
+
+			var validation = new ValidationHelper();
+
+			validation.AddRule(vm, RuleResult.Valid);
+
+			validation.AddRule(vm, () =>
+			{
+				return RuleResult.Invalid("Rule 2 failed");
+			});
+
+			validation.AddRule(vm, RuleResult.Valid);
+
+			var r = validation.Validate(vm);
+
+			Assert.False(r.IsValid);
+		}
+
+		[Fact]
+		public void SyncValidation_RuleThrowsException_ExceptionIsPropogated()
+		{
+			// ARRANGE
+			var validator = new ValidationHelper();
+
+			validator.AddRule(() =>
+			{
+				throw new InvalidOperationException("Test");
+			});
+
+			// ACT & VERIFY
+			Assert.Throws<ValidationException>(validator.ValidateAllAsync());
 		}
 
 		[Fact]
@@ -620,33 +743,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[Fact]
-		public void ValidateAsync_WithCallback_ValidationOccuredAndCallbackIsCalledOnUIThread()
-		{
-			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
-			{
-				var vm = new DummyViewModel();
-				vm.Foo = null;
-				bool ruleExecuted = false;
-
-				var validation = new ValidationHelper();
-
-				validation.AddAsyncRule(setResult =>
-				{
-					ruleExecuted = true;
-					setResult(RuleResult.Invalid("Error1"));
-				});
-
-				validation.ValidateAllAsync(result =>
-				{
-					Assert.True(ruleExecuted, "Validation rule must be executed before validation callback is called.");
-					Assert.Equal(dispatcher.Thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId);
-
-					completedAction();
-				});
-			});
-		}
-
-		[Fact]
 		public void ErrorChanged_RaisedOnUIThread()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -684,121 +780,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 						completedAction();
 					});
 			});
-		}
-
-		[Fact]
-		public void ValidateAllAsync_SimilteniousCalls_DoesNotFail()
-		{
-			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
-			{
-				const int numThreadsPerIternation = 4;
-				const int iterationCount = 10;
-				const int numThreads = numThreadsPerIternation * iterationCount;
-				var resetEvent = new ManualResetEvent(false);
-				int toProcess = numThreads;
-
-				var validation = new ValidationHelper();
-
-				for (int i = 0; i < iterationCount; i++)
-				{
-					var target1 = new object();
-					var target2 = new object();
-
-					validation.AddAsyncRule(setResult =>
-					{
-						setResult(RuleResult.Invalid("Error1"));
-					});
-
-					validation.AddAsyncRule(target1, setResult =>
-					{
-						setResult(RuleResult.Valid());
-					});
-
-					validation.AddRule(target2, () =>
-					{
-						return RuleResult.Invalid("Error2");
-					});
-
-					validation.AddRule(target2, RuleResult.Valid);
-
-					Action<Action> testThreadBody = exercise =>
-					{
-						try
-						{
-							exercise();
-
-							if (Interlocked.Decrement(ref toProcess) == 0)
-								resetEvent.Set();
-						}
-						catch (Exception ex)
-						{
-							dispatcher.BeginInvoke(new Action(() =>
-							{
-								throw new AggregateException(ex);
-							}));
-						}
-					};
-
-					var thread1 = new Thread(() =>
-					{
-						testThreadBody(() =>
-						{
-							validation.ValidateAllAsync().Wait();
-						});
-					});
-
-					var thread2 = new Thread(() =>
-					{
-						testThreadBody(() =>
-						{
-							validation.ValidateAllAsync().Wait();
-						});
-					});
-
-					var thread3 = new Thread(() =>
-					{
-						testThreadBody(() =>
-						{
-							validation.Validate(target2);
-						});
-					});
-
-					var thread4 = new Thread(() =>
-					{
-						testThreadBody(() =>
-						{
-							validation.Validate(target2);
-						});
-					});
-
-					thread1.Start();
-					thread2.Start();
-					thread3.Start();
-					thread4.Start();
-				}
-
-				ThreadPool.QueueUserWorkItem(_ =>
-				{
-					resetEvent.WaitOne();
-					completedAction();
-				});
-
-			});
-		}
-
-		[Fact]
-		public async Task ValidateAsync_AsyncRuleRegisteredWithNewSyntax_RuleIsExecuted()
-		{
-			// ARRANGE
-			var validator = new ValidationHelper();
-
-			validator.AddAsyncRule(async () => await Task.Factory.StartNew(() => RuleResult.Invalid("error")));
-
-			// ACT
-			var result = await validator.ValidateAllAsync();
-
-			// VERIFY
-			Assert.False(result.IsValid);
 		}
 	}
 	// ReSharper restore InconsistentNaming

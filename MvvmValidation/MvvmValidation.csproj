@@ -141,6 +141,9 @@
     <Compile Include="..\MvvmValidation.Portable\Internal\DelegateDisposable.cs">
       <Link>Internal\DelegateDisposable.cs</Link>
     </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\ExceptionUtils.cs">
+      <Link>Internal\ExceptionUtils.cs</Link>
+    </Compile>
     <Compile Include="..\MvvmValidation.Portable\Internal\GenericValidationTarget.cs">
       <Link>Internal\GenericValidationTarget.cs</Link>
     </Compile>
@@ -161,6 +164,9 @@
     </Compile>
     <Compile Include="..\MvvmValidation.Portable\Internal\PropertyValidationTarget.cs">
       <Link>Internal\PropertyValidationTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\MvvmValidation.Portable\Internal\TaskEx.cs">
+      <Link>Internal\TaskEx.cs</Link>
     </Compile>
     <Compile Include="..\MvvmValidation.Portable\Internal\UndefinedValidationTarget.cs">
       <Link>Internal\UndefinedValidationTarget.cs</Link>
