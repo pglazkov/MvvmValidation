@@ -48,18 +48,13 @@ Validator.AddRule(() => RangeStart,
 Such rule can perform more complex validation that may take long time or cannot be executed synchronously, for example, a call to a web service.
 ```cs
 Validator.AddAsyncRule(() => UserName,
-                       (Action<RuleResult> onCompleted) =>
-                       {
-                           var asyncOperation = UserRegistrationService.IsUserNameAvailable(UserName);
-                               asyncOperation.Completed += (o, e) => 
-                           {
-                               var isAvailable = e.Result;
+    async () =>
+    {
+        var isAvailable = await UserRegistrationService.IsUserNameAvailable(UserName).ToTask();
 
-                               var ruleResult = RuleResult.Assert(isAvailable, string.Format("User Name {0} is taken. Please choose a different one.", UserName));
-
-                              onCompleted(ruleResult);
-                           }
-                       });
+        return RuleResult.Assert(isAvailable,
+        string.Format("User Name {0} is taken. Please choose a different one.", UserName));
+    });
 ```
 **Executing validation**
 ```cs
