@@ -41,7 +41,8 @@ Such a rule will be executed whenever you validate either of those properties.
 ```cs
 Validator.AddRule(() => RangeStart,
                   () => RangeEnd,
-                  () => RuleResult.Assert(RangeEnd > RangeStart, "RangeEnd must be grater than RangeStart");
+                  () => RuleResult.Assert(RangeEnd > RangeStart, 
+                                          "RangeEnd must be grater than RangeStart");
 ```
 **Adding an asynchronous rule**
 
@@ -52,8 +53,8 @@ Validator.AddAsyncRule(() => UserName,
     {
         var isAvailable = await UserRegistrationService.IsUserNameAvailable(UserName).ToTask();
 
-        return RuleResult.Assert(isAvailable,
-        string.Format("User Name {0} is taken. Please choose a different one.", UserName));
+        return RuleResult.Assert(isAvailable, 
+            string.Format("User Name {0} is taken. Please choose a different one.", UserName));
     });
 ```
 **Executing validation**
