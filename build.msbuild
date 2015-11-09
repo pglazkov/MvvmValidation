@@ -1,140 +1,150 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildFull">
-  <Import Project="Tools\Build\MSBuild.Community.Tasks.Targets"/>
+	<Import Project="Tools\Build\MSBuild.Community.Tasks.Targets"/>
 
-  <UsingTask AssemblyFile=".\packages\xunit.2.0.0-alpha-build1611\lib\net45\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
+	<UsingTask AssemblyFile=".\packages\xunit.2.0.0-alpha-build1611\lib\net45\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
 
-  <PropertyGroup>
-    <Major>2</Major>
-    <Minor>1</Minor>
-    <Patch>2</Patch>
-    <PreReleaseString>beta</PreReleaseString>
+	<PropertyGroup>
+		<Major>2</Major>
+		<Minor>1</Minor>
+		<Patch>0</Patch>
+		<PreReleaseString>beta</PreReleaseString>
 
-    <VersionInfoString Condition="$(PreReleaseString) != ''">$(Major).$(Minor).$(Patch)-$(PreReleaseString)</VersionInfoString>
-    <VersionInfoString Condition="$(PreReleaseString) == ''">$(Major).$(Minor).$(Patch)</VersionInfoString>
-  </PropertyGroup>
+		<VersionInfoString Condition="$(PreReleaseString) != ''">$(Major).$(Minor).$(Patch)-$(PreReleaseString)</VersionInfoString>
+		<VersionInfoString Condition="$(PreReleaseString) == ''">$(Major).$(Minor).$(Patch)</VersionInfoString>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <Configuration>Release</Configuration>
-    <SourceDir>.\</SourceDir>
-    <SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
-    <OutputFolderPath>$(SourceDir)Output</OutputFolderPath>
-    <VersionInfoPath>$(SourceDir)VersionInfo.cs</VersionInfoPath>
-    <MainAssemblyWithVersion>$(OutputFolderPath)\lib\portable-win8+net45+sl5+wp8\MvvmValidation.dll</MainAssemblyWithVersion>
-    <NuGetPreRelaseVersionSuffix>-beta</NuGetPreRelaseVersionSuffix>
-    <UnitTestAssembliesPath>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssembliesPath>
-    <UnitTestHtmlReportPath>$(SourceDir)TestReport.html</UnitTestHtmlReportPath>
-    <ZippedOutputFileName>MvvmValidation.$(VersionInfoString).zip</ZippedOutputFileName>
-    <ZippedOutputFilePath>$(OutputFolderPath)\$(ZippedOutputFileName)</ZippedOutputFilePath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Configuration>Release</Configuration>
+		<SourceDir>.\</SourceDir>
+		<SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
+		<OutputFolderPath>$(SourceDir)Output</OutputFolderPath>
+		<VersionInfoPath>$(SourceDir)VersionInfo.cs</VersionInfoPath>
+		<PortableAssemblyOutputFolder>$(OutputFolderPath)\lib\portable-win8+net45+sl5+wp8</PortableAssemblyOutputFolder>
+		<Net45NuGetOutputFolder>$(OutputFolderPath)\lib\net45</Net45NuGetOutputFolder>
+		<MainAssemblyWithVersion>$(PortableAssemblyOutputFolder)\MvvmValidation.dll</MainAssemblyWithVersion>
+		<NuGetPreRelaseVersionSuffix>-beta</NuGetPreRelaseVersionSuffix>
+		<UnitTestAssembliesPath>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssembliesPath>
+		<UnitTestHtmlReportPath>$(SourceDir)TestReport.html</UnitTestHtmlReportPath>
+		<ZippedOutputFileName>MvvmValidation.$(VersionInfoString).zip</ZippedOutputFileName>
+		<ZippedOutputFilePath>$(OutputFolderPath)\$(ZippedOutputFileName)</ZippedOutputFilePath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <UnitTestAssemblies Include="$(UnitTestAssembliesPath)" />
-    <OutputFolder Include="$(OutputFolderPath)"/>
-  </ItemGroup>
+	<ItemGroup>
+		<UnitTestAssemblies Include="$(UnitTestAssembliesPath)" />
+		<OutputFolder Include="$(OutputFolderPath)"/>
+	</ItemGroup>
 
-  <PropertyGroup>
-    <BuildFullDependsOn>
-      Clean;
-      BuildSolution;
-      CleanupAfterBuild;
-      UnitTest;
-      ZipOutput;
-      CreateNuGetPackage
-    </BuildFullDependsOn>
+	<PropertyGroup>
+		<BuildFullDependsOn>
+			Clean;
+			BuildSolution;
+			CleanupAfterBuild;
+			CopyOutputToAdditionalNuGetFolders;
+			UnitTest;
+			ZipOutput;
+			CreateNuGetPackage
+		</BuildFullDependsOn>
 
-    <BuildSolutionDependsOn>
-      UpdateVersion
-    </BuildSolutionDependsOn>
+		<BuildSolutionDependsOn>
+			UpdateVersion
+		</BuildSolutionDependsOn>
 
-    <UpdateVersionDependsOn>
+		<UpdateVersionDependsOn>
 
-    </UpdateVersionDependsOn>
+		</UpdateVersionDependsOn>
 
-    <CreateNuGetPackageDependsOn>
-      BuildSolution
-    </CreateNuGetPackageDependsOn>
+		<CreateNuGetPackageDependsOn>
+			BuildSolution
+		</CreateNuGetPackageDependsOn>
 
-    <CleanupAfterBuildDependsOn>
-      BuildSolution
-    </CleanupAfterBuildDependsOn>
+		<CleanupAfterBuildDependsOn>
+			BuildSolution
+		</CleanupAfterBuildDependsOn>
 
-    <UnitTestDependsOn>
-      BuildSolution
-    </UnitTestDependsOn>
+		<UnitTestDependsOn>
+			BuildSolution
+		</UnitTestDependsOn>
 
-    <ZipOutputDependsOn>
-      BuildSolution
-    </ZipOutputDependsOn>
-  </PropertyGroup>
+		<ZipOutputDependsOn>
+			BuildSolution
+		</ZipOutputDependsOn>
+	</PropertyGroup>
 
-  <Target Name="BuildFull" DependsOnTargets="$(BuildFullDependsOn)">
-  </Target>
+	<Target Name="BuildFull" DependsOnTargets="$(BuildFullDependsOn)">
+	</Target>
 
-  <Target Name="Clean">
-    <MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />
+	<Target Name="Clean">
+		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false" Properties="Configuration=$(Configuration)" Targets="Clean" />
 
-    <CreateItem Include="%(OutputFolder.FullPath)\**\*.*">
-      <Output TaskParameter="Include" ItemName="FilesToRemove"/>
-    </CreateItem>
+		<CreateItem Include="%(OutputFolder.FullPath)\**\*.*">
+			<Output TaskParameter="Include" ItemName="FilesToRemove"/>
+		</CreateItem>
 
-    <Delete Files="%(FilesToRemove.FullPath)" ContinueOnError="true" />
-    <RemoveDir Directories="%(OutputFolder.FullPath)" ContinueOnError="true"/>
-    <MakeDir Directories="%(OutputFolder.FullPath)" ContinueOnError="true"/>
-  </Target>
+		<Delete Files="%(FilesToRemove.FullPath)" ContinueOnError="true" />
+		<RemoveDir Directories="%(OutputFolder.FullPath)" ContinueOnError="true"/>
+		<MakeDir Directories="%(OutputFolder.FullPath)" ContinueOnError="true"/>
+	</Target>
 
-  <Target Name="BuildSolution" DependsOnTargets="$(BuildSolutionDependsOn)">
-    <MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false"  Properties="Configuration=$(Configuration);BuildInParallel=True">
-      <Output ItemName="BuildOutput" TaskParameter="TargetOutputs"/>
-    </MSBuild>
-  </Target>
+	<Target Name="BuildSolution" DependsOnTargets="$(BuildSolutionDependsOn)">
+		<MSBuild Projects="$(SolutionFilePath)" ContinueOnError="false"  Properties="Configuration=$(Configuration);BuildInParallel=True">
+			<Output ItemName="BuildOutput" TaskParameter="TargetOutputs"/>
+		</MSBuild>
+	</Target>
 
-  <Target Name="CleanupAfterBuild" DependsOnTargets="$(CleanupAfterBuildDependsOn)">
-    <!-- Delete code analysis files -->
+	<Target Name="CopyOutputToAdditionalNuGetFolders">
+		<ItemGroup>
+			<Net45Files Include="$(PortableAssemblyOutputFolder)\*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(Net45Files)" DestinationFolder="$(Net45NuGetOutputFolder)"/>
+	</Target>
+	
+	<Target Name="CleanupAfterBuild" DependsOnTargets="$(CleanupAfterBuildDependsOn)">
+		<!-- Delete code analysis files -->
 
-    <CreateItem Include="$(OutputFolderPath)\**\*CodeAnalysisLog.xml">
-      <Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
-    </CreateItem>
-    <CreateItem Include="$(OutputFolderPath)\**\*.lastcodeanalysissucceeded">
-      <Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
-    </CreateItem>
+		<CreateItem Include="$(OutputFolderPath)\**\*CodeAnalysisLog.xml">
+			<Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
+		</CreateItem>
+		<CreateItem Include="$(OutputFolderPath)\**\*.lastcodeanalysissucceeded">
+			<Output TaskParameter="Include" ItemName="CodeAnalysisFiles" />
+		</CreateItem>
 
-    <Delete Files="%(CodeAnalysisFiles.FullPath)" ContinueOnError="false" />
-  </Target>
+		<Delete Files="%(CodeAnalysisFiles.FullPath)" ContinueOnError="false" />
+	</Target>
 
-  <Target Name="UnitTest" DependsOnTargets="$(UnitTestDependsOn)">
-    <xunit Assemblies="@(UnitTestAssemblies)" Html="$(UnitTestHtmlReportPath)" />
-  </Target>
+	<Target Name="UnitTest" DependsOnTargets="$(UnitTestDependsOn)">
+		<xunit Assemblies="@(UnitTestAssemblies)" Html="$(UnitTestHtmlReportPath)" />
+	</Target>
 
-  <Target Name="UpdateVersion"
+	<Target Name="UpdateVersion"
 					DependsOnTargets="$(UpdateVersionDependsOn)">
 
-    <Message Text="Version: $(VersionInfoString)"/>
+		<Message Text="Version: $(VersionInfoString)"/>
 
-    <AssemblyInfo CodeLanguage="CS"
+		<AssemblyInfo CodeLanguage="CS"
                   OutputFile="$(VersionInfoPath)"
                   AssemblyVersion="$(Major).$(Minor).$(Patch)"
                   AssemblyFileVersion="$(Major).$(Minor).$(Patch)"
                   AssemblyInformationalVersion="$(VersionInfoString)"/>
 
-    <XmlUpdate XmlFileName="Package.nuspec"
+		<XmlUpdate XmlFileName="Package.nuspec"
         XPath="package/metadata/version"
         Value="$(VersionInfoString)"/>
-  </Target>
+	</Target>
 
 
-  <Target Name="CreateNuGetPackage"
+	<Target Name="CreateNuGetPackage"
           DependsOnTargets="$(CreateNuGetPackageDependsOn)">
-    <Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath $(OutputFolderPath) -OutputDirectory $(OutputFolderPath) -Exclude **\Tests\** -Exclude **\*.pdb -Exclude **\$(ZippedOutputFileName)"/>
-  </Target>
+		<Exec Command="Tools\NuGet.exe pack Package.nuspec -BasePath $(OutputFolderPath) -OutputDirectory $(OutputFolderPath) -Exclude **\Tests\** -Exclude **\*.pdb -Exclude **\$(ZippedOutputFileName)"/>
+	</Target>
 
-  <Target Name="ZipOutput"
+	<Target Name="ZipOutput"
 					DependsOnTargets="$(ZipOutputDependsOn)">
-    <ItemGroup>
-      <ZipOutputFiles Include="$(OutputFolderPath)\lib\**\*.*" />
-    </ItemGroup>
+		<ItemGroup>
+			<ZipOutputFiles Include="$(OutputFolderPath)\lib\**\*.*" />
+		</ItemGroup>
 
-    <Zip Files="@(ZipOutputFiles)"
+		<Zip Files="@(ZipOutputFiles)"
          WorkingDirectory="$(OutputFolderPath)"
          ZipFileName="$(ZippedOutputFilePath)" />
-  </Target>
+	</Target>
 </Project>
