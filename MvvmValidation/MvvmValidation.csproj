@@ -222,6 +222,9 @@
     <Compile Include="..\MvvmValidation.Portable\ValidationResultExtensions.cs">
       <Link>ValidationResultExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\MvvmValidation.Portable\ValidationScope.cs">
+      <Link>ValidationScope.cs</Link>
+    </Compile>
     <Compile Include="..\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>

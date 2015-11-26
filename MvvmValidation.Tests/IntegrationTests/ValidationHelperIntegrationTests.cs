@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
 using MvvmValidation.Tests.Helpers;
 using Xunit;
@@ -738,6 +739,45 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 						completedAction();
 					});
+				});
+			});
+		}
+
+		[Fact]
+		public void AddChildValidatableCollection_OneRuleThrowsException_EntireValidationFails()
+		{
+			TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
+			{
+				// ARRANGE
+				var parent = new ValidatableViewModel();
+				var child1 = new ValidatableViewModel();
+				var child2 = new ValidatableViewModel();
+
+				parent.Children = new List<IValidatable>
+				{
+					child1,
+					child2
+				};
+
+				parent.Validator.AddAsyncRule(() => TaskEx.FromResult(RuleResult.Valid()));
+				child1.Validator.AddAsyncRule(() => Task.Factory.StartNew<RuleResult>(() =>
+				{
+					throw new FakeException();
+				}));
+
+				child2.Validator.AddAsyncRule(() => TaskEx.FromResult(RuleResult.Valid()));
+
+				parent.Validator.AddChildValidatableCollection(() => parent.Children);
+
+				// ACT
+				parent.Validator.ValidateAllAsync().ContinueWith(r1 =>
+				{
+					uiThreadDispatcher.BeginInvoke(new Action(() => 
+					{
+						Assert.NotNull(r1.Exception);
+						Assert.IsType<FakeException>(ExceptionUtils.UnwrapException(r1.Exception));
+						completedAction();
+					}));
 				});
 			});
 		}

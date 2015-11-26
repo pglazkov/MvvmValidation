@@ -27,6 +27,12 @@ namespace MvvmValidation.Internal
 				return aggregateException.InnerExceptions.SelectMany(UnwrapExceptions);
 			}
 
+			var validationException = exception as ValidationException;
+			if (validationException != null)
+			{
+				return UnwrapExceptions(validationException.InnerException);
+			}
+
 			if (exception.GetType() == typeof(Exception) && exception.InnerException != null)
 			{
 				return UnwrapExceptions(exception.InnerException);

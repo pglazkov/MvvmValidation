@@ -65,7 +65,7 @@ namespace MvvmValidation
 		/// Executes the validation of all registered validators and combines the result from all of them.
 		/// </summary>
 		/// <returns>The validation result.</returns>
-		public Task<ValidationResult> ValidateAll()
+		public Task<ValidationResult> ValidateAllAsync()
 		{
 			return
 				TaskEx.WhenAll(registeredValidators.Select(x => x.ValidateAllAsync()).ToList()).ContinueWith(t => CombineResults(t.Result));

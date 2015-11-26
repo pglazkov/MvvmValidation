@@ -10,9 +10,20 @@ namespace MvvmValidation.Internal
 	{
 		public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
 		{
+			if (tasks == null)
+			{
+				throw new ArgumentNullException(nameof(tasks));
+			}
+
 			var tcs = new TaskCompletionSource<TResult[]>();
 
 			var remainingTasks = tasks.ToList();
+
+			if (remainingTasks.Count == 0)
+			{
+				throw new ArgumentException("There must be at least one task.", nameof(tasks));
+			}
+
 			int count = remainingTasks.Count;
 			var exceptions = new List<Exception>();
 			var results = new List<TResult>();
@@ -23,17 +34,17 @@ namespace MvvmValidation.Internal
 				{
 					if (Interlocked.Decrement(ref count) == 0)
 					{
-						foreach (var task1 in remainingTasks)
+						foreach (var remainingTask in remainingTasks)
 						{
-							if (task1.Exception != null)
+							if (remainingTask.Exception != null)
 							{
-								exceptions.Add(task1.Exception);
+								exceptions.Add(remainingTask.Exception);
 							}
 							else
 							{
 								lock (results)
 								{
-									results.Add(task1.Result);
+									results.Add(remainingTask.Result);
 								}
 							}
 						}

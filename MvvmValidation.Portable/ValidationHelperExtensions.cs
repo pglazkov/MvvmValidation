@@ -94,7 +94,7 @@ namespace MvvmValidation
 					});
 				}
 
-				return Task.Factory.StartNew(() => RuleResult.Valid());
+				return TaskEx.FromResult(RuleResult.Valid());
 			});
 		}
 
@@ -122,57 +122,50 @@ namespace MvvmValidation
 
 				if (items == null)
 				{
-					return Task.Factory.StartNew(() => RuleResult.Valid());
+					return TaskEx.FromResult(RuleResult.Valid());
 				}
 
-				return Task.Factory.StartNew(() =>
+				items = items as IValidatable[] ?? items.ToArray();
+
+				if (!items.Any())
 				{
-					var result = new RuleResult();
+					return TaskEx.FromResult(RuleResult.Valid());
+				}
 
-					// Execute validation on all items at the same time, wait for all
-					// to fininish and combine the results.
+				var result = new RuleResult();
 
-					var results = new List<ValidationResult>();
+				// Execute validation on all items at the same time, wait for all
+				// to finish and combine the results.
 
-					var syncEvent = new ManualResetEvent(false);
+				var results = new List<ValidationResult>();
 
-					var itemsArray = items as IValidatable[] ?? items.ToArray();
-					int[] numerOfThreadsNotYetCompleted = { itemsArray.Length };
+				var tasks = new List<Task<ValidationResult>>();
 
-					foreach (var item in itemsArray)
+				foreach (var item in items)
+				{
+					var task = item.Validate().ContinueWith(tr =>
 					{
-#if SILVERLIGHT_4
-						item.Validate(r =>
+						ValidationResult r = tr.Result;
+						AggregateException ex = tr.Exception;
+
+						lock (results)
 						{
-							Exception ex = null;
-#else
-						item.Validate().ContinueWith(tr =>
-						{
-							ValidationResult r = tr.Result;
-							AggregateException ex = tr.Exception;
-#endif
-							lock (results)
+							if (ex == null && r != null)
 							{
-								// ReSharper disable ConditionIsAlwaysTrueOrFalse
-								if (ex == null && r != null)
-								// ReSharper restore ConditionIsAlwaysTrueOrFalse
-								{
-									results.Add(r);
-								}
-
-								if (Interlocked.Decrement(ref numerOfThreadsNotYetCompleted[0]) == 0)
-								{
-									syncEvent.Set();
-								}
+								results.Add(r);
 							}
-						});
-					}
+						}
 
-					if (numerOfThreadsNotYetCompleted[0] > 0)
+						return tr.Result;
+					});
+
+					tasks.Add(task);
+				}
+
+				var resultTask = TaskEx.WhenAll(tasks).ContinueWith(tr =>
+				{
+					if (tr.Exception == null)
 					{
-						// Wait for all items to finish validation
-						syncEvent.WaitOne();
-
 						// Add errors from all validation results
 						foreach (ValidationResult itemResult in results)
 						{
@@ -181,11 +174,15 @@ namespace MvvmValidation
 								result.AddError(error.ErrorText);
 							}
 						}
+
+						return result;
 					}
 
-					return result;
+					throw new AggregateException(tr.Exception);
 				});
-				
+
+				return resultTask;
+
 			});
 		}
 	}
