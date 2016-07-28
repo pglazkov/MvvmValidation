@@ -119,7 +119,6 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
-    <Compile Include="AsyncRuleValidateAction.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IAsyncValidationRule.cs" />
     <Compile Include="Internal\Annotations.cs" />
@@ -151,7 +150,6 @@
     <Compile Include="ValidationErrorCollection.cs" />
     <Compile Include="ValidationException.cs" />
     <Compile Include="ValidationHelper.cs" />
-    <Compile Include="ValidationHelper.Obsolete.cs" />
     <Compile Include="ValidationHelperExtensions.cs" />
     <Compile Include="ValidationResult.cs" />
     <Compile Include="ValidationResultChangedEventArgs.cs" />

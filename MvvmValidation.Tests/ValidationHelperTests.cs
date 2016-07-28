@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
 using Xunit;
@@ -427,7 +428,7 @@ namespace MvvmValidation.Tests
 			validation.AddRule(RuleResult.Valid);
 
 			// Add an async rule
-			validation.AddAsyncRule(onCompleted => onCompleted(RuleResult.Invalid("Error")));
+			validation.AddAsyncRule(() => Task.Run(() => RuleResult.Invalid("Error")));
 
 			// ACT
 			Assert.Throws<InvalidOperationException>(() =>

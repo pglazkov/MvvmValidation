@@ -28,12 +28,15 @@ namespace MvvmValidation.Tests.IntegrationTests
 				Action<RuleResult> dummy = null;
 				Assert.Null(dummy); // Getting rid of the "unused variable" warning.
 
-				validation.AddAsyncRule(setResult => ThreadPool.QueueUserWorkItem(_ =>
-				{
-					ruleExecuted = true;
+			    validation.AddAsyncRule(async () =>
+			    {
+			        return await Task.Run(() =>
+			        {
+			            ruleExecuted = true;
 
-					setResult(RuleResult.Invalid("Foo cannot be empty string."));
-				}));
+			            return RuleResult.Invalid("Foo cannot be empty string.");
+			        });
+			    });
 
 				validation.ResultChanged += (o, e) =>
 				{
@@ -83,12 +86,9 @@ namespace MvvmValidation.Tests.IntegrationTests
 				validation.AddAsyncRule(
 					() => vm.Foo, 
 					() => vm.Bar,
-					setResult =>
-					{
-						ThreadPool.QueueUserWorkItem(_ =>
-						{
-							setResult(RuleResult.Assert(validCondition(), "Foo must be different than bar"));
-						});
+                    async () =>
+                    {
+                        return await Task.Run(() => RuleResult.Assert(validCondition(), "Foo must be different than bar"));
 					});
 
 				validation.ValidateAsync(() => vm.Bar).ContinueWith(r =>
@@ -113,27 +113,36 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				bool rule1Executed = false;
 
-				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
+				validation.AddAsyncRule(() =>
 				{
-					rule1Executed = true;
-					setResultDelegate(RuleResult.Valid());
-				}));
+				    return Task.Run(() =>
+				    {
+				        rule1Executed = true;
+				        return RuleResult.Valid();
+				    });
+				});
 
 				bool rule2Executed = false;
 
-				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
+				validation.AddAsyncRule(() =>
 				{
-					rule2Executed = true;
-					setResultDelegate(RuleResult.Valid());
-				}));
+				    return Task.Run(() =>
+				    {
+				        rule2Executed = true;
+				        return RuleResult.Valid();
+				    });
+				});
 
 				bool rule3Executed = false;
 
-				validation.AddAsyncRule(setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
+				validation.AddAsyncRule(() =>
 				{
-					rule3Executed = true;
-					setResultDelegate(RuleResult.Valid());
-				}));
+				    return Task.Run(() =>
+				    {
+				        rule3Executed = true;
+				        return RuleResult.Valid();
+				    });
+				});
 
 				validation.ValidateAllAsync().ContinueWith(r =>
 				{
@@ -158,11 +167,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				bool rule1Executed = false;
 
-				validation.AddAsyncRule(vm, setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
+				validation.AddAsyncRule(vm, () =>
 				{
-					rule1Executed = true;
-					setResultDelegate(RuleResult.Valid());
-				}));
+				    return Task.Run(() =>
+				    {
+				        rule1Executed = true;
+				        return RuleResult.Valid();
+				    });
+				});
 
 				bool rule2Executed = false;
 
@@ -174,11 +186,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				bool rule3Executed = false;
 
-				validation.AddAsyncRule(vm, setResultDelegate => ThreadPool.QueueUserWorkItem(_ =>
+				validation.AddAsyncRule(vm, () =>
 				{
-					rule3Executed = true;
-					setResultDelegate(RuleResult.Valid());
-				}));
+				    return Task.Run(() =>
+				    {
+				        rule3Executed = true;
+				        return RuleResult.Valid();
+				    });
+				});
 
 				validation.ValidateAllAsync().ContinueWith(r =>
 				{
@@ -293,19 +308,22 @@ namespace MvvmValidation.Tests.IntegrationTests
 				bool firstRuleExecuted = false;
 				bool secondRuleExecuted = false;
 
-				validation.AddRule(() => dummy.Foo,
-				                   () =>
-				                   {
-				                   	firstRuleExecuted = true;
-				                   	return RuleResult.Invalid("Error1");
-				                   });
+			    validation.AddRule(() => dummy.Foo,
+			        () =>
+			        {
+			            firstRuleExecuted = true;
+			            return RuleResult.Invalid("Error1");
+			        });
 
 				validation.AddAsyncRule(() => dummy.Foo,
-				                        onCompleted =>
-				                        {
-				                        	secondRuleExecuted = true;
-				                        	onCompleted(RuleResult.Invalid("Error2"));
-				                        });
+				    () =>
+				    {
+				        return Task.Run(() =>
+				        {
+				            secondRuleExecuted = true;
+				            return RuleResult.Invalid("Error2");
+				        });
+				    });
 
 				// ACT
 
@@ -338,14 +356,17 @@ namespace MvvmValidation.Tests.IntegrationTests
 
 				int uiThreadId = Thread.CurrentThread.ManagedThreadId;
 				int validationThreadId = uiThreadId;
-				
-				validation.AddAsyncRule(() => dummy.Foo,
-					onCompleted =>
-					{
-						validationThreadId = Thread.CurrentThread.ManagedThreadId;
 
-						onCompleted(RuleResult.Valid());
-					});
+			    validation.AddAsyncRule(() => dummy.Foo,
+			        () =>
+			        {
+			            return Task.Run(() =>
+			            {
+			                validationThreadId = Thread.CurrentThread.ManagedThreadId;
+
+			                return RuleResult.Valid();
+			            });
+			        });
 
 				// ACT
 
@@ -375,33 +396,6 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[Fact]
-		public void AsyncValidation_WithCallback_ValidationOccuredAndCallbackIsCalledOnUIThread()
-		{
-			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
-			{
-				var vm = new DummyViewModel();
-				vm.Foo = null;
-				bool ruleExecuted = false;
-
-				var validation = new ValidationHelper();
-
-				validation.AddAsyncRule(setResult =>
-				{
-					ruleExecuted = true;
-					setResult(RuleResult.Invalid("Error1"));
-				});
-
-				validation.ValidateAllAsync(result =>
-				{
-					Assert.True(ruleExecuted, "Validation rule must be executed before validation callback is called.");
-					Assert.Equal(dispatcher.Thread.ManagedThreadId, Thread.CurrentThread.ManagedThreadId);
-
-					completedAction();
-				});
-			});
-		}
-
-		[Fact]
 		public void AsyncValidation_SimilteniousCalls_DoesNotFail()
 		{
 			TestUtils.ExecuteWithDispatcher((dispatcher, completedAction) =>
@@ -419,14 +413,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 					var target1 = new object();
 					var target2 = new object();
 
-					validation.AddAsyncRule(setResult =>
+					validation.AddAsyncRule(() =>
 					{
-						setResult(RuleResult.Invalid("Error1"));
+					    return Task.Run(() => RuleResult.Invalid("Error1"));
 					});
 
-					validation.AddAsyncRule(target1, setResult =>
+					validation.AddAsyncRule(target1, () =>
 					{
-						setResult(RuleResult.Valid());
+						return Task.Run(() => RuleResult.Valid());
 					});
 
 					validation.AddRule(target2, () =>
@@ -790,12 +784,10 @@ namespace MvvmValidation.Tests.IntegrationTests
 				var vm = new DummyViewModel();
 				var syncEvent = new ManualResetEvent(false);
 
-				vm.Validator.AddAsyncRule(() => vm.Foo, setResult =>
-					{
-						var t = new Thread(() => setResult(RuleResult.Invalid("Test")));
-
-						t.Start();
-					});
+			    vm.Validator.AddAsyncRule(() => vm.Foo, () =>
+			    {
+			        return Task.Run(() => RuleResult.Invalid("Test"));
+			    });
 
 				vm.ErrorsChanged += (o, e) =>
 					{
