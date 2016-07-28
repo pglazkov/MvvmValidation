@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -17,7 +15,7 @@ namespace MvvmValidation
 	/// Main helper class that contains the functionality of managing validation rules, 
 	/// executing validation using those rules and keeping validation results.
 	/// </summary>
-	public partial class ValidationHelper
+	public class ValidationHelper
 	{
 		#region Fields
 
@@ -44,13 +42,6 @@ namespace MvvmValidation
 		#region Properties
 
 		private ValidationRuleCollection ValidationRules { get; set; }
-
-		/// <summary>
-		/// Gets or sets a timeout that indicates how much time is allocated for an async rule to complete.
-		/// If a rule did not complete in this timeout, then an exception will be thrown.
-		/// </summary>
-		[Obsolete("This property has no effect anymore. The library always waits until the rule completes.")]
-		public TimeSpan AsyncRuleExecutionTimeout { get; set; }
 
 		/// <summary>
 		/// Indicates whether the validation is currently suspended using the <see cref="SuppressValidation"/> method.
@@ -105,9 +96,9 @@ namespace MvvmValidation
 		}
 
 		/// <summary>
-		/// Adds a validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
+		/// Adds a validation rule that validates a property of an object. The target property is specified in the <paramref name="targetName"/> parameter.
 		/// </summary>
-		/// <param name="propertyExpression">The target property expression. Example: AddRule(() => MyProperty, ...).</param>
+		/// <param name="targetName">The target property name. Example: AddRule(nameof(MyProperty), ...).</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
@@ -120,12 +111,12 @@ namespace MvvmValidation
 		/// </example>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IValidationRule AddRule([NotNull] Expression<Func<object>> propertyExpression, [NotNull] Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule([NotNull] string targetName, [NotNull] Func<RuleResult> validateDelegate)
 		{
-			Guard.NotNull(propertyExpression, nameof(propertyExpression));
+			Guard.NotNull(targetName, nameof(targetName));
 			Guard.NotNull(validateDelegate, nameof(validateDelegate));
 
-			var rule = AddRule(new[] { propertyExpression }, validateDelegate);
+			var rule = AddRule(new[] { targetName }, validateDelegate);
 
 			return rule;
 		}
@@ -133,8 +124,8 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds a validation rule that validates two dependent properties.
 		/// </summary>
-		/// <param name="property1Expression">The first target property expression. Example: AddRule(() => MyProperty, ...).</param>
-		/// <param name="property2Expression">The second target property expression. Example: AddRule(..., () => MyProperty, ...).</param>
+		/// <param name="property1Name">The first target property name. Example: AddRule(nameof(MyProperty), ...).</param>
+		/// <param name="property2Name">The second target property name. Example: AddRule(..., nameof(MyProperty), ...).</param>
 		/// <param name="validateDelegate">
 		/// The validation delegate - a function that returns an instance 
 		/// of <see cref="RuleResult"/> that indicated whether the rule has passed and 
@@ -147,13 +138,13 @@ namespace MvvmValidation
 		/// </example>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IValidationRule AddRule([NotNull] Expression<Func<object>> property1Expression, [NotNull] Expression<Func<object>> property2Expression, [NotNull] Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule([NotNull] string property1Name, [NotNull] string property2Name, [NotNull] Func<RuleResult> validateDelegate)
 		{
-			Guard.NotNull(property1Expression, nameof(property1Expression));
-			Guard.NotNull(property2Expression, nameof(property2Expression));
+			Guard.NotNull(property1Name, nameof(property1Name));
+			Guard.NotNull(property2Name, nameof(property2Name));
 			Guard.NotNull(validateDelegate, nameof(validateDelegate));
 
-			var rule = AddRule(new[] { property1Expression, property2Expression }, validateDelegate);
+			var rule = AddRule(new[] { property1Name, property2Name }, validateDelegate);
 
 			return rule;
 		}
@@ -169,7 +160,7 @@ namespace MvvmValidation
 		/// </param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IValidationRule AddRule([NotNull] IEnumerable<Expression<Func<object>>> properties, [NotNull] Func<RuleResult> validateDelegate)
+		public IValidationRule AddRule([NotNull] IEnumerable<string> properties, [NotNull] Func<RuleResult> validateDelegate)
 		{
 			Guard.NotNull(properties, nameof(properties));
 			Guard.Assert(properties.Any(), "properties.Any()");
@@ -217,9 +208,9 @@ namespace MvvmValidation
 		}
 
 		/// <summary>
-		/// Adds an asynchronious validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyExpression"/> parameter.
+		/// Adds an asynchronious validation rule that validates a property of an object. The target property is specified in the <paramref name="propertyName"/> parameter.
 		/// </summary>
-		/// <param name="propertyExpression">The target property expression. Example: AddAsyncRule(() => MyProperty, ...).</param>
+		/// <param name="propertyName">The target property name. Example: AddAsyncRule(nameof(MyProperty), ...).</param>
 		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
 		/// <example>
 		/// <code>
@@ -233,12 +224,12 @@ namespace MvvmValidation
 		/// </example>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IAsyncValidationRule AddAsyncRule([NotNull] Expression<Func<object>> propertyExpression, [NotNull] Func<Task<RuleResult>> validateAction)
+		public IAsyncValidationRule AddAsyncRule([NotNull] string propertyName, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
-			Guard.NotNull(propertyExpression, nameof(propertyExpression));
+			Guard.NotNull(propertyName, nameof(propertyName));
 			Guard.NotNull(validateAction, nameof(validateAction));
 
-			var rule = AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
+			var rule = AddAsyncRule(new[] { propertyName }.Select(c => c), validateAction);
 
 			return rule;
 		}
@@ -246,8 +237,8 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates two dependent properties.
 		/// </summary>
-		/// <param name="property1Expression">The first target property expression. Example: AddRule(() => MyProperty, ...).</param>
-		/// <param name="property2Expression">The second target property expression. Example: AddRule(..., () => MyProperty, ...).</param>
+		/// <param name="property1Name">The first target property name. Example: AddRule(nameof(MyProperty), ...).</param>
+		/// <param name="property2Name">The second target property name. Example: AddRule(..., nameof(MyProperty), ...).</param>
 		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
 		/// <example>
 		/// <code>
@@ -261,13 +252,13 @@ namespace MvvmValidation
 		/// </example>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IAsyncValidationRule AddAsyncRule([NotNull] Expression<Func<object>> property1Expression, [NotNull] Expression<Func<object>> property2Expression, [NotNull] Func<Task<RuleResult>> validateAction)
+		public IAsyncValidationRule AddAsyncRule([NotNull] string property1Name, [NotNull] string property2Name, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
-			Guard.NotNull(property1Expression, nameof(property1Expression));
-			Guard.NotNull(property2Expression, nameof(property2Expression));
+			Guard.NotNull(property1Name, nameof(property1Name));
+			Guard.NotNull(property2Name, nameof(property2Name));
 			Guard.NotNull(validateAction, nameof(validateAction));
 
-			var rule = AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
+			var rule = AddAsyncRule(new[] { property1Name, property2Name }, validateAction);
 
 			return rule;
 		}
@@ -275,11 +266,11 @@ namespace MvvmValidation
 		/// <summary>
 		/// Adds an asynchronious validation rule that validates a collection of dependent properties.
 		/// </summary>
-		/// <param name="properties">The collection of target property expressions. Example: AddAsyncRule(new [] { () => MyProperty1, () => MyProperty2, () => MyProperty3 }, ...).</param>
+		/// <param name="properties">The collection of target property names. Example: AddAsyncRule(new [] { nameof(MyProperty1), nameof(MyProperty2), nameof(MyProperty3) }, ...).</param>
 		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public IAsyncValidationRule AddAsyncRule([NotNull] IEnumerable<Expression<Func<object>>> properties, [NotNull] Func<Task<RuleResult>> validateAction)
+		public IAsyncValidationRule AddAsyncRule([NotNull] IEnumerable<string> properties, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
 			Guard.NotNull(properties, nameof(properties));
 			Guard.Assert(properties.Any(), "properties.Any()");
@@ -365,7 +356,7 @@ namespace MvvmValidation
 			return rule;
 		}
 
-		private static IValidationTarget CreatePropertyValidationTarget(IEnumerable<Expression<Func<object>>> properties)
+		private static IValidationTarget CreatePropertyValidationTarget(IEnumerable<string> properties)
 		{
 			IValidationTarget target;
 
@@ -378,7 +369,7 @@ namespace MvvmValidation
 			}
 			else
 			{
-				target = new PropertyCollectionValidationTarget(properties.Select(p => PropertyName.For(p)));
+				target = new PropertyCollectionValidationTarget(properties);
 			}
 			return target;
 		}
@@ -439,16 +430,16 @@ namespace MvvmValidation
 		}
 
 		/// <summary>
-		/// Returns the current validation state for a property represented by <paramref name="propertyExpression"/> (all errors tracked by this instance of <see cref="ValidationHelper"/>).
+		/// Returns the current validation state for a property represented by <paramref name="targetName"/> (all errors tracked by this instance of <see cref="ValidationHelper"/>).
 		/// </summary>
-		/// <param name="propertyExpression">The property for which to retrieve the validation state. Example: GetResult(() => MyProperty)</param>
+		/// <param name="targetName">The property for which to retrieve the validation state. Example: GetResult(() => MyProperty)</param>
 		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public ValidationResult GetResult([NotNull] Expression<Func<object>> propertyExpression)
+		public ValidationResult GetResult([NotNull] string targetName)
 		{
-			Guard.NotNull(propertyExpression, nameof(propertyExpression));
+			Guard.NotNull(targetName, nameof(targetName));
 
-			return GetResult(PropertyName.For(propertyExpression));
+			return GetResult((object)targetName);
 		}
 
 		private ValidationResult GetResultInternal(object target)
@@ -498,16 +489,16 @@ namespace MvvmValidation
 		#region Validation Execution
 
 		/// <summary>
-		/// Validates (executes validation rules) the property specified in the <paramref name="propertyPathExpression"/> parameter.
+		/// Validates (executes validation rules) the property specified in the <paramref name="targetName"/> parameter.
 		/// </summary>
-		/// <param name="propertyPathExpression">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
+		/// <param name="targetName">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
 		/// <returns>Result that indicates whether the given property is valid and a collection of errors, if not valid.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public ValidationResult Validate([NotNull] Expression<Func<object>> propertyPathExpression)
+		public ValidationResult Validate([NotNull] string targetName)
 		{
-			Guard.NotNull(propertyPathExpression, nameof(propertyPathExpression));
+			Guard.NotNull(targetName, nameof(targetName));
 
-			return ValidateInternal(PropertyName.For(propertyPathExpression));
+			return ValidateInternal(targetName);
 		}
 
 		/// <summary>
@@ -762,16 +753,16 @@ namespace MvvmValidation
 
 		/// <summary>
 		/// Executes validation for the given property asynchronously. 
-		/// Executes all (normal and async) validation rules for the property specified in the <paramref name="propertyPathExpression"/>.
+		/// Executes all (normal and async) validation rules for the property specified in the <paramref name="targetName"/>.
 		/// </summary>
-		/// <param name="propertyPathExpression">Expression for the property to validate. Example: ValidateAsync(() => MyProperty, ...).</param>
+		/// <param name="targetName">Expression for the property to validate. Example: ValidateAsync(() => MyProperty, ...).</param>
 		/// <returns>Task that represents the validation operation.</returns>
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		public Task<ValidationResult> ValidateAsync([NotNull] Expression<Func<object>> propertyPathExpression)
+		public Task<ValidationResult> ValidateAsync([NotNull] string targetName)
 		{
-			Guard.NotNull(propertyPathExpression, nameof(propertyPathExpression));
+			Guard.NotNull(targetName, nameof(targetName));
 
-			return ValidateInternalAsync(PropertyName.For(propertyPathExpression));
+			return ValidateInternalAsync(targetName);
 		}
 
 		/// <summary>
@@ -841,11 +832,7 @@ namespace MvvmValidation
 				return;
 			}
 
-			var handler = ResultChanged;
-			if (handler != null)
-			{
-				handler(this, new ValidationResultChangedEventArgs(target, newResult));
-			}
+		    ResultChanged?.Invoke(this, new ValidationResultChangedEventArgs(target, newResult));
 		}
 
 		#endregion

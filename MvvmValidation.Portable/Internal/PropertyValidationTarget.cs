@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq.Expressions;
 
 namespace MvvmValidation.Internal
 {
 	internal class PropertyValidationTarget : IValidationTarget, IEquatable<PropertyValidationTarget>
 	{
-		public PropertyValidationTarget(Expression<Func<object>> propertyNameExpression)
-			: this(Internal.PropertyName.For(propertyNameExpression))
-		{
-		}
-
-		private PropertyValidationTarget(string propertyName)
+		public PropertyValidationTarget(string propertyName)
 		{
 			Guard.NotNullOrEmpty(propertyName, nameof(propertyName));
 

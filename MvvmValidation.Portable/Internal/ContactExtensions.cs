@@ -1,8 +1,6 @@
 ﻿//  Include this file in your project if your project uses
 //  ContractArgumentValidator or ContractAbbreviator methods
 
-using System;
-
 // ReSharper disable CheckNamespace
 
 namespace System.Diagnostics.Contracts

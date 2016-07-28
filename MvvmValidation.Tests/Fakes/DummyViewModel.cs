@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MvvmValidation.Tests.Fakes
+﻿namespace MvvmValidation.Tests.Fakes
 {
 	public class DummyViewModel : ValidatableViewModel
 	{

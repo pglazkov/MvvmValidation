@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace MvvmValidation
+﻿namespace MvvmValidation
 {
 	/// <summary>
 	/// Represents an asynchronous validation rule.

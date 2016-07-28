@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
 using Xunit;
 
@@ -154,11 +153,8 @@ namespace MvvmValidation.Tests
 			// Arrange
 			var validation = new ValidationHelper();
 			var dummy = new DummyViewModel();
-			validation.AddRule(() => dummy.Foo, () => dummy.Bar,
-							   () =>
-							   {
-								   return RuleResult.Invalid("Error");
-							   });
+			validation.AddRule(nameof(dummy.Foo), nameof(dummy.Bar),
+							   () => RuleResult.Invalid("Error"));
 
 			// Act
 			var result = validation.ValidateAll();
@@ -167,8 +163,8 @@ namespace MvvmValidation.Tests
 			Assert.False(result.IsValid);
 
 			Assert.True(result.ErrorList.Count == 2, "There must be two errors: one for each property target");
-			Assert.True(Equals(result.ErrorList[0].Target, "dummy.Foo"), "Target for the first error must be dummy.Foo");
-			Assert.True(Equals(result.ErrorList[1].Target, "dummy.Bar"), "Target for the second error must be dummy.Bar");
+			Assert.True(Equals(result.ErrorList[0].Target, "Foo"), "Target for the first error must be Foo");
+			Assert.True(Equals(result.ErrorList[1].Target, "Bar"), "Target for the second error must be Bar");
 		}
 
 		[Fact]
@@ -178,7 +174,7 @@ namespace MvvmValidation.Tests
 			var validation = new ValidationHelper();
 			var dummy = new DummyViewModel();
 
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 							   () => RuleResult.Invalid("Error"));
 
 			var eventFiredTimes = 0;
@@ -202,11 +198,11 @@ namespace MvvmValidation.Tests
 			var validation = new ValidationHelper();
 			var dummy = new DummyViewModel();
 
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 							   () => RuleResult.Invalid("Error"));
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 							   RuleResult.Valid);
-			validation.AddRule(() => dummy.Bar,
+			validation.AddRule(nameof(dummy.Bar),
 								RuleResult.Valid);
 			validation.AddRule(() => RuleResult.Invalid("Error"));
 
@@ -235,7 +231,7 @@ namespace MvvmValidation.Tests
 			var fooResult = RuleResult.Valid();
 
 			// ReSharper disable AccessToModifiedClosure // Intended
-			validation.AddRule(() => dummy.Foo, () => fooResult);
+			validation.AddRule(nameof(dummy.Foo), () => fooResult);
 			// ReSharper restore AccessToModifiedClosure
 
 			var onResultChanged = new Action<ValidationResultChangedEventArgs>(r => { });
@@ -277,7 +273,7 @@ namespace MvvmValidation.Tests
 			var validation = new ValidationHelper();
 			var dummy = new DummyViewModel();
 
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 				() =>
 				{
 					if (string.IsNullOrEmpty(dummy.Foo))
@@ -334,13 +330,13 @@ namespace MvvmValidation.Tests
 			bool firstRuleExecuted = false;
 			bool secondRuleExecuted = false;
 
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 							   () =>
 							   {
 								   firstRuleExecuted = true;
 								   return RuleResult.Invalid("Error1");
 							   });
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 							   () =>
 							   {
 								   secondRuleExecuted = true;
@@ -367,12 +363,12 @@ namespace MvvmValidation.Tests
 			RuleResult firstRuleResult = RuleResult.Valid();
 			RuleResult secondRuleResult = RuleResult.Invalid("Error2");
 
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 							   () =>
 							   {
 								   return firstRuleResult;
 							   });
-			validation.AddRule(() => dummy.Foo,
+			validation.AddRule(nameof(dummy.Foo),
 							   () =>
 							   {
 								   return secondRuleResult;
@@ -388,7 +384,7 @@ namespace MvvmValidation.Tests
 
 			// VERIFY
 
-			var result = validation.GetResult(() => dummy.Foo);
+			var result = validation.GetResult(nameof(dummy.Foo));
 
 			Assert.False(result.IsValid);
 			Assert.Equal(1, result.ErrorList.Count);
@@ -521,8 +517,8 @@ namespace MvvmValidation.Tests
 
 			var validation = new ValidationHelper();
 
-			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error2"));
-			var invalidRule = validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error"));
+			validation.AddRule(nameof(dummy.Foo), () => RuleResult.Invalid("error2"));
+			var invalidRule = validation.AddRule(nameof(dummy.Foo), () => RuleResult.Invalid("error"));
 
 			var validationResult = validation.ValidateAll();
 
@@ -532,7 +528,7 @@ namespace MvvmValidation.Tests
 
 			validation.ResultChanged += (sender, args) =>
 			{
-				Assert.Equal(PropertyName.For(() => dummy.Foo), args.Target);
+				Assert.Equal(nameof(dummy.Foo), args.Target);
 				Assert.False(args.NewResult.IsValid);
 
 				resultChangedEventFired = true;
@@ -589,8 +585,8 @@ namespace MvvmValidation.Tests
 			var dummy = new DummyViewModel();
 
 			var validation = new ValidationHelper();
-			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error1"));
-			validation.AddRule(() => dummy.Bar, () => RuleResult.Invalid("error2"));
+			validation.AddRule(nameof(dummy.Foo), () => RuleResult.Invalid("error1"));
+			validation.AddRule(nameof(dummy.Bar), () => RuleResult.Invalid("error2"));
 
 			validation.ValidateAll();
 
@@ -615,8 +611,8 @@ namespace MvvmValidation.Tests
 			var dummy = new DummyViewModel();
 
 			var validation = new ValidationHelper();
-			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error1"));
-			validation.AddRule(() => dummy.Bar, () => RuleResult.Invalid("error2"));
+			validation.AddRule(nameof(dummy.Foo), () => RuleResult.Invalid("error1"));
+			validation.AddRule(nameof(dummy.Bar), () => RuleResult.Invalid("error2"));
 
 			validation.ValidateAll();
 
@@ -625,8 +621,8 @@ namespace MvvmValidation.Tests
 
 			// VERIFY
 			Assert.True(validation.GetResult().IsValid);
-			Assert.True(validation.GetResult(() => dummy.Foo).IsValid);
-			Assert.True(validation.GetResult(() => dummy.Bar).IsValid);
+			Assert.True(validation.GetResult(nameof(dummy.Foo)).IsValid);
+			Assert.True(validation.GetResult(nameof(dummy.Bar)).IsValid);
 		}
 
 		[Fact]
@@ -637,8 +633,8 @@ namespace MvvmValidation.Tests
 
 			var validation = new ValidationHelper();
 			validation.AddRule(RuleResult.Valid);
-			validation.AddRule(() => dummy.Foo, () => RuleResult.Invalid("error1"));
-			validation.AddRule(() => dummy.Bar, () => RuleResult.Invalid("error2"));
+			validation.AddRule(nameof(dummy.Foo), () => RuleResult.Invalid("error1"));
+			validation.AddRule(nameof(dummy.Bar), () => RuleResult.Invalid("error2"));
 
 			validation.ValidateAll();
 
@@ -647,11 +643,11 @@ namespace MvvmValidation.Tests
 
 			validation.ResultChanged += (sender, args) =>
 			{
-				if (Equals(args.Target, PropertyName.For(() => dummy.Foo)))
+				if (Equals(args.Target, nameof(dummy.Foo)))
 				{
 					eventFiredForFoo = true;
 				}
-				else if (Equals(args.Target, PropertyName.For(() => dummy.Bar)))
+				else if (Equals(args.Target, nameof(dummy.Bar)))
 				{
 					evernFiredForBar = true;
 				}

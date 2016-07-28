@@ -84,14 +84,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 				var validation = new ValidationHelper();
 
 				validation.AddAsyncRule(
-					() => vm.Foo, 
-					() => vm.Bar,
+					nameof(vm.Foo), 
+					nameof(vm.Bar),
                     async () =>
                     {
                         return await Task.Run(() => RuleResult.Assert(validCondition(), "Foo must be different than bar"));
 					});
 
-				validation.ValidateAsync(() => vm.Bar).ContinueWith(r =>
+				validation.ValidateAsync(nameof(vm.Bar)).ContinueWith(r =>
 				{
 					Assert.False(r.Result.IsValid, "Validation must fail");
 					Assert.True(r.Result.ErrorList.Count == 2, "There must be 2 errors: one for each dependant property");
@@ -308,14 +308,14 @@ namespace MvvmValidation.Tests.IntegrationTests
 				bool firstRuleExecuted = false;
 				bool secondRuleExecuted = false;
 
-			    validation.AddRule(() => dummy.Foo,
+			    validation.AddRule(nameof(dummy.Foo),
 			        () =>
 			        {
 			            firstRuleExecuted = true;
 			            return RuleResult.Invalid("Error1");
 			        });
 
-				validation.AddAsyncRule(() => dummy.Foo,
+				validation.AddAsyncRule(nameof(dummy.Foo),
 				    () =>
 				    {
 				        return Task.Run(() =>
@@ -357,7 +357,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				int uiThreadId = Thread.CurrentThread.ManagedThreadId;
 				int validationThreadId = uiThreadId;
 
-			    validation.AddAsyncRule(() => dummy.Foo,
+			    validation.AddAsyncRule(nameof(dummy.Foo),
 			        () =>
 			        {
 			            return Task.Run(() =>
@@ -784,7 +784,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 				var vm = new DummyViewModel();
 				var syncEvent = new ManualResetEvent(false);
 
-			    vm.Validator.AddAsyncRule(() => vm.Foo, () =>
+			    vm.Validator.AddAsyncRule(nameof(vm.Foo), () =>
 			    {
 			        return Task.Run(() => RuleResult.Invalid("Test"));
 			    });

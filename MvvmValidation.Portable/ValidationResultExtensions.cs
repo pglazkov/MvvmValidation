@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using MvvmValidation.Internal;
 
 namespace MvvmValidation

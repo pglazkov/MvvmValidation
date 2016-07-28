@@ -45,7 +45,7 @@ namespace FormValidationExample.ViewModel
 			{
 				userName = value;
 				RaisePropertyChanged("UserName");
-				Validator.ValidateAsync(() => UserName);
+				Validator.ValidateAsync(nameof(UserName));
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace FormValidationExample.ViewModel
 			{
 				nameInfo.FirstName = value;
 				RaisePropertyChanged("FirstName");
-				Validator.Validate(() => FirstName);
+				Validator.Validate(nameof(FirstName));
 			}
 		}
 
@@ -67,7 +67,7 @@ namespace FormValidationExample.ViewModel
 			{
 				nameInfo.LastName = value;
 				RaisePropertyChanged("LastName");
-				Validator.Validate(() => LastName);
+				Validator.Validate(nameof(LastName));
 			}
  		}
 
@@ -78,7 +78,7 @@ namespace FormValidationExample.ViewModel
 			{
 				email = value;
 				RaisePropertyChanged("Email");
-				Validator.Validate(() => Email);
+				Validator.Validate(nameof(Email));
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace FormValidationExample.ViewModel
 			{
 				password = value;
 				RaisePropertyChanged("Password");
-				Validator.Validate(() => Password);
+				Validator.Validate(nameof(Password));
 			}
 		}
 
@@ -100,7 +100,7 @@ namespace FormValidationExample.ViewModel
 			{
 				passwordConfirmation = value;
 				RaisePropertyChanged("PasswordConfirmation");
-				Validator.Validate(() => PasswordConfirmation);
+				Validator.Validate(nameof(PasswordConfirmation));
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace FormValidationExample.ViewModel
 		{
 			Validator.AddRequiredRule(() => UserName, "User Name is required");
 
-			Validator.AddAsyncRule(() => UserName,
+			Validator.AddAsyncRule(nameof(UserName),
 				async () =>
 				{
 					var isAvailable = await UserRegistrationService.IsUserNameAvailable(UserName).ToTask();
@@ -145,7 +145,7 @@ namespace FormValidationExample.ViewModel
 
 			Validator.AddRequiredRule(() => Email, "Email is required");
 
-			Validator.AddRule(() => Email,
+			Validator.AddRule(nameof(Email),
 			                  () =>
 			                  {
 			                  	const string regexPattern =
@@ -156,21 +156,21 @@ namespace FormValidationExample.ViewModel
 
 			Validator.AddRequiredRule(() => Password, "Password is required");
 
-			Validator.AddRule(() => Password,
+			Validator.AddRule(nameof(Password),
 			                  () => RuleResult.Assert(Password.Length >= 6,
 			                                          "Password must contain at least 6 characters"));
 
-			Validator.AddRule(() => Password,
+			Validator.AddRule(nameof(Password),
 			                  () => RuleResult.Assert((!Password.All(Char.IsLower) &&
 			                                           !Password.All(Char.IsUpper) &&
 			                                           !Password.All(Char.IsDigit)),
 			                                          "Password must contain both lower case and upper case letters"));
 
-			Validator.AddRule(() => Password,
+			Validator.AddRule(nameof(Password),
 			                  () => RuleResult.Assert(Password.Any(Char.IsDigit),
 			                                          "Password must contain at least one digit"));
 
-			Validator.AddRule(() => PasswordConfirmation,
+			Validator.AddRule(nameof(PasswordConfirmation),
 			                  () =>
 			                  {
 			                  	if (!string.IsNullOrEmpty(Password) && string.IsNullOrEmpty(PasswordConfirmation))
@@ -181,8 +181,8 @@ namespace FormValidationExample.ViewModel
 			                  	return RuleResult.Valid();
 			                  });
 
-			Validator.AddRule(() => Password,
-			                  () => PasswordConfirmation,
+			Validator.AddRule(nameof(Password),
+			                  nameof(PasswordConfirmation),
 			                  () =>
 			                  {
 			                  	if (!string.IsNullOrEmpty(Password) && !string.IsNullOrEmpty(PasswordConfirmation))
@@ -198,11 +198,11 @@ namespace FormValidationExample.ViewModel
 
 		private void OnSelectedInterestsChanged(object sender, EventArgs e)
 		{
-			var currentState = Validator.GetResult(() => InterestSelectorViewModel);
+			var currentState = Validator.GetResult(nameof(InterestSelectorViewModel));
 
 			if (!currentState.IsValid)
 			{
-				Validator.ValidateAsync(() => InterestSelectorViewModel);
+				Validator.ValidateAsync(nameof(InterestSelectorViewModel));
 			}
 		}
 

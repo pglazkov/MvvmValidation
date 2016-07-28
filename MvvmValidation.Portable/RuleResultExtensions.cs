@@ -1,4 +1,3 @@
-using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
 using MvvmValidation.Internal;

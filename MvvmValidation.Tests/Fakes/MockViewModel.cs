@@ -36,8 +36,8 @@ namespace MvvmValidation.Tests.Fakes
 
 				stringProperty = value;
 
-				Validation.Validate(() => StringProperty);
-				RaisePropertyChanged(() => StringProperty);
+				Validation.Validate(nameof(StringProperty));
+				RaisePropertyChanged(nameof(StringProperty));
 			}
 		}
 
@@ -54,9 +54,9 @@ namespace MvvmValidation.Tests.Fakes
 
 				stringProperty2 = value;
 
-				Validation.ValidateAsync(() => StringProperty2);
+				Validation.ValidateAsync(nameof(StringProperty2));
 
-				RaisePropertyChanged(() => StringProperty2);
+				RaisePropertyChanged(nameof(StringProperty2));
 			}
 		}
 
@@ -73,8 +73,8 @@ namespace MvvmValidation.Tests.Fakes
 
 				intProperty = value;
 
-				Validation.Validate(() => IntProperty);
-				RaisePropertyChanged(() => IntProperty);
+				Validation.Validate(nameof(IntProperty));
+				RaisePropertyChanged(nameof(IntProperty));
 			}
 		}
 
@@ -91,8 +91,8 @@ namespace MvvmValidation.Tests.Fakes
 
 				rangeStart = value;
 
-				Validation.Validate(() => RangeStart);
-				RaisePropertyChanged(() => RangeStart);
+				Validation.Validate(nameof(RangeStart));
+				RaisePropertyChanged(nameof(RangeStart));
 			}
 		}
 
@@ -109,8 +109,8 @@ namespace MvvmValidation.Tests.Fakes
 
 				rangeEnd = value;
 
-				Validation.Validate(() => RangeEnd);
-				RaisePropertyChanged(() => RangeEnd);
+				Validation.Validate(nameof(RangeEnd));
+				RaisePropertyChanged(nameof(RangeEnd));
 			}
 		}
 
@@ -142,31 +142,25 @@ namespace MvvmValidation.Tests.Fakes
 			var validationRules = new ValidationHelper();
 
 			// Simple properties
-			validationRules.AddRule(() => StringProperty,
-			                        () => { return RuleResult.Assert(!string.IsNullOrEmpty(StringProperty), "StringProperty cannot be null or empty string"); });
+			validationRules.AddRule(nameof(StringProperty),
+			                        () => RuleResult.Assert(!string.IsNullOrEmpty(StringProperty), "StringProperty cannot be null or empty string"));
 
-			validationRules.AddRule(() => IntProperty,
-			                        () => { return RuleResult.Assert(IntProperty > 0, "IntProperty should be greater than zero."); });
+			validationRules.AddRule(nameof(IntProperty),
+			                        () => RuleResult.Assert(IntProperty > 0, "IntProperty should be greater than zero."));
 
 			// Dependant properties
-			validationRules.AddRule(() => RangeStart,
-			                        () => RangeEnd,
-			                        () =>
-			                        {
-			                        	return RuleResult.Assert(RangeEnd > RangeStart, "RangeEnd must be grater than RangeStart");
-			                        });
+			validationRules.AddRule(nameof(RangeStart),
+			                        nameof(RangeEnd),
+			                        () => RuleResult.Assert(RangeEnd > RangeStart, "RangeEnd must be grater than RangeStart"));
 			
 			// Long-running validation (simulates call to a web service or something)
 			validationRules.AddRule(
-				() => StringProperty2,
+				nameof(StringProperty2),
 				() =>
 				{
-					if (SyncValidationRuleExecutedAsyncroniouslyDelegate != null)
-					{
-						SyncValidationRuleExecutedAsyncroniouslyDelegate();
-					}
+                    SyncValidationRuleExecutedAsyncroniouslyDelegate?.Invoke();
 
-					return RuleResult.Assert(!string.IsNullOrEmpty(StringProperty2), "StringProperty2 cannot be null or empty string");
+                    return RuleResult.Assert(!string.IsNullOrEmpty(StringProperty2), "StringProperty2 cannot be null or empty string");
 				});
 
 			Validation = validationRules;

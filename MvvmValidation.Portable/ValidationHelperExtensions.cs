@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using MvvmValidation.Internal;
@@ -73,14 +70,10 @@ namespace MvvmValidation
 
 				if (validatable != null)
 				{
-#if SILVERLIGHT_4
-					validatable.Validate(result =>
-					{
-#else
                     return validatable.Validate().ContinueWith(r =>
                     {
                         ValidationResult result = r.Result;
-#endif
+
 						var ruleResult = new RuleResult();
 
 						foreach (ValidationError error in result.ErrorList)
