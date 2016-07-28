@@ -23,8 +23,7 @@ namespace MvvmValidation
 		[NotNull]
 		public static RuleResult Invalid([NotNull] string error)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(error));
-			Contract.Ensures(Contract.Result<RuleResult>() != null);
+			Guard.NotNullOrEmpty(error, nameof(error));
 
 			return new RuleResult(error);
 		}
@@ -36,8 +35,6 @@ namespace MvvmValidation
 		[NotNull]
 		public static RuleResult Valid()
 		{
-			Contract.Ensures(Contract.Result<RuleResult>() != null);
-
 			return new RuleResult();
 		}
 
@@ -51,8 +48,7 @@ namespace MvvmValidation
 		[NotNull]
 		public static RuleResult Assert(bool condition, [NotNull] string errorMessage)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(errorMessage));
-			Contract.Ensures(Contract.Result<RuleResult>() != null);
+			Guard.NotNullOrEmpty(errorMessage, nameof(errorMessage));
 
 			if (!condition)
 			{
@@ -76,12 +72,12 @@ namespace MvvmValidation
 		private RuleResult(string error)
 			: this(false, new[] {error})
 		{
-			Contract.Requires(!string.IsNullOrEmpty(error));
+			Guard.NotNullOrEmpty(error, nameof(error));
 		}
 
 		private RuleResult(bool isValid, IEnumerable<string> errors)
 		{
-			Contract.Requires(errors != null);
+			Guard.NotNull(errors, nameof(errors));
 
 			IsValid = isValid;
 
@@ -101,8 +97,6 @@ namespace MvvmValidation
 		{
 			get
 			{
-				Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
-
 				return errors;
 			}
 		}
@@ -113,7 +107,7 @@ namespace MvvmValidation
 		/// <param name="error">The error message to add.</param>
 		public void AddError([NotNull] string error)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(error));
+			Guard.NotNullOrEmpty(error, nameof(error));
 
 			errors.Add(error);
 			IsValid = false;

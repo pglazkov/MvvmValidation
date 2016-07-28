@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
@@ -67,7 +68,7 @@ namespace MvvmValidation
 
 		private void AddError(ValidationError error)
 		{
-			Contract.Requires(error != null);
+			Guard.NotNull(error, nameof(error));
 
 			ErrorList.Add(error);
 		}
@@ -87,7 +88,7 @@ namespace MvvmValidation
 		[NotNull]
 		public string ToString([NotNull] IValidationResultFormatter formatter)
 		{
-			Contract.Requires(formatter != null);
+			Guard.NotNull(formatter, nameof(formatter));
 
 			string result = formatter.Format(this);
 
@@ -102,8 +103,6 @@ namespace MvvmValidation
 		/// </returns>
 		public override string ToString()
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			var result = ToString(new NumberedListValidationResultFormatter());
 
 			return result;

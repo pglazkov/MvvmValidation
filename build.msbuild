@@ -4,8 +4,8 @@
 	<UsingTask AssemblyFile=".\packages\xunit.2.0.0-alpha-build1611\lib\net45\xunit.runner.msbuild.dll" TaskName="Xunit.Runner.MSBuild.xunit"/>
 
 	<PropertyGroup>
-		<Major>2</Major>
-		<Minor>1</Minor>
+		<Major>3</Major>
+		<Minor>0</Minor>
 		<Patch>0</Patch>
 		<PreReleaseString>beta</PreReleaseString>
 
@@ -19,8 +19,7 @@
 		<SolutionFilePath>$(SourceDir)MvvmValidation.sln</SolutionFilePath>
 		<OutputFolderPath>$(SourceDir)Output</OutputFolderPath>
 		<VersionInfoPath>$(SourceDir)VersionInfo.cs</VersionInfoPath>
-		<PortableAssemblyOutputFolder>$(OutputFolderPath)\lib\portable-win8+net45+sl5+wp8</PortableAssemblyOutputFolder>
-		<Net45NuGetOutputFolder>$(OutputFolderPath)\lib\net45</Net45NuGetOutputFolder>
+		<PortableAssemblyOutputFolder>$(OutputFolderPath)\lib\netstandard1.0</PortableAssemblyOutputFolder>
 		<MainAssemblyWithVersion>$(PortableAssemblyOutputFolder)\MvvmValidation.dll</MainAssemblyWithVersion>
 		<NuGetPreRelaseVersionSuffix>-beta</NuGetPreRelaseVersionSuffix>
 		<UnitTestAssembliesPath>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssembliesPath>
@@ -92,10 +91,6 @@
 	</Target>
 
 	<Target Name="CopyOutputToAdditionalNuGetFolders">
-		<ItemGroup>
-			<Net45Files Include="$(PortableAssemblyOutputFolder)\*.*" />
-		</ItemGroup>
-		<Copy SourceFiles="@(Net45Files)" DestinationFolder="$(Net45NuGetOutputFolder)"/>
 	</Target>
 	
 	<Target Name="CleanupAfterBuild" DependsOnTargets="$(CleanupAfterBuildDependsOn)">

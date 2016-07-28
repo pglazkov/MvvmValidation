@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
@@ -11,7 +11,7 @@ namespace MvvmValidation
 	{
 		internal ValidationResultChangedEventArgs(object target, ValidationResult newResult)
 		{
-			Contract.Requires(newResult != null);
+			Guard.NotNull(newResult, nameof(newResult));
 
 			Target = target;
 			NewResult = newResult;

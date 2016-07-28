@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
@@ -19,7 +20,7 @@ namespace MvvmValidation
 		[Obsolete("Use method that returns Task<ValidationResult> instead.")]
 		public void ValidateAsync([NotNull] Expression<Func<object>> propertyPathExpression, Action<ValidationResult> onCompleted)
 		{
-			Contract.Requires(propertyPathExpression != null);
+			Guard.NotNull(propertyPathExpression, nameof(propertyPathExpression));
 
 			RunValidationWithCallback(() => ValidateAsync(propertyPathExpression), onCompleted);
 		}
@@ -33,7 +34,7 @@ namespace MvvmValidation
 		[Obsolete("Use method that returns Task<ValidationResult> instead.")]
 		public void ValidateAsync([NotNull] object target, Action<ValidationResult> onCompleted)
 		{
-			Contract.Requires(target != null);
+			Guard.NotNull(target, nameof(target));
 
 			RunValidationWithCallback(() => ValidateAsync(target), onCompleted);
 		}

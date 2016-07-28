@@ -3,18 +3,10 @@
 namespace MvvmValidation
 {
 	/// <summary>
-	/// Represents an asynchronious validation rule.
+	/// Represents an asynchronous validation rule.
 	/// </summary>
-	[ContractClass(typeof(IAsyncValidationRuleContract))]
 	public interface IAsyncValidationRule : IValidationRule
 	{
 
-	}
-
-	[ContractClassFor(typeof(IAsyncValidationRule))]
-// ReSharper disable InconsistentNaming
-	internal abstract class IAsyncValidationRuleContract : IAsyncValidationRule
-	{
-// ReSharper restore InconsistentNaming
 	}
 }

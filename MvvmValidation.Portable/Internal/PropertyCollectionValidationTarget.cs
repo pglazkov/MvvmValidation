@@ -9,8 +9,8 @@ namespace MvvmValidation.Internal
 	{
 		public PropertyCollectionValidationTarget(IEnumerable<string> properties)
 		{
-			Contract.Requires(properties != null);
-			Contract.Requires(properties.Any());
+			Guard.NotNull(properties != null, nameof(properties));
+            Guard.Assert(properties.Any(), "properties.Any()");
 
 			Properties = properties;
 		}

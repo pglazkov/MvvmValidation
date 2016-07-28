@@ -77,9 +77,8 @@ namespace MvvmValidation
 		[NotNull]
 		public IValidationRule AddRule([NotNull] object target, [NotNull] Func<RuleResult> validateDelegate)
 		{
-			Contract.Requires(target != null);
-			Contract.Requires(validateDelegate != null);
-			Contract.Ensures(Contract.Result<IValidationRule>() != null);
+			Guard.NotNull(target, nameof(target));
+			Guard.NotNull(validateDelegate, nameof(validateDelegate));
 
 			var rule = AddRuleCore(new GenericValidationTarget(target), validateDelegate, null);
 
@@ -98,8 +97,7 @@ namespace MvvmValidation
 		[NotNull]
 		public IValidationRule AddRule([NotNull] Func<RuleResult> validateDelegate)
 		{
-			Contract.Requires(validateDelegate != null);
-			Contract.Ensures(Contract.Result<IValidationRule>() != null);
+			Guard.NotNull(validateDelegate, nameof(validateDelegate));
 
 			var rule = AddRuleCore(new UndefinedValidationTarget(), validateDelegate, null);
 
@@ -124,9 +122,8 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IValidationRule AddRule([NotNull] Expression<Func<object>> propertyExpression, [NotNull] Func<RuleResult> validateDelegate)
 		{
-			Contract.Requires(propertyExpression != null);
-			Contract.Requires(validateDelegate != null);
-			Contract.Ensures(Contract.Result<IValidationRule>() != null);
+			Guard.NotNull(propertyExpression, nameof(propertyExpression));
+			Guard.NotNull(validateDelegate, nameof(validateDelegate));
 
 			var rule = AddRule(new[] { propertyExpression }, validateDelegate);
 
@@ -152,10 +149,9 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IValidationRule AddRule([NotNull] Expression<Func<object>> property1Expression, [NotNull] Expression<Func<object>> property2Expression, [NotNull] Func<RuleResult> validateDelegate)
 		{
-			Contract.Requires(property1Expression != null);
-			Contract.Requires(property2Expression != null);
-			Contract.Requires(validateDelegate != null);
-			Contract.Ensures(Contract.Result<IValidationRule>() != null);
+			Guard.NotNull(property1Expression, nameof(property1Expression));
+			Guard.NotNull(property2Expression, nameof(property2Expression));
+			Guard.NotNull(validateDelegate, nameof(validateDelegate));
 
 			var rule = AddRule(new[] { property1Expression, property2Expression }, validateDelegate);
 
@@ -175,10 +171,9 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IValidationRule AddRule([NotNull] IEnumerable<Expression<Func<object>>> properties, [NotNull] Func<RuleResult> validateDelegate)
 		{
-			Contract.Requires(properties != null);
-			Contract.Requires(properties.Any());
-			Contract.Requires(validateDelegate != null);
-			Contract.Ensures(Contract.Result<IValidationRule>() != null);
+			Guard.NotNull(properties, nameof(properties));
+			Guard.Assert(properties.Any(), "properties.Any()");
+			Guard.NotNull(validateDelegate, nameof(validateDelegate));
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
 
@@ -198,9 +193,8 @@ namespace MvvmValidation
 		[NotNull]
 		public IAsyncValidationRule AddAsyncRule([NotNull] object target, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
-			Contract.Requires(target != null);
-			Contract.Requires(validateAction != null);
-			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
+			Guard.NotNull(target, nameof(target));
+			Guard.NotNull(validateAction, nameof(validateAction));
 
 			var rule = AddRuleCore(new GenericValidationTarget(target), null, validateAction);
 
@@ -215,8 +209,7 @@ namespace MvvmValidation
 		[NotNull]
 		public IAsyncValidationRule AddAsyncRule([NotNull] Func<Task<RuleResult>> validateAction)
 		{
-			Contract.Requires(validateAction != null);
-			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
+			Guard.NotNull(validateAction, nameof(validateAction));
 
 			var rule = AddRuleCore(new UndefinedValidationTarget(), null, validateAction);
 
@@ -242,9 +235,8 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IAsyncValidationRule AddAsyncRule([NotNull] Expression<Func<object>> propertyExpression, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
-			Contract.Requires(propertyExpression != null);
-			Contract.Requires(validateAction != null);
-			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
+			Guard.NotNull(propertyExpression, nameof(propertyExpression));
+			Guard.NotNull(validateAction, nameof(validateAction));
 
 			var rule = AddAsyncRule(new[] { propertyExpression }.Select(c => c), validateAction);
 
@@ -271,10 +263,9 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IAsyncValidationRule AddAsyncRule([NotNull] Expression<Func<object>> property1Expression, [NotNull] Expression<Func<object>> property2Expression, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
-			Contract.Requires(property1Expression != null);
-			Contract.Requires(property2Expression != null);
-			Contract.Requires(validateAction != null);
-			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
+			Guard.NotNull(property1Expression, nameof(property1Expression));
+			Guard.NotNull(property2Expression, nameof(property2Expression));
+			Guard.NotNull(validateAction, nameof(validateAction));
 
 			var rule = AddAsyncRule(new[] { property1Expression, property2Expression }, validateAction);
 
@@ -290,10 +281,9 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public IAsyncValidationRule AddAsyncRule([NotNull] IEnumerable<Expression<Func<object>>> properties, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
-			Contract.Requires(properties != null);
-			Contract.Requires(properties.Any());
-			Contract.Requires(validateAction != null);
-			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
+			Guard.NotNull(properties, nameof(properties));
+			Guard.Assert(properties.Any(), "properties.Any()");
+			Guard.NotNull(validateAction, nameof(validateAction));
 
 			IValidationTarget target = CreatePropertyValidationTarget(properties);
 
@@ -419,11 +409,11 @@ namespace MvvmValidation
 		/// <param name="rule">Validation rule instance.</param>
 		public void RemoveRule([NotNull] IValidationRule rule)
 		{
-			Contract.Requires(rule != null);
+			Guard.NotNull(rule, nameof(rule));
 
 			var typedRule = rule as ValidationRule;
 
-			Contract.Assert(typedRule != null, string.Format(CultureInfo.InvariantCulture, "Rule must be of type \"{0}\".", typeof(ValidationRule).FullName));
+			Guard.Assert(typedRule != null, string.Format(CultureInfo.InvariantCulture, "Rule must be of type \"{0}\".", typeof(ValidationRule).FullName));
 
 			lock (syncRoot)
 			{
@@ -548,8 +538,7 @@ namespace MvvmValidation
 		[NotNull]
 		public ValidationResult GetResult([NotNull] object target)
 		{
-			Contract.Requires(target != null);
-			Contract.Ensures(Contract.Result<ValidationResult>() != null);
+			Guard.NotNull(target, nameof(target));
 
 			bool returnAllResults = string.IsNullOrEmpty(target as string);
 
@@ -566,8 +555,7 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public ValidationResult GetResult([NotNull] Expression<Func<object>> propertyExpression)
 		{
-			Contract.Requires(propertyExpression != null);
-			Contract.Ensures(Contract.Result<ValidationResult>() != null);
+			Guard.NotNull(propertyExpression, nameof(propertyExpression));
 
 			return GetResult(PropertyName.For(propertyExpression));
 		}
@@ -626,8 +614,7 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public ValidationResult Validate([NotNull] Expression<Func<object>> propertyPathExpression)
 		{
-			Contract.Requires(propertyPathExpression != null);
-			Contract.Ensures(Contract.Result<ValidationResult>() != null);
+			Guard.NotNull(propertyPathExpression, nameof(propertyPathExpression));
 
 			return ValidateInternal(PropertyName.For(propertyPathExpression));
 		}
@@ -640,7 +627,7 @@ namespace MvvmValidation
 		[NotNull]
 		public ValidationResult Validate([NotNull] object target)
 		{
-			Contract.Requires(target != null);
+			Guard.NotNull(target, nameof(target));
 
 			return ValidateInternal(target);
 		}
@@ -658,8 +645,6 @@ namespace MvvmValidation
 		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
 		private ValidationResult ValidateInternal(object target)
 		{
-			Contract.Ensures(Contract.Result<ValidationResult>() != null);
-
 			ReadOnlyCollection<ValidationRule> rulesToExecute;
 
 			lock (syncRoot)
@@ -893,8 +878,7 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
 		public Task<ValidationResult> ValidateAsync([NotNull] Expression<Func<object>> propertyPathExpression)
 		{
-			Contract.Requires(propertyPathExpression != null);
-			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
+			Guard.NotNull(propertyPathExpression, nameof(propertyPathExpression));
 
 			return ValidateInternalAsync(PropertyName.For(propertyPathExpression));
 		}
@@ -908,8 +892,7 @@ namespace MvvmValidation
 		[NotNull]
 		public Task<ValidationResult> ValidateAsync([NotNull] object target)
 		{
-			Contract.Requires(target != null);
-			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
+			Guard.NotNull(target, nameof(target));
 
 			return ValidateInternalAsync(target);
 		}
@@ -921,8 +904,6 @@ namespace MvvmValidation
 		[NotNull]
 		public Task<ValidationResult> ValidateAllAsync()
 		{
-			Contract.Ensures(Contract.Result<Task<ValidationResult>>() != null);
-
 			return ValidateInternalAsync(null);
 		}
 
@@ -998,8 +979,6 @@ namespace MvvmValidation
 		[NotNull, SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		public IDisposable SuppressValidation()
 		{
-			Contract.Ensures(Contract.Result<IDisposable>() != null);
-
 			isValidationSuspended = true;
 
 			return new DelegateDisposable(() => { isValidationSuspended = false; });

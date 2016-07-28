@@ -8,7 +8,7 @@ namespace MvvmValidation.Internal
 	{
 		public GenericValidationTarget(object targetId)
 		{
-			Contract.Requires(targetId != null);
+			Guard.NotNull(targetId, nameof(targetId));
 
 			TargetId = targetId;
 		}

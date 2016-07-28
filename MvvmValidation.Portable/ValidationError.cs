@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
 using JetBrains.Annotations;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
@@ -12,8 +12,8 @@ namespace MvvmValidation
 	{
 		internal ValidationError([NotNull] string errorText, [NotNull] object target)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(errorText));
-			Contract.Requires(target != null);
+			Guard.NotNullOrEmpty(errorText, nameof(errorText));
+			Guard.NotNull(target, nameof(target));
 
 			ErrorText = errorText;
 			Target = target;
@@ -104,8 +104,6 @@ namespace MvvmValidation
 		/// </returns>
 		public override string ToString()
 		{
-			Contract.Ensures(Contract.Result<string>() != null);
-
 			return ErrorText;
 		}
 
@@ -119,7 +117,7 @@ namespace MvvmValidation
 		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public static implicit operator string(ValidationError error)
 		{
-			Contract.Requires(error != null);
+			Guard.NotNull(error, nameof(error));
 
 			return error.ToString();
 		}

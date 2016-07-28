@@ -29,10 +29,9 @@ namespace MvvmValidation
 		public static IValidationRule AddRequiredRule([NotNull] this ValidationHelper validator,
 			[NotNull] Expression<Func<object>> propertyExpression, [NotNull] string errorMessage)
 		{
-			Contract.Requires(validator != null);
-			Contract.Requires(propertyExpression != null);
-			Contract.Requires(!string.IsNullOrEmpty(errorMessage));
-			Contract.Ensures(Contract.Result<IValidationRule>() != null);
+			Guard.NotNull(validator, nameof(validator));
+			Guard.NotNull(propertyExpression, nameof(propertyExpression));
+			Guard.NotNullOrEmpty(errorMessage, nameof(errorMessage));
 
 			Func<object> propertyGetter = propertyExpression.Compile();
 
@@ -63,9 +62,8 @@ namespace MvvmValidation
 		public static IAsyncValidationRule AddChildValidatable([NotNull] this ValidationHelper validator,
 			[NotNull] Expression<Func<IValidatable>> childValidatableGetter)
 		{
-			Contract.Requires(validator != null);
-			Contract.Requires(childValidatableGetter != null);
-			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
+			Guard.NotNull(validator, nameof(validator));
+			Guard.NotNull(childValidatableGetter, nameof(childValidatableGetter));
 
 			Func<IValidatable> getter = childValidatableGetter.Compile();
 
@@ -110,9 +108,8 @@ namespace MvvmValidation
 		public static IAsyncValidationRule AddChildValidatableCollection([NotNull] this ValidationHelper validator,
 			[NotNull] Expression<Func<IEnumerable<IValidatable>>> validatableCollectionGetter)
 		{
-			Contract.Requires(validator != null);
-			Contract.Requires(validatableCollectionGetter != null);
-			Contract.Ensures(Contract.Result<IAsyncValidationRule>() != null);
+			Guard.NotNull(validator, nameof(validator));
+			Guard.NotNull(validatableCollectionGetter, nameof(validatableCollectionGetter));
 
 			Func<IEnumerable<IValidatable>> getter = validatableCollectionGetter.Compile();
 

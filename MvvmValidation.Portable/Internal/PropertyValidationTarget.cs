@@ -14,7 +14,7 @@ namespace MvvmValidation.Internal
 
 		private PropertyValidationTarget(string propertyName)
 		{
-			Contract.Requires(!string.IsNullOrEmpty(propertyName));
+			Guard.NotNullOrEmpty(propertyName, nameof(propertyName));
 
 			PropertyName = propertyName;
 		}

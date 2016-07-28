@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
 using JetBrains.Annotations;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
@@ -29,7 +29,7 @@ namespace MvvmValidation
 		/// <param name="errorsChangedNotificationContext">Synchronization context that should be used to raise the <see cref="ErrorsChanged"/> event on.</param>
 		public NotifyDataErrorInfoAdapter([NotNull] ValidationHelper validator, [CanBeNull] SynchronizationContext errorsChangedNotificationContext)
 		{
-			Contract.Requires(validator != null);
+			Guard.NotNull(validator, nameof(validator));
 
 			Validator = validator;
 
@@ -86,11 +86,7 @@ namespace MvvmValidation
 
 		private void OnErrorsChanged(string propertyName)
 		{
-			EventHandler<DataErrorsChangedEventArgs> handler = ErrorsChanged;
-			if (handler != null)
-			{
-				handler(this, new DataErrorsChangedEventArgs(propertyName));
-			}
+		    ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
 		}
 	}
 }

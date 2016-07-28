@@ -37,7 +37,7 @@ namespace MvvmValidation
 		/// <param name="validator">Validator to register.</param>
 		public void RegisterValidator([NotNull] ValidationHelper validator)
 		{
-			Guard.NotNull(validator, () => validator);
+			Guard.NotNull(validator, nameof(validator));
 
 			registeredValidators.Add(validator);
 			resultsByValidator.Add(validator, ValidationResult.Valid);

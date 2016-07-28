@@ -10,8 +10,8 @@ namespace MvvmValidation.Internal
 		public ValidationRule(IValidationTarget target, Func<RuleResult> validateDelegate,
 							  Func<Task<RuleResult>> asyncValidateAction)
 		{
-			Contract.Requires(target != null);
-			Contract.Requires(validateDelegate != null || asyncValidateAction != null);
+			Guard.NotNull(target, nameof(target));
+			Guard.Assert(validateDelegate != null || asyncValidateAction != null, "validateDelegate != null || asyncValidateAction != null");
 
 			Target = target;
 			ValidateDelegate = validateDelegate;

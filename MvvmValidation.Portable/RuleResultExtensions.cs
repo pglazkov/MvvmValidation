@@ -1,6 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using JetBrains.Annotations;
+using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
@@ -19,9 +20,8 @@ namespace MvvmValidation
 		[NotNull]
 		public static RuleResult Combine([NotNull] this RuleResult firstRuleResult, [NotNull] RuleResult secondRuleResult)
 		{
-			Contract.Requires(firstRuleResult != null);
-			Contract.Requires(secondRuleResult != null);
-			Contract.Ensures(Contract.Result<RuleResult>() != null);
+			Guard.NotNull(firstRuleResult, nameof(firstRuleResult));
+			Guard.NotNull(secondRuleResult, nameof(secondRuleResult));
 
 			var result = new RuleResult();
 

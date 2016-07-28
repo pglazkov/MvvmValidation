@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{6C8F3CB8-EA5F-4E72-B804-A10081DF47E5}</ProjectGuid>
@@ -10,8 +10,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MvvmValidation</RootNamespace>
     <AssemblyName>MvvmValidation</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Profile158</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
@@ -20,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Output\lib\portable-win8+net45+sl5+wp8\</OutputPath>
+    <OutputPath>..\Output\lib\netstandard1.0\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -56,9 +57,9 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\Output\lib\portable-win8+net45+sl5+wp8\MvvmValidation.XML</DocumentationFile>
+    <DocumentationFile>..\Output\lib\netstandard1.0\MvvmValidation.XML</DocumentationFile>
     <CodeContractsMissingPublicRequiresAsWarnings>True</CodeContractsMissingPublicRequiresAsWarnings>
     <CodeContractsSQLServerOption />
     <CodeContractsFailBuildOnWarnings>False</CodeContractsFailBuildOnWarnings>
@@ -66,13 +67,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Output\lib\portable-win8+net45+sl5+wp8\</OutputPath>
+    <OutputPath>..\Output\lib\netstandard1.0\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\Output\lib\portable-win8+net45+sl5+wp8\MvvmValidation.XML</DocumentationFile>
+    <DocumentationFile>..\Output\lib\netstandard1.0\MvvmValidation.XML</DocumentationFile>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
@@ -129,8 +130,8 @@
     <Compile Include="Internal\ExceptionUtils.cs" />
     <Compile Include="Internal\GenericValidationTarget.cs" />
     <Compile Include="Internal\Guard.cs" />
+    <Compile Include="Internal\GuardReSharperTemplates.cs" />
     <Compile Include="Internal\IValidationTarget.cs" />
-    <Compile Include="Internal\IValidationTargetContract.cs" />
     <Compile Include="Internal\PropertyCollectionValidationTarget.cs" />
     <Compile Include="Internal\PropertyName.cs" />
     <Compile Include="Internal\PropertyValidationTarget.cs" />
@@ -164,6 +165,7 @@
     <None Include="..\Key.snk">
       <Link>Key.snk</Link>
     </None>
+    <None Include="project.json" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

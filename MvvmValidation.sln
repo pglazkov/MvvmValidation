@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{1EC81A79-B894-4B22-B163-68FFDA3389FF}"
 EndProject
@@ -23,11 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{40CAE0
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation", "MvvmValidation\MvvmValidation.csproj", "{56D2052D-459D-402A-8938-174DACDC66C5}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Tests", "MvvmValidation.Tests\MvvmValidation.Tests.csproj", "{9D98F797-07E1-4936-9349-E874572DBCD1}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormValidationExample.Silverlight", "Examples\FormValidationExample.Silverlight\FormValidationExample.Silverlight.csproj", "{3870EB67-7EF0-4645-B3C8-8D04477A82A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormValidationExample", "Examples\FormValidationExample\FormValidationExample.csproj", "{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}"
 EndProject
@@ -43,16 +39,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{56D2052D-459D-402A-8938-174DACDC66C5}.Release|x86.ActiveCfg = Release|Any CPU
 		{9D98F797-07E1-4936-9349-E874572DBCD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9D98F797-07E1-4936-9349-E874572DBCD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D98F797-07E1-4936-9349-E874572DBCD1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -63,16 +49,6 @@ Global
 		{9D98F797-07E1-4936-9349-E874572DBCD1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{9D98F797-07E1-4936-9349-E874572DBCD1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9D98F797-07E1-4936-9349-E874572DBCD1}.Release|x86.ActiveCfg = Release|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5}.Release|x86.ActiveCfg = Release|Any CPU
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}.Debug|Mixed Platforms.Build.0 = Debug|x86
@@ -99,7 +75,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9D98F797-07E1-4936-9349-E874572DBCD1} = {1EC81A79-B894-4B22-B163-68FFDA3389FF}
-		{3870EB67-7EF0-4645-B3C8-8D04477A82A5} = {AD568145-6ABE-441A-B4F1-364204B15F3B}
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD} = {AD568145-6ABE-441A-B4F1-364204B15F3B}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
