@@ -206,17 +206,17 @@ namespace FormValidationExample.ViewModel
 			}
 		}
 
-		private void Validate()
+		private async void Validate()
 		{
-			var uiThread = TaskScheduler.FromCurrentSynchronizationContext();
-
-			Validator.ValidateAllAsync().ContinueWith(r => OnValidateAllCompleted(r.Result), uiThread);
+		    await ValidateAsync();
 		}
 
-		private void OnValidateAllCompleted(ValidationResult validationResult)
-		{
-			UpdateValidationSummary(validationResult);
-		}
+	    private async Task ValidateAsync()
+	    {
+	        var result = await Validator.ValidateAllAsync();
+
+            UpdateValidationSummary(result);
+        }
 
 		private void OnValidationResultChanged(object sender, ValidationResultChangedEventArgs e)
 		{
