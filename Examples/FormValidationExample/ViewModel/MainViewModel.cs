@@ -44,7 +44,7 @@ namespace FormValidationExample.ViewModel
 			set
 			{
 				userName = value;
-				RaisePropertyChanged("UserName");
+				RaisePropertyChanged(nameof(UserName));
 				Validator.ValidateAsync(nameof(UserName));
 			}
 		}
@@ -55,7 +55,7 @@ namespace FormValidationExample.ViewModel
 			set
 			{
 				nameInfo.FirstName = value;
-				RaisePropertyChanged("FirstName");
+				RaisePropertyChanged(nameof(FirstName));
 				Validator.Validate(nameof(FirstName));
 			}
 		}
@@ -66,7 +66,7 @@ namespace FormValidationExample.ViewModel
 			set
 			{
 				nameInfo.LastName = value;
-				RaisePropertyChanged("LastName");
+				RaisePropertyChanged(nameof(LastName));
 				Validator.Validate(nameof(LastName));
 			}
  		}
@@ -77,7 +77,7 @@ namespace FormValidationExample.ViewModel
 			set
 			{
 				email = value;
-				RaisePropertyChanged("Email");
+				RaisePropertyChanged(nameof(Email));
 				Validator.Validate(nameof(Email));
 			}
 		}
@@ -88,7 +88,7 @@ namespace FormValidationExample.ViewModel
 			set
 			{
 				password = value;
-				RaisePropertyChanged("Password");
+				RaisePropertyChanged(nameof(Password));
 				Validator.Validate(nameof(Password));
 			}
 		}
@@ -99,7 +99,7 @@ namespace FormValidationExample.ViewModel
 			set
 			{
 				passwordConfirmation = value;
-				RaisePropertyChanged("PasswordConfirmation");
+				RaisePropertyChanged(nameof(PasswordConfirmation));
 				Validator.Validate(nameof(PasswordConfirmation));
 			}
 		}
@@ -110,7 +110,7 @@ namespace FormValidationExample.ViewModel
 			private set
 			{
 				validationErrorsString = value;
-				RaisePropertyChanged("ValidationErrorsString");
+				RaisePropertyChanged(nameof(ValidationErrorsString));
 			}
 		}
 
@@ -120,7 +120,7 @@ namespace FormValidationExample.ViewModel
 			private set
 			{
 				isValid = value;
-				RaisePropertyChanged("IsValid");
+				RaisePropertyChanged(nameof(IsValid));
 			}
 		}
 
@@ -161,13 +161,13 @@ namespace FormValidationExample.ViewModel
 			                                          "Password must contain at least 6 characters"));
 
 			Validator.AddRule(nameof(Password),
-			                  () => RuleResult.Assert((!Password.All(Char.IsLower) &&
-			                                           !Password.All(Char.IsUpper) &&
-			                                           !Password.All(Char.IsDigit)),
+			                  () => RuleResult.Assert((!Password.All(char.IsLower) &&
+			                                           !Password.All(char.IsUpper) &&
+			                                           !Password.All(char.IsDigit)),
 			                                          "Password must contain both lower case and upper case letters"));
 
 			Validator.AddRule(nameof(Password),
-			                  () => RuleResult.Assert(Password.Any(Char.IsDigit),
+			                  () => RuleResult.Assert(Password.Any(char.IsDigit),
 			                                          "Password must contain at least one digit"));
 
 			Validator.AddRule(nameof(PasswordConfirmation),

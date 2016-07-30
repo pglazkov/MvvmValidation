@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -491,7 +492,7 @@ namespace MvvmValidation
 		/// <summary>
 		/// Validates (executes validation rules) the property specified in the <paramref name="targetName"/> parameter.
 		/// </summary>
-		/// <param name="targetName">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
+		/// <param name="targetName">Name of the property to validate. Example: Validate(nameof(MyProperty)).</param>
 		/// <returns>Result that indicates whether the given property is valid and a collection of errors, if not valid.</returns>
 		[NotNull]
 		public ValidationResult Validate([NotNull] string targetName)
@@ -501,12 +502,12 @@ namespace MvvmValidation
 			return ValidateInternal(targetName);
 		}
 
-		/// <summary>
-		/// Validates (executes validation rules) the specified target object.
-		/// </summary>
-		/// <param name="target">The target object to validate.</param>
-		/// <returns>Result that indicates whether the given target object is valid and a collection of errors, if not valid.</returns>
-		[NotNull]
+        /// <summary>
+        /// Validates (executes validation rules) the specified target object.
+        /// </summary>
+        /// <param name="target">The target object to validate.</param>
+        /// <returns>Result that indicates whether the given target object is valid and a collection of errors, if not valid.</returns>
+        [NotNull]
 		public ValidationResult Validate([NotNull] object target)
 		{
 			Guard.NotNull(target, nameof(target));
