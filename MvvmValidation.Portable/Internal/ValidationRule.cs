@@ -27,7 +27,6 @@ namespace MvvmValidation.Internal
 
 		public IValidationTarget Target { get; private set; }
 
-		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "EvaluateAsync")]
 		public RuleResult Evaluate()
 		{
 			if (!SupportsSyncValidation)

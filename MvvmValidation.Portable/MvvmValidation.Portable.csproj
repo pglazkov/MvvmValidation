@@ -119,12 +119,10 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>Properties\VersionInfo.cs</Link>
     </Compile>
-    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="IAsyncValidationRule.cs" />
     <Compile Include="Internal\Annotations.cs" />
     <Compile Include="Internal\CallerInfoAttributes.cs" />
     <Compile Include="Internal\CollectionUtils.cs" />
-    <Compile Include="Internal\ContactExtensions.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />
     <Compile Include="Internal\ExceptionUtils.cs" />
     <Compile Include="Internal\GenericValidationTarget.cs" />
@@ -155,9 +153,6 @@
     <Compile Include="ValidationResultChangedEventArgs.cs" />
     <Compile Include="ValidationResultExtensions.cs" />
     <Compile Include="ValidationScope.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <CodeAnalysisDictionary Include="CodeAnalysisDictionary.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Key.snk">

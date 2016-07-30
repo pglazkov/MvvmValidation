@@ -18,9 +18,6 @@ namespace MvvmValidation.Internal
 		/// <param name="compound"><c>True</c> if the full expression path should be used to build the string. For example, 
 		/// call PropertyName.For(() => MyObj.Property.NestedProperty) will result in string "MyObj.Property.NestedProperty".
 		/// If <c>False</c> it will return only the last part, which is "NestedProperty" in the example above.</param>
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		[SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		public static string For<T>(Expression<Func<T>> expression, bool compound = true)
 		{
 			Expression body = expression.Body;
@@ -34,9 +31,6 @@ namespace MvvmValidation.Internal
 		/// <param name="compound"><c>True</c> if the full expression path should be used to build the string. For example, 
 		/// call PropertyName.For(() => MyObj.Property.NestedProperty) will result in string "MyObj.Property.NestedProperty".
 		/// If <c>False</c> it will return only the last part, which is "NestedProperty" in the example above.</param>
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		[SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters")]
-		[SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		public static string For(Expression<Func<object>> expression, bool compound = true)
 		{
 			Expression body = expression.Body;
@@ -50,7 +44,6 @@ namespace MvvmValidation.Internal
 		/// <param name="compound"><c>True</c> if the full expression path should be used to build the string. For example, 
 		/// call GetMemberName(() => MyObj.Property.NestedProperty) will result in string "MyObj.Property.NestedProperty".
 		/// If <c>False</c> it will return only the last part, which is "NestedProperty" in the example above.</param>
-		[SuppressMessage("Microsoft.Design", "CA1026:DefaultParametersShouldNotBeUsed")]
 		private static string GetMemberName(Expression expression, bool compound = true)
 		{
 			var memberExpression = expression as MemberExpression;

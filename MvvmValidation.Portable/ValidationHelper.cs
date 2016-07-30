@@ -110,7 +110,7 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public IValidationRule AddRule([NotNull] string targetName, [NotNull] Func<RuleResult> validateDelegate)
 		{
 			Guard.NotNull(targetName, nameof(targetName));
@@ -137,7 +137,7 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public IValidationRule AddRule([NotNull] string property1Name, [NotNull] string property2Name, [NotNull] Func<RuleResult> validateDelegate)
 		{
 			Guard.NotNull(property1Name, nameof(property1Name));
@@ -159,7 +159,7 @@ namespace MvvmValidation
 		/// a collection of errors (in not passed).
 		/// </param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public IValidationRule AddRule([NotNull] IEnumerable<string> properties, [NotNull] Func<RuleResult> validateDelegate)
 		{
 			Guard.NotNull(properties, nameof(properties));
@@ -223,7 +223,7 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public IAsyncValidationRule AddAsyncRule([NotNull] string propertyName, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
 			Guard.NotNull(propertyName, nameof(propertyName));
@@ -251,7 +251,7 @@ namespace MvvmValidation
 		/// </code>
 		/// </example>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public IAsyncValidationRule AddAsyncRule([NotNull] string property1Name, [NotNull] string property2Name, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
 			Guard.NotNull(property1Name, nameof(property1Name));
@@ -269,7 +269,7 @@ namespace MvvmValidation
 		/// <param name="properties">The collection of target property names. Example: AddAsyncRule(new [] { nameof(MyProperty1), nameof(MyProperty2), nameof(MyProperty3) }, ...).</param>
 		/// <param name="validateAction">The validation delegate - a function that performs asyncrhonious validation.</param>
 		/// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public IAsyncValidationRule AddAsyncRule([NotNull] IEnumerable<string> properties, [NotNull] Func<Task<RuleResult>> validateAction)
 		{
 			Guard.NotNull(properties, nameof(properties));
@@ -434,7 +434,7 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="targetName">The property for which to retrieve the validation state. Example: GetResult(() => MyProperty)</param>
 		/// <returns>An instance of <see cref="ValidationResult"/> that contains an indication whether the object is valid and a collection of errors if not.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public ValidationResult GetResult([NotNull] string targetName)
 		{
 			Guard.NotNull(targetName, nameof(targetName));
@@ -493,7 +493,7 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="targetName">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
 		/// <returns>Result that indicates whether the given property is valid and a collection of errors, if not valid.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public ValidationResult Validate([NotNull] string targetName)
 		{
 			Guard.NotNull(targetName, nameof(targetName));
@@ -524,7 +524,6 @@ namespace MvvmValidation
 			return ValidateInternal(null);
 		}
 
-		[SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "ValidateAsync")]
 		private ValidationResult ValidateInternal(object target)
 		{
 			ReadOnlyCollection<ValidationRule> rulesToExecute;
@@ -757,7 +756,7 @@ namespace MvvmValidation
 		/// </summary>
 		/// <param name="targetName">Expression for the property to validate. Example: ValidateAsync(() => MyProperty, ...).</param>
 		/// <returns>Task that represents the validation operation.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public Task<ValidationResult> ValidateAsync([NotNull] string targetName)
 		{
 			Guard.NotNull(targetName, nameof(targetName));
@@ -854,7 +853,7 @@ namespace MvvmValidation
 		/// </code>
 		/// </remarks>
 		/// <returns>An instance of <see cref="IDisposable"/> that serves as a handle that you can call <see cref="IDisposable.Dispose"/> on to resume validation. The value can also be used in a <c>using</c> block.</returns>
-		[NotNull, SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[NotNull]
 		public IDisposable SuppressValidation()
 		{
 			isValidationSuspended = true;

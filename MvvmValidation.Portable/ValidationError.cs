@@ -114,7 +114,6 @@ namespace MvvmValidation
 		/// <returns>
 		/// The result of the conversion.
 		/// </returns>
-		[SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "0")]
 		public static implicit operator string(ValidationError error)
 		{
 			Guard.NotNull(error, nameof(error));

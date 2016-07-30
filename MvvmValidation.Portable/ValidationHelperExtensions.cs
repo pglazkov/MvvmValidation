@@ -22,7 +22,7 @@ namespace MvvmValidation
 		/// <param name="propertyExpression">Expression that specifies the property to validate. Example: Validate(() => MyProperty).</param>
 		/// <param name="errorMessage">Error message in case if the property is null or empty.</param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public static IValidationRule AddRequiredRule([NotNull] this ValidationHelper validator,
 			[NotNull] Expression<Func<object>> propertyExpression, [NotNull] string errorMessage)
 		{
@@ -54,8 +54,7 @@ namespace MvvmValidation
 		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
 		/// <param name="childValidatableGetter">Expression for getting the <see cref="IValidatable"/> object to add as child.</param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		[SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+		[NotNull]
 		public static IAsyncValidationRule AddChildValidatable([NotNull] this ValidationHelper validator,
 			[NotNull] Expression<Func<IValidatable>> childValidatableGetter)
 		{
@@ -96,8 +95,7 @@ namespace MvvmValidation
 		/// <param name="validator">An instance of <see cref="ValidationHelper"/> that is used for validation.</param>
 		/// <param name="validatableCollectionGetter">Expression for getting the collection of <see cref="IValidatable"/> objects to add as child items.</param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
-		[NotNull, SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		[NotNull]
 		public static IAsyncValidationRule AddChildValidatableCollection([NotNull] this ValidationHelper validator,
 			[NotNull] Expression<Func<IEnumerable<IValidatable>>> validatableCollectionGetter)
 		{
