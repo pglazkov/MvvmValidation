@@ -32,7 +32,7 @@ namespace MvvmValidation
 
 			Func<object> propertyGetter = propertyExpression.Compile();
 
-			return validator.AddRule(propertyExpression, () =>
+			return validator.AddRule(PropertyName.For(propertyExpression, false), () =>
 			{
 				object propertyValue = propertyGetter();
 
@@ -96,8 +96,7 @@ namespace MvvmValidation
 		/// <param name="validatableCollectionGetter">Expression for getting the collection of <see cref="IValidatable"/> objects to add as child items.</param>
 		/// <returns>An instance of <see cref="IValidationRule"/> that represents the newly created validation rule.</returns>
 		[NotNull]
-		public static IAsyncValidationRule AddChildValidatableCollection([NotNull] this ValidationHelper validator,
-			[NotNull] Expression<Func<IEnumerable<IValidatable>>> validatableCollectionGetter)
+		public static IAsyncValidationRule AddChildValidatableCollection([NotNull] this ValidationHelper validator, [NotNull] Expression<Func<IEnumerable<IValidatable>>> validatableCollectionGetter)
 		{
 			Guard.NotNull(validator, nameof(validator));
 			Guard.NotNull(validatableCollectionGetter, nameof(validatableCollectionGetter));

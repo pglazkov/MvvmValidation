@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{1EC81A79-B894-4B22-B163-68FFDA3389FF}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CB9FED21-F8DB-4EE9-ACFE-A82F1D5AEC2A}"
 	ProjectSection(SolutionItems) = preProject
 		build.msbuild = build.msbuild
@@ -74,7 +72,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{9D98F797-07E1-4936-9349-E874572DBCD1} = {1EC81A79-B894-4B22-B163-68FFDA3389FF}
 		{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD} = {AD568145-6ABE-441A-B4F1-364204B15F3B}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution

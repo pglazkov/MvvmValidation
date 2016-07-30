@@ -680,5 +680,22 @@ namespace MvvmValidation.Tests
 			// VERIFY
 			Assert.True(r.ToString() == string.Empty);
 		}
+
+        [Fact]
+	    public void AddRequiredRule_RuleIsAddedForSpecifiedPropertyName()
+	    {
+	        // ARRANGE
+            var vm = new DummyViewModel();
+            var v = new ValidationHelper();
+
+	        v.AddRequiredRule(() => vm.Foo, "Foo required.");
+
+            // ACT
+	        var vr = v.Validate(nameof(vm.Foo));
+            
+            // VERIFY
+            Assert.False(vr.IsValid);
+            Assert.Equal(vr.ErrorList[0].ErrorText, "Foo required.");
+	    }
 	}
 }
