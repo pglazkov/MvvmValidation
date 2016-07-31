@@ -24,7 +24,7 @@
         <PortableAssemblyOutputFolder>$(OutputFolderPath)\lib\netstandard1.0</PortableAssemblyOutputFolder>
         <MainAssemblyWithVersion>$(PortableAssemblyOutputFolder)\MvvmValidation.dll</MainAssemblyWithVersion>
         <NuGetPreRelaseVersionSuffix>-beta</NuGetPreRelaseVersionSuffix>
-        <UnitTestAssembliesPath>$(SourceDir)\**\bin\$(Configuration)\*.Tests.dll</UnitTestAssembliesPath>
+        <UnitTestAssembliesPath>$(SourceDir)**\bin\$(Configuration)\*.Tests.dll</UnitTestAssembliesPath>
         <UnitTestHtmlReportPath>$(SourceDir)TestReport.html</UnitTestHtmlReportPath>
         <ZippedOutputFileName>MvvmValidation.$(VersionInfoString).zip</ZippedOutputFileName>
         <ZippedOutputFilePath>$(OutputFolderPath)\$(ZippedOutputFileName)</ZippedOutputFilePath>
@@ -32,7 +32,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <UnitTestAssemblies Include="$(UnitTestAssembliesPath)" />
         <OutputFolder Include="$(OutputFolderPath)"/>
     </ItemGroup>
 
@@ -128,6 +127,13 @@
 
     <Target Name="UnitTest"
             DependsOnTargets="$(UnitTestDependsOn)">
+        <CreateItem Include="$(UnitTestAssembliesPath)">
+            <Output TaskParameter="Include"
+                    ItemName="UnitTestAssemblies" />
+        </CreateItem>
+        
+        <Message Text="@(UnitTestAssemblies)"/>
+        
         <xunit Assemblies="@(UnitTestAssemblies)"
                Html="$(UnitTestHtmlReportPath)" />
     </Target>
