@@ -15,11 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{AD568145-6ABE-441A-B4F1-364204B15F3B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{40CAE01C-FBD6-455A-B4B3-45B6EA17BD0D}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvvmValidation.Tests", "MvvmValidation.Tests\MvvmValidation.Tests.csproj", "{9D98F797-07E1-4936-9349-E874572DBCD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormValidationExample", "Examples\FormValidationExample\FormValidationExample.csproj", "{0FAB2AD2-EE78-49DF-8043-A5DF3BADEBDD}"

@@ -2,8 +2,8 @@
          DefaultTargets="BuildFull">
     <Import Project="Tools\Build\MSBuild.Community.Tasks.Targets"/>
 
-    <UsingTask AssemblyFile=".\packages\xunit.2.0.0-alpha-build1611\lib\net45\xunit.runner.msbuild.dll"
-               TaskName="Xunit.Runner.MSBuild.xunit"/>
+    <UsingTask AssemblyFile="$(MSBuildThisFileDirectory)packages\xunit.MSBuild.2.0.0.0\tools\xunit.runner.msbuild.dll" 
+               TaskName="Xunit.Runner.MSBuild.xunit" />
 
     <PropertyGroup>
         <Major>3</Major>

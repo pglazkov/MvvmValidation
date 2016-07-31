@@ -511,7 +511,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[Fact]
-		public void AsyncValidation_RuleThrowsException_ExceptionIsPropogated()
+		public async void AsyncValidation_RuleThrowsException_ExceptionIsPropogated()
 		{
 			// ARRANGE
 			var validator = new ValidationHelper();
@@ -527,7 +527,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 
 			// ACT & VERIFY
-			Assert.Throws<ValidationException>(validator.ValidateAllAsync());
+			await Assert.ThrowsAsync<ValidationException>(() => validator.ValidateAllAsync());
 		}
 
 		[Fact]
@@ -552,7 +552,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 		}
 
 		[Fact]
-		public void SyncValidation_RuleThrowsException_ExceptionIsPropogated()
+		public async void SyncValidation_RuleThrowsException_ExceptionIsPropogated()
 		{
 			// ARRANGE
 			var validator = new ValidationHelper();
@@ -563,7 +563,7 @@ namespace MvvmValidation.Tests.IntegrationTests
 			});
 
 			// ACT & VERIFY
-			Assert.Throws<ValidationException>(validator.ValidateAllAsync());
+			await Assert.ThrowsAsync<ValidationException>(() => validator.ValidateAllAsync());
 		}
 
 		[Fact]

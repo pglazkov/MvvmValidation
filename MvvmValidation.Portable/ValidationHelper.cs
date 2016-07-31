@@ -565,8 +565,6 @@ namespace MvvmValidation
 
 		private Task<ValidationResult> ExecuteValidationRulesAsync(IEnumerable<ValidationRule> rulesToExecute, SynchronizationContext syncContext = null)
 		{
-			syncContext = syncContext ?? SynchronizationContext.Current;
-
 			var resultTcs = new TaskCompletionSource<ValidationResult>();
 			var result = new ValidationResult();
 			var failedTargets = new HashSet<object>();
@@ -845,8 +843,6 @@ namespace MvvmValidation
 
 		private void NotifyResultChanged(object target, ValidationResult newResult, SynchronizationContext syncContext, bool useSyncContext = true)
 		{
-			syncContext = syncContext ?? SynchronizationContext.Current;
-
 			if (useSyncContext && syncContext != null)
 			{
 				syncContext.Post(_ => NotifyResultChanged(target, newResult, syncContext, useSyncContext: false), null);
