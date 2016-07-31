@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/cxp4fdhrhqhrq127?svg=true)](https://ci.appveyor.com/project/pglazkov/mvvmvalidation)
 
 # MVVM Validation Helpers
-MVVM Validation Helpers is a little library that makes it easier for developers to implement validation in their WPF/Silverlight MVVM applications. You'll no longer have to implement IDataErrorInfo and INotifyDataErrorInfo interfaces manually in your view models. 
+MVVM Validation Helpers is a little library that makes it easier for developers to implement validation in MVVM applications. You'll no longer have to implement INotifyDataErrorInfo interface manually in your view models. 
 
 With this lightweight library you can define and keep all your validation rules conveniently in one place. It saves you from all the boilerplate of maintaining error list for each of the validation targets (properties). You just define a set of validation rules that need to be checked for each of the targets and later, when appropriate, it is easy to just validate a target and get the validation result back without worrying what rules need to be checked.
 
