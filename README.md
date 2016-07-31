@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/cxp4fdhrhqhrq127?svg=true)](https://ci.appveyor.com/project/pglazkov/mvvmvalidation)
+
 # MVVM Validation Helpers
 MVVM Validation Helpers is a little library that makes it easier for developers to implement validation in their WPF/Silverlight MVVM applications. You'll no longer have to implement IDataErrorInfo and INotifyDataErrorInfo interfaces manually in your view models. 
 
@@ -28,7 +30,7 @@ public class ViewModelBase
 ```    
 **Adding a simple validation rule**
 ```cs
-Validator.AddRule(() => FirstName,
+Validator.AddRule(nameof(FirstName),
                   () => RuleResult.Assert(!string.IsNullOrEmpty(FirstName), "First Name is required"));
 ```
 OR
@@ -39,8 +41,8 @@ Validator.AddRequiredRule(() => FirstName, "First Name is required");
 
 Such a rule will be executed whenever you validate either of those properties.
 ```cs
-Validator.AddRule(() => RangeStart,
-                  () => RangeEnd,
+Validator.AddRule(nameof(RangeStart),
+                  nameof(RangeEnd),
                   () => RuleResult.Assert(RangeEnd > RangeStart, 
                                           "RangeEnd must be grater than RangeStart");
 ```
@@ -48,7 +50,7 @@ Validator.AddRule(() => RangeStart,
 
 Such rule can perform more complex validation that may take long time or cannot be executed synchronously, for example, a call to a web service.
 ```cs
-Validator.AddAsyncRule(() => UserName,
+Validator.AddAsyncRule(nameof(UserName),
     async () =>
     {
         var isAvailable = await UserRegistrationService.IsUserNameAvailable(UserName).ToTask();
@@ -63,7 +65,7 @@ Validator.AddAsyncRule(() => UserName,
 ValidationResult validationResult = Validator.ValidateAll();
 
 // Validate a specific target
-ValidationResult validationResult = Validator.Validate(() => FirstName);
+ValidationResult validationResult = Validator.Validate(nameof(FirstName));
 ```
 OR
 ```cs
@@ -72,14 +74,10 @@ ValidationResult validationResult = Validator.Validate("FirstName");
 **Executing validation asynchronously**
 ```cs
 // Validate all (execute all validation rules)
-Validator.ValidateAllAsync(result => {
-    // Analyze the result
-});
+ValidationResult validationResult = await Validator.ValidateAllAsync();
 
 // Validate a specific target
-Validator.ValidateAsync(() => FirstName, result => {
-    // Analyze the result
-});
+ValidationResult validationResult = await Validator.ValidateAsync(nameof(FirstName));
 ```
 **Getting current validation state at any point of time**
 
@@ -89,7 +87,7 @@ Any time you can request current validation state for the entire object or for s
 var validationResult = Validator.GetResult();
 
 // Get validation result for a target
-var firstNameValidationResult = Validator.GetResult(() => FirstName);
+var firstNameValidationResult = Validator.GetResult(nameof(FirstName));
 ```
 **Receive notifications when validation result changes**
 ```cs
@@ -103,37 +101,10 @@ private void OnValidationResultChanged(object sender, ValidationResultChangedEve
     UpdateValidationSummary(validationResult);
 }
 ```
-**Implement _IDataErrorInfo_ and _INotifyDataErrorInfo_ interfaces**
+**Implement _INotifyDataErrorInfo_ interface**
 
-The library includes _DataErrorInfoAdapter_ and _NotifyDataErrorAdapter_ classes that make the implementation of _IDataErrorInfo_ and _INotifyDataErrorInfo_ interfaces in your view models trivial.
+The library includes _NotifyDataErrorAdapter_ class that makes the implementation of _INotifyDataErrorInfo_ interface in your view models trivial.
 
-_IDataErrorInfo_:
-```cs
-public class ValidatableViewModelBase : IDataErrorInfo
-{
-        protected ValidationHelper Validator { get; private set; }
-
-        private DataErrorInfoAdapter DataErrorInfoAdapter { get; set; }
-
-        public ValidatableViewModelBase()
-        {
-            Validator = new ValidationHelper();
-
-            DataErrorInfoAdapter = new DataErrorInfoAdapter(Validator);
-        }
-
-        public string this[string columnName]
-        {
-            get { return DataErrorInfoAdapter[columnName]; }
-        }
-
-        public string Error
-        {
-            get { return DataErrorInfoAdapter.Error; }
-        }
-}
-```
-_INotifyDataErrorInfo_:
 ```cs
 public class ValidatableViewModelBase : INotifyDataErrorInfo
 {
