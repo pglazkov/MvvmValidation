@@ -25,26 +25,20 @@ namespace MvvmValidation
 			ErrorList = errors;
 		}
 
-		internal static ValidationResult Valid
-		{
-			get { return new ValidationResult(); }
-		}
+		internal static ValidationResult Valid => new ValidationResult();
 
-		/// <summary>
+	    /// <summary>
 		/// Gets the list of errors if any. If valid, returns an empty collection.
 		/// </summary>
 		[NotNull]
-		public ValidationErrorCollection ErrorList { get; private set; }
+		public ValidationErrorCollection ErrorList { get; }
 
 		/// <summary>
 		/// Gets a value indicating whether the validation was sucessful. If not, see <see cref="ErrorList"/> for the list of errors.
 		/// </summary>
-		public bool IsValid
-		{
-			get { return !ErrorList.Any(); }
-		}
+		public bool IsValid => !ErrorList.Any();
 
-		/// <summary>
+	    /// <summary>
 		/// Gets an error by <paramref name="target"/>, or <c>null</c> if valid.
 		/// </summary>
 		[CanBeNull]
@@ -54,12 +48,7 @@ namespace MvvmValidation
 			{
 				ValidationError firstErrorForTarget = ErrorList.FirstOrDefault(e => e.Target == target);
 
-				if (firstErrorForTarget != null)
-				{
-					return firstErrorForTarget.ErrorText;
-				}
-
-				return null;
+			    return firstErrorForTarget?.ErrorText;
 			}
 		}
 

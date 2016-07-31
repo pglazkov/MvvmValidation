@@ -92,15 +92,9 @@ namespace MvvmValidation
 		/// Gets the error messages in case if the target is invalid according to this validation rule.
 		/// </summary>
 		[NotNull]
-		public IEnumerable<string> Errors
-		{
-			get
-			{
-				return errors;
-			}
-		}
+		public IEnumerable<string> Errors => errors;
 
-		/// <summary>
+	    /// <summary>
 		/// Adds an error to the result.
 		/// </summary>
 		/// <param name="error">The error message to add.</param>
@@ -172,7 +166,7 @@ namespace MvvmValidation
 		{
 			unchecked
 			{
-				return ((errors != null ? errors.GetHashCode() : 0) * 397) ^ IsValid.GetHashCode();
+				return ((errors?.GetHashCode() ?? 0) * 397) ^ IsValid.GetHashCode();
 			}
 		} 
 

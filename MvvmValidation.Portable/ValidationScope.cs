@@ -24,11 +24,7 @@ namespace MvvmValidation
 
 		private void OnResultChanged(ValidationResultChangedEventArgs e)
 		{
-			var handler = ResultChanged;
-			if (handler != null)
-			{
-				handler(this, e);
-			}
+		    ResultChanged?.Invoke(this, e);
 		}
 
 		/// <summary>

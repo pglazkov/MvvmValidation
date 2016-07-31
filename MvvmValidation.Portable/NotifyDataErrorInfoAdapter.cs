@@ -49,7 +49,7 @@ namespace MvvmValidation
 			OnErrorsChanged(e.Target as string);
 		}
 
-		private ValidationHelper Validator { get; set; }
+		private ValidationHelper Validator { get; }
 
 		#region INotifyDataErrorInfo Members
 
@@ -72,12 +72,9 @@ namespace MvvmValidation
 		/// Gets a value that indicates whether the object has validation errors.
 		/// </summary>
 		/// <returns>true if the object currently has validation errors; otherwise, false.</returns>
-		public bool HasErrors
-		{
-			get { return !Validator.GetResult().IsValid; }
-		}
+		public bool HasErrors => !Validator.GetResult().IsValid;
 
-		/// <summary>
+	    /// <summary>
 		/// Occurs when the validation errors have changed for a property or for the entire object.
 		/// </summary>
 		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;

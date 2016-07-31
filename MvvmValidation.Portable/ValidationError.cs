@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using JetBrains.Annotations;
 using MvvmValidation.Internal;
 
@@ -23,13 +22,13 @@ namespace MvvmValidation
 		/// Gets the error message.
 		/// </summary>
 		[NotNull]
-		public string ErrorText { get; private set; }
+		public string ErrorText { get; }
 
 		/// <summary>
 		/// Gets the target of the error (a property name or any other arbitrary object).
 		/// </summary>
 		[NotNull]
-		public object Target { get; private set; }
+		public object Target { get; }
 
 		#region IEquatable<ValidationError> Members
 

@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -24,9 +22,8 @@ namespace MvvmValidation
 			new Dictionary<object, IDictionary<ValidationRule, RuleResult>>();
 
 		private readonly object syncRoot = new object();
-		private bool isValidationSuspended;
 
-		#endregion
+	    #endregion
 
 		#region Construction
 
@@ -42,17 +39,14 @@ namespace MvvmValidation
 
 		#region Properties
 
-		private ValidationRuleCollection ValidationRules { get; set; }
+		private ValidationRuleCollection ValidationRules { get; }
 
 		/// <summary>
 		/// Indicates whether the validation is currently suspended using the <see cref="SuppressValidation"/> method.
 		/// </summary>
-		public bool IsValidationSuspended
-		{
-			get { return isValidationSuspended; }
-		}
+		public bool IsValidationSuspended { get; private set; }
 
-		#endregion
+	    #endregion
 
 		#region Rules Construction
 
@@ -531,7 +525,7 @@ namespace MvvmValidation
 
 			lock (syncRoot)
 			{
-				if (isValidationSuspended)
+				if (IsValidationSuspended)
 				{
 					return ValidationResult.Valid;
 				}
@@ -791,7 +785,7 @@ namespace MvvmValidation
 
 		private Task<ValidationResult> ValidateInternalAsync(object target)
 		{
-			if (isValidationSuspended)
+			if (IsValidationSuspended)
 			{
 				return TaskEx.FromResult(ValidationResult.Valid);
 			}
@@ -857,9 +851,9 @@ namespace MvvmValidation
 		[NotNull]
 		public IDisposable SuppressValidation()
 		{
-			isValidationSuspended = true;
+			IsValidationSuspended = true;
 
-			return new DelegateDisposable(() => { isValidationSuspended = false; });
+			return new DelegateDisposable(() => { IsValidationSuspended = false; });
 		}
 
 		/// <summary>
