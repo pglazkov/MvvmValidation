@@ -67,10 +67,6 @@ ValidationResult validationResult = Validator.ValidateAll();
 // Validate a specific target
 ValidationResult validationResult = Validator.Validate(nameof(FirstName));
 ```
-OR
-```cs
-ValidationResult validationResult = Validator.Validate("FirstName");
-```
 **Executing validation asynchronously**
 ```cs
 // Validate all (execute all validation rules)
