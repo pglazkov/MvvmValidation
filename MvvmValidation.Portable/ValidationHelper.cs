@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -509,6 +510,19 @@ namespace MvvmValidation
 			return ValidateInternal(target);
 		}
 
+        /// <summary>
+		/// Validates (executes validation rules) the calling property.
+		/// </summary>
+		/// <param name="callerName">Name of the property to validate (provided by the c# compiler and should not be specified exlicitly).</param>
+		/// <returns>Result that indicates whether the given property is valid and a collection of errors, if not valid.</returns>
+        [NotNull]
+	    public ValidationResult ValidateCaller([CallerMemberName] string callerName = null)
+	    {
+            Guard.NotNullOrEmpty(callerName, nameof(callerName));
+
+	        return Validate(callerName);
+	    }
+
 		/// <summary>
 		/// Executes validation using all validation rules. 
 		/// </summary>
@@ -759,13 +773,26 @@ namespace MvvmValidation
 			return ValidateInternalAsync(targetName);
 		}
 
-		/// <summary>
-		/// Executes validation for the given target asynchronously. 
-		/// Executes all (normal and async) validation rules for the target object specified in the <paramref name="target"/>.
+        /// <summary>
+		/// Executes validation for the calling property asynchronously.
 		/// </summary>
-		/// <param name="target">The target object to validate.</param>
-		/// <returns>Task that represents the validation operation.</returns>
-		[NotNull]
+		/// <param name="callerName">Name of the property to validate (provided by the c# compiler and should not be specified exlicitly).</param>
+		/// <returns>Result that indicates whether the given property is valid and a collection of errors, if not valid.</returns>
+        [NotNull]
+        public Task<ValidationResult> ValidateCallerAsync([CallerMemberName] string callerName = null)
+        {
+            Guard.NotNullOrEmpty(callerName, nameof(callerName));
+
+            return ValidateAsync(callerName);
+        }
+
+        /// <summary>
+        /// Executes validation for the given target asynchronously. 
+        /// Executes all (normal and async) validation rules for the target object specified in the <paramref name="target"/>.
+        /// </summary>
+        /// <param name="target">The target object to validate.</param>
+        /// <returns>Task that represents the validation operation.</returns>
+        [NotNull]
 		public Task<ValidationResult> ValidateAsync([NotNull] object target)
 		{
 			Guard.NotNull(target, nameof(target));
