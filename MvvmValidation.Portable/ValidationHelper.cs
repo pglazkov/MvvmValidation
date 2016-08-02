@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -118,6 +120,20 @@ namespace MvvmValidation
         }
 
         /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a <see cref="string"/> argument (<see cref="AddRule(string,System.Func{MvvmValidation.RuleResult})"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        public IValidationRule AddRule([NotNull] Expression<Func<object>> propertyExpression,
+            [NotNull] Func<RuleResult> validateDelegate)
+        {
+            Guard.NotNull(propertyExpression, nameof(propertyExpression));
+            Guard.NotNull(validateDelegate, nameof(validateDelegate));
+
+            return AddRule(PropertyName.For(propertyExpression, false), validateDelegate);
+        }
+
+        /// <summary>
         /// Adds a validation rule that validates two dependent properties.
         /// </summary>
         /// <param name="property1Name">The first target property name. Example: AddRule(nameof(MyProperty), ...).</param>
@@ -147,6 +163,22 @@ namespace MvvmValidation
         }
 
         /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a <see cref="string"/> arguments (<see cref="AddRule(string, string,Func{RuleResult})"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public IValidationRule AddRule([NotNull] Expression<Func<object>> property1Expression,
+            [NotNull] Expression<Func<object>> property2Expression, [NotNull] Func<RuleResult> validateDelegate)
+        {
+            Guard.NotNull(property1Expression, nameof(property1Expression));
+            Guard.NotNull(property2Expression, nameof(property2Expression));
+            Guard.NotNull(validateDelegate, nameof(validateDelegate));
+
+            return AddRule(PropertyName.For(property1Expression, false), PropertyName.For(property2Expression, false), validateDelegate);
+        }
+
+        /// <summary>
         /// Adds a validation rule that validates a collection of dependent properties.
         /// </summary>
         /// <param name="properties">The collection of target property expressions. Example: AddRule(new [] { () => MyProperty1, () => MyProperty2, () => MyProperty3 }, ...).</param>
@@ -169,6 +201,21 @@ namespace MvvmValidation
             var rule = AddRuleCore(target, validateDelegate, null);
 
             return rule;
+        }
+
+        /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a collection of <see cref="string"/> (<see cref="AddRule(IEnumerable{string},Func{RuleResult})"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public IValidationRule AddRule([NotNull] IEnumerable<Expression<Func<object>>> properties,
+            [NotNull] Func<RuleResult> validateDelegate)
+        {
+            Guard.NotNull(properties, nameof(properties));
+            Guard.NotNull(validateDelegate, nameof(validateDelegate));
+
+            return AddRule(properties.Select(x => PropertyName.For(x, false)), validateDelegate);
         }
 
         #region Async Rules
@@ -214,11 +261,11 @@ namespace MvvmValidation
         /// <example>
         /// <code>
         /// AddRule(() => Foo, 
-        ///			() => 
+        ///         () => 
         ///         {
-        ///				return ValidationServiceFacade.ValidateFooAsync(Foo)
+        ///             return ValidationServiceFacade.ValidateFooAsync(Foo)
         ///                 .ContinueWith(t => return RuleResult.Assert(t.Result.IsValid, "Foo must be greater than 10"));
-        ///			})
+        ///         })
         /// </code>
         /// </example>
         /// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
@@ -235,6 +282,21 @@ namespace MvvmValidation
         }
 
         /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a <see cref="string"/> argument (<see cref="AddAsyncRule(string,Func{Task{RuleResult}})"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public IAsyncValidationRule AddAsyncRule([NotNull] Expression<Func<object>> propertyExpression,
+            [NotNull] Func<Task<RuleResult>> validateAction)
+        {
+            Guard.NotNull(propertyExpression, nameof(propertyExpression));
+            Guard.NotNull(validateAction, nameof(validateAction));
+
+            return AddAsyncRule(PropertyName.For(propertyExpression, false), validateAction);
+        }
+
+        /// <summary>
         /// Adds an asynchronious validation rule that validates two dependent properties.
         /// </summary>
         /// <param name="property1Name">The first target property name. Example: AddRule(nameof(MyProperty), ...).</param>
@@ -243,11 +305,11 @@ namespace MvvmValidation
         /// <example>
         /// <code>
         /// AddRule(() => Foo, () => Bar
-        ///			() => 
+        ///            () => 
         ///         {
-        ///				return ValidationServiceFacade.ValidateFooAndBar(Foo, Bar)
+        ///                return ValidationServiceFacade.ValidateFooAndBar(Foo, Bar)
         ///                       .ContinueWith(t => RuleResult.Assert(t.Result.IsValid, "Foo must be greater than 10"));
-        ///			})
+        ///            })
         /// </code>
         /// </example>
         /// <returns>An instance of <see cref="IAsyncValidationRule"/> that represents the newly created validation rule.</returns>
@@ -262,6 +324,21 @@ namespace MvvmValidation
             var rule = AddAsyncRule(new[] {property1Name, property2Name}, validateAction);
 
             return rule;
+        }
+
+        /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes <see cref="string"/> arguments (<see cref="AddAsyncRule(string,string,Func{Task{RuleResult}})"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public IAsyncValidationRule AddAsyncRule([NotNull] Expression<Func<object>> property1Expression, [NotNull] Expression<Func<object>> property2Expression, [NotNull] Func<Task<RuleResult>> validateAction)
+        {
+            Guard.NotNull(property1Expression, nameof(property1Expression));
+            Guard.NotNull(property2Expression, nameof(property2Expression));
+            Guard.NotNull(validateAction, nameof(validateAction));
+
+            return AddAsyncRule(PropertyName.For(property1Expression, false), PropertyName.For(property2Expression, false), validateAction);
         }
 
         /// <summary>
@@ -283,6 +360,20 @@ namespace MvvmValidation
             var rule = AddRuleCore(target, null, validateAction);
 
             return rule;
+        }
+
+        /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a collection of <see cref="string"/> (<see cref="AddAsyncRule(IEnumerable{string},Func{Task{RuleResult}})"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public IAsyncValidationRule AddAsyncRule([NotNull] IEnumerable<Expression<Func<object>>> properties, [NotNull] Func<Task<RuleResult>> validateAction)
+        {
+            Guard.NotNull(properties, nameof(properties));
+            Guard.NotNull(validateAction, nameof(validateAction));
+
+            return AddAsyncRule(properties.Select(x => PropertyName.For(x, false)), validateAction);
         }
 
         #endregion
@@ -445,6 +536,19 @@ namespace MvvmValidation
             return GetResult((object) targetName);
         }
 
+        /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a <see cref="string"/> argument (<see cref="GetResult(string)"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public ValidationResult GetResult([NotNull] Expression<Func<object>> propertyExpression)
+        {
+            Guard.NotNull(propertyExpression, nameof(propertyExpression));
+
+            return GetResult(PropertyName.For(propertyExpression, false));
+        }
+
         private ValidationResult GetResultInternal(object target)
         {
             ValidationResult result = ValidationResult.Valid;
@@ -501,6 +605,19 @@ namespace MvvmValidation
             Guard.NotNull(targetName, nameof(targetName));
 
             return ValidateInternal(targetName);
+        }
+
+        /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a <see cref="string"/> argument (<see cref="Validate(string)"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public ValidationResult Validate([NotNull] Expression<Func<object>> propertyPathExpression)
+        {
+            Guard.NotNull(propertyPathExpression, nameof(propertyPathExpression));
+
+            return Validate(PropertyName.For(propertyPathExpression, false));
         }
 
         /// <summary>
@@ -781,6 +898,19 @@ namespace MvvmValidation
             Guard.NotNull(targetName, nameof(targetName));
 
             return ValidateInternalAsync(targetName);
+        }
+
+        /// <summary>
+        /// OBSOLTE: If you are using C# 6 compiler consider using another overload of this method that 
+        /// takes a <see cref="string"/> argument (<see cref="ValidateAsync(string)"/>) 
+        /// and invoke it with nameof(MyProperty) instead. 
+        /// </summary>
+        [NotNull]
+        public Task<ValidationResult> ValidateAsync([NotNull] Expression<Func<object>> propertyPathExpression)
+        {
+            Guard.NotNull(propertyPathExpression, nameof(propertyPathExpression));
+
+            return ValidateAsync(PropertyName.For(propertyPathExpression, false));
         }
 
         /// <summary>
