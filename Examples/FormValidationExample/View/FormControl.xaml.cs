@@ -2,11 +2,11 @@
 
 namespace FormValidationExample.View
 {
-	public partial class FormControl : UserControl
-	{
-		public FormControl()
-		{
-			InitializeComponent();
-		}
-	}
+    public partial class FormControl : UserControl
+    {
+        public FormControl()
+        {
+            InitializeComponent();
+        }
+    }
 }

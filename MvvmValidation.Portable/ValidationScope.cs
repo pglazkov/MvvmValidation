@@ -7,85 +7,88 @@ using MvvmValidation.Internal;
 
 namespace MvvmValidation
 {
-	/// <summary>
-	/// Provides a possibility to comibine multiple instances of <see cref="ValidationHelper"/> into one scope and 
-	/// execute the validation in one go with multiple validators. Useful when validating multiple view models that are
-	/// not aware of each other and know only about the scope. 
-	/// </summary>
-	public sealed class ValidationScope
-	{
-		private readonly IList<ValidationHelper> registeredValidators = new List<ValidationHelper>();
-		private readonly IDictionary<ValidationHelper, ValidationResult> resultsByValidator = new Dictionary<ValidationHelper, ValidationResult>();
+    /// <summary>
+    /// Provides a possibility to comibine multiple instances of <see cref="ValidationHelper"/> into one scope and 
+    /// execute the validation in one go with multiple validators. Useful when validating multiple view models that are
+    /// not aware of each other and know only about the scope. 
+    /// </summary>
+    public sealed class ValidationScope
+    {
+        private readonly IList<ValidationHelper> registeredValidators = new List<ValidationHelper>();
 
-		/// <summary>
-		/// Occurs when validation result changes.
-		/// </summary>
-		public event EventHandler<ValidationResultChangedEventArgs> ResultChanged;
+        private readonly IDictionary<ValidationHelper, ValidationResult> resultsByValidator =
+            new Dictionary<ValidationHelper, ValidationResult>();
 
-		private void OnResultChanged(ValidationResultChangedEventArgs e)
-		{
-		    ResultChanged?.Invoke(this, e);
-		}
+        /// <summary>
+        /// Occurs when validation result changes.
+        /// </summary>
+        public event EventHandler<ValidationResultChangedEventArgs> ResultChanged;
 
-		/// <summary>
-		/// Registers a validator with this scope. 
-		/// </summary>
-		/// <param name="validator">Validator to register.</param>
-		public void RegisterValidator([NotNull] ValidationHelper validator)
-		{
-			Guard.NotNull(validator, nameof(validator));
+        private void OnResultChanged(ValidationResultChangedEventArgs e)
+        {
+            ResultChanged?.Invoke(this, e);
+        }
 
-			registeredValidators.Add(validator);
-			resultsByValidator.Add(validator, ValidationResult.Valid);
+        /// <summary>
+        /// Registers a validator with this scope. 
+        /// </summary>
+        /// <param name="validator">Validator to register.</param>
+        public void RegisterValidator([NotNull] ValidationHelper validator)
+        {
+            Guard.NotNull(validator, nameof(validator));
 
-			validator.ResultChanged += OnValidatorResultChanged;
-		}
+            registeredValidators.Add(validator);
+            resultsByValidator.Add(validator, ValidationResult.Valid);
 
-		private void OnValidatorResultChanged(object sender, ValidationResultChangedEventArgs e)
-		{
-			var validator = (ValidationHelper)sender;
+            validator.ResultChanged += OnValidatorResultChanged;
+        }
 
-			resultsByValidator[validator] = e.NewResult;
+        private void OnValidatorResultChanged(object sender, ValidationResultChangedEventArgs e)
+        {
+            var validator = (ValidationHelper) sender;
 
-			NotifyCombinedResultChanged();
-		}
+            resultsByValidator[validator] = e.NewResult;
 
-		private void NotifyCombinedResultChanged()
-		{
-			var combinedResult = GetResult();
+            NotifyCombinedResultChanged();
+        }
 
-			OnResultChanged(new ValidationResultChangedEventArgs(null, combinedResult));
-		}
+        private void NotifyCombinedResultChanged()
+        {
+            var combinedResult = GetResult();
 
-		/// <summary>
-		/// Executes the validation of all registered validators and combines the result from all of them.
-		/// </summary>
-		/// <returns>The validation result.</returns>
-		public Task<ValidationResult> ValidateAllAsync()
-		{
-			return
-				TaskEx.WhenAll(registeredValidators.Select(x => x.ValidateAllAsync()).ToList()).ContinueWith(t => CombineResults(t.Result));
-		}
+            OnResultChanged(new ValidationResultChangedEventArgs(null, combinedResult));
+        }
 
-		/// <summary>
-		/// Gets the result of last validation (without executing the validation).
-		/// </summary>
-		/// <returns>The result of last validation.</returns>
-		public ValidationResult GetResult()
-		{
-			return CombineResults(resultsByValidator.Values);
-		}
+        /// <summary>
+        /// Executes the validation of all registered validators and combines the result from all of them.
+        /// </summary>
+        /// <returns>The validation result.</returns>
+        public Task<ValidationResult> ValidateAllAsync()
+        {
+            return
+                TaskEx.WhenAll(registeredValidators.Select(x => x.ValidateAllAsync()).ToList())
+                    .ContinueWith(t => CombineResults(t.Result));
+        }
 
-		private static ValidationResult CombineResults(IEnumerable<ValidationResult> results)
-		{
-			ValidationResult result = ValidationResult.Valid;
+        /// <summary>
+        /// Gets the result of last validation (without executing the validation).
+        /// </summary>
+        /// <returns>The result of last validation.</returns>
+        public ValidationResult GetResult()
+        {
+            return CombineResults(resultsByValidator.Values);
+        }
 
-			foreach (var r in results)
-			{
-				result = result.Combine(r);
-			}
+        private static ValidationResult CombineResults(IEnumerable<ValidationResult> results)
+        {
+            ValidationResult result = ValidationResult.Valid;
 
-			return result;
-		}
-	}
+            foreach (var r in results)
+            {
+                result = result.Combine(r);
+            }
+
+            return result;
+        }
+    }
 }

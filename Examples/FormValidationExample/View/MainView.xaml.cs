@@ -4,13 +4,13 @@ using FormValidationExample.ViewModel;
 
 namespace FormValidationExample.View
 {
-	public partial class MainView : UserControl
-	{
-		public MainView()
-		{
-			InitializeComponent();
+    public partial class MainView : UserControl
+    {
+        public MainView()
+        {
+            InitializeComponent();
 
-			DataContext = new MainViewModel(new UserRegistrationService());
-		}
-	}
+            DataContext = new MainViewModel(new UserRegistrationService());
+        }
+    }
 }

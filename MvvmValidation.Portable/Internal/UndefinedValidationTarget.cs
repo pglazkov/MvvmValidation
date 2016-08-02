@@ -2,42 +2,42 @@
 
 namespace MvvmValidation.Internal
 {
-	internal class UndefinedValidationTarget : IValidationTarget
-	{
-		private static readonly object FakeTarget = new object();
+    internal class UndefinedValidationTarget : IValidationTarget
+    {
+        private static readonly object FakeTarget = new object();
 
-		#region IValidationTarget Members
+        #region IValidationTarget Members
 
-		public IEnumerable<object> UnwrapTargets()
-		{
-			return new[] {FakeTarget};
-		}
+        public IEnumerable<object> UnwrapTargets()
+        {
+            return new[] {FakeTarget};
+        }
 
-		public bool IsMatch(object target)
-		{
-			return ReferenceEquals(target, null);
-		}
+        public bool IsMatch(object target)
+        {
+            return ReferenceEquals(target, null);
+        }
 
-		#endregion
+        #endregion
 
-		public override bool Equals(object obj)
-		{
-			if (obj == null)
-			{
-				return true;
-			}
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+            {
+                return true;
+            }
 
-			if (obj is UndefinedValidationTarget)
-			{
-				return true;
-			}
+            if (obj is UndefinedValidationTarget)
+            {
+                return true;
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-		public override int GetHashCode()
-		{
-			return 0;
-		}
-	}
+        public override int GetHashCode()
+        {
+            return 0;
+        }
+    }
 }

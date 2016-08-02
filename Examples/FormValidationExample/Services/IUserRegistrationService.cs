@@ -2,8 +2,8 @@
 
 namespace FormValidationExample.Services
 {
-	public interface IUserRegistrationService
-	{
-		IObservable<bool> IsUserNameAvailable(string userName);
-	}
+    public interface IUserRegistrationService
+    {
+        IObservable<bool> IsUserNameAvailable(string userName);
+    }
 }

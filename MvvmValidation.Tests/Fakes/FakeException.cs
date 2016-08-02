@@ -2,12 +2,11 @@
 
 namespace MvvmValidation.Tests.Fakes
 {
-	public class FakeException : Exception
-	{
-		public FakeException()
-			: base("Test exception")
-		{
-			
-		}
-	}
+    public class FakeException : Exception
+    {
+        public FakeException()
+            : base("Test exception")
+        {
+        }
+    }
 }

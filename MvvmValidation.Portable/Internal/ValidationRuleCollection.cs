@@ -2,7 +2,7 @@
 
 namespace MvvmValidation.Internal
 {
-	internal class ValidationRuleCollection : List<ValidationRule>
-	{
-	}
+    internal class ValidationRuleCollection : List<ValidationRule>
+    {
+    }
 }

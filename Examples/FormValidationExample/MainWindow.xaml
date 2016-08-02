@@ -1,11 +1,11 @@
 ﻿<Window x:Class="FormValidationExample.MainWindow"
-		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:View="clr-namespace:FormValidationExample.View"
         Title="MainWindow"
-		Height="704"
-		Width="980">
-	<Grid>
-		<View:MainView />
-	</Grid>
+        Height="704"
+        Width="980">
+    <Grid>
+        <View:MainView />
+    </Grid>
 </Window>

@@ -7,19 +7,19 @@ using MvvmValidation;
 
 namespace FormValidationExample.Infrastructure
 {
-	public abstract class ValidatableViewModelBase : ViewModelBase, IValidatable, INotifyDataErrorInfo
+    public abstract class ValidatableViewModelBase : ViewModelBase, IValidatable, INotifyDataErrorInfo
     {
-		protected ValidationHelper Validator { get; }
+        protected ValidationHelper Validator { get; }
 
-		private NotifyDataErrorInfoAdapter NotifyDataErrorInfoAdapter { get; }
+        private NotifyDataErrorInfoAdapter NotifyDataErrorInfoAdapter { get; }
 
-	    protected ValidatableViewModelBase()
-		{
-			Validator = new ValidationHelper();
+        protected ValidatableViewModelBase()
+        {
+            Validator = new ValidationHelper();
 
-			NotifyDataErrorInfoAdapter = new NotifyDataErrorInfoAdapter(Validator);
-		    NotifyDataErrorInfoAdapter.ErrorsChanged += OnErrorsChanged;
-		}
+            NotifyDataErrorInfoAdapter = new NotifyDataErrorInfoAdapter(Validator);
+            NotifyDataErrorInfoAdapter.ErrorsChanged += OnErrorsChanged;
+        }
 
         private void OnErrorsChanged(object sender, DataErrorsChangedEventArgs e)
         {
@@ -28,9 +28,9 @@ namespace FormValidationExample.Infrastructure
         }
 
         Task<ValidationResult> IValidatable.Validate()
-		{
-			return Validator.ValidateAllAsync();
-		}
+        {
+            return Validator.ValidateAllAsync();
+        }
 
         #region Implementation of INotifyDataErrorInfo
 

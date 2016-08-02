@@ -2,10 +2,10 @@
 
 namespace MvvmValidation.Internal
 {
-	internal interface IValidationTarget
-	{
-		IEnumerable<object> UnwrapTargets();
+    internal interface IValidationTarget
+    {
+        IEnumerable<object> UnwrapTargets();
 
-		bool IsMatch(object target);
-	}
+        bool IsMatch(object target);
+    }
 }

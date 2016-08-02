@@ -28,7 +28,8 @@ namespace MvvmValidation.Internal
             if (ReferenceEquals(value, null))
             {
                 string argumentNullMessage = $"Value of argument \"{paramName}\" cannot be null.";
-                string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath, callerLineNumber);
+                string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath,
+                    callerLineNumber);
 
                 BreakInDebuggerIfAttached();
 
@@ -60,7 +61,8 @@ namespace MvvmValidation.Internal
             if (value.Length == 0)
             {
                 string argumentNullMessage = $"Value of argument \"{argumentName}\" cannot be null or an empty string.";
-                string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath, callerLineNumber);
+                string message = FormatMessageWithCollerInfo(argumentNullMessage, callerMemberName, callerFilePath,
+                    callerLineNumber);
 
                 BreakInDebuggerIfAttached();
 
@@ -93,7 +95,8 @@ namespace MvvmValidation.Internal
 
             BreakInDebuggerIfAttached();
 
-            string formattedMessage = FormatMessageWithCollerInfo(message, callerMemberName, callerFilePath, callerLineNumber);
+            string formattedMessage = FormatMessageWithCollerInfo(message, callerMemberName, callerFilePath,
+                callerLineNumber);
 
             throw new InvalidOperationException(formattedMessage);
         }

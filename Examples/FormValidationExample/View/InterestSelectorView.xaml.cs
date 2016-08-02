@@ -2,11 +2,11 @@
 
 namespace FormValidationExample.View
 {
-	public partial class InterestSelectorView : UserControl
-	{
-		public InterestSelectorView()
-		{
-			InitializeComponent();
-		}
-	}
+    public partial class InterestSelectorView : UserControl
+    {
+        public InterestSelectorView()
+        {
+            InitializeComponent();
+        }
+    }
 }
