@@ -9,7 +9,7 @@
         <Major>3</Major>
         <Minor>0</Minor>
         <Patch>0</Patch>
-        <PreReleaseString>rc1</PreReleaseString>
+        <PreReleaseString>rc2</PreReleaseString>
 
         <VersionInfoString Condition="$(PreReleaseString) != ''">$(Major).$(Minor).$(Patch)-$(PreReleaseString)</VersionInfoString>
         <VersionInfoString Condition="$(PreReleaseString) == ''">$(Major).$(Minor).$(Patch)</VersionInfoString>
