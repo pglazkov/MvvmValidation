@@ -3,7 +3,7 @@
   <metadata>
     <id>MvvmValidation</id>
     <title>MVVM Validation Helpers</title>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <authors>Pavlo Glazkov</authors>
     <owners>Pavlo Glazkov</owners>
     <licenseUrl>https://raw.githubusercontent.com/pglazkov/MvvmValidation/master/LICENSE.md</licenseUrl>

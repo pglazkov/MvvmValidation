@@ -7,7 +7,7 @@
 
     <PropertyGroup>
         <Major>3</Major>
-        <Minor>0</Minor>
+        <Minor>1</Minor>
         <Patch>0</Patch>
         <PreReleaseString></PreReleaseString>
 
