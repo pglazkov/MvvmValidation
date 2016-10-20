@@ -701,28 +701,37 @@ namespace MvvmValidation
 
             executeRuleFromQueueRecursive = () =>
             {
-                ExecuteNextRuleFromQueueAsync(rulesQueue, failedTargets, result, syncContext).ContinueWith(t =>
+                try
                 {
-                    if (t.Exception != null)
+                    ExecuteNextRuleFromQueueAsync(rulesQueue, failedTargets, result, syncContext).ContinueWith(t =>
                     {
-                        resultTcs.TrySetException(t.Exception);
-                        return;
-                    }
+                        if (t.Exception != null)
+                        {
+                            resultTcs.TrySetException(t.Exception);
+                            return;
+                        }
 
-                    if (t.IsCanceled)
-                    {
-                        resultTcs.TrySetCanceled();
-                        return;
-                    }
+                        if (t.IsCanceled)
+                        {
+                            resultTcs.TrySetCanceled();
+                            return;
+                        }
 
-                    if (t.Result)
-                    {
-                        executeRuleFromQueueRecursive();
-                        return;
-                    }
+                        if (t.Result)
+                        {
+                            executeRuleFromQueueRecursive();
+                            return;
+                        }
 
-                    resultTcs.TrySetResult(result);
-                });
+                        resultTcs.TrySetResult(result);
+                    });
+                }
+                catch (Exception ex)
+                {
+                    // We need to catch the exception here because overwise it might be left unnoticed when this fuction is executed recursively and rule is synchronous. 
+                    // See MixedValidation_SyncRuleThrowsExceptionAfterSuccesfullAsyncRule_ExceptionIsPropogated test.
+                    resultTcs.TrySetException(ex);
+                }
             };
 
             executeRuleFromQueueRecursive();

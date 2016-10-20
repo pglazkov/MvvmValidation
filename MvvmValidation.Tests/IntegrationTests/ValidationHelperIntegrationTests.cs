@@ -527,6 +527,27 @@ namespace MvvmValidation.Tests.IntegrationTests
         }
 
         [Fact]
+        public async void MixedValidation_SyncRuleThrowsExceptionAfterSuccesfullAsyncRule_ExceptionIsPropogated()
+        {
+            // ARRANGE
+            var validator = new ValidationHelper();
+
+            validator.AddAsyncRule(async () =>
+            {
+                return await Task.Run(() => RuleResult.Valid());
+            });
+
+            validator.AddRule(() => { throw new InvalidOperationException("Test"); });
+
+            // ACT & VERIFY
+            var task = Assert.ThrowsAsync<ValidationException>(() => validator.ValidateAllAsync());
+            if (task != await Task.WhenAny(task, Task.Delay(TimeSpan.FromSeconds(5))))
+            {
+                Assert.True(false, "Looks like the validation is stuck (didn't complete in a timeout), which means it didn't handle the exception properly.");
+            }
+        }
+
+        [Fact]
         public void AddChildValidatable_AddsRuleThatExecutedValidationOnChild()
         {
             TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>
