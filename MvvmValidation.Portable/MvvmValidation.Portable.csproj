@@ -85,7 +85,9 @@
     <Compile Include="ValidationResult.cs" />
     <Compile Include="ValidationResultChangedEventArgs.cs" />
     <Compile Include="ValidationResultExtensions.cs" />
+    <Compile Include="ValidationRuleSettings.cs" />
     <Compile Include="ValidationScope.cs" />
+    <Compile Include="ValidationSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Key.snk">

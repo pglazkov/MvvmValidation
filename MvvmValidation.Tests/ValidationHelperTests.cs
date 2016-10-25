@@ -347,6 +347,89 @@ namespace MvvmValidation.Tests
         }
 
         [Fact]
+        public void Validate_MultipleRulesForSameTarget_OptionToAllowValidationOnFailedTargetsIsSetGlobally_AllRulesAreExecuted()
+        {
+            // ARRANGE
+            var validation = new ValidationHelper(new ValidationSettings
+            {
+                DefaultRuleSettings = new ValidationRuleSettings
+                {
+                    ExecuteOnAlreadyInvalidTarget = true
+                }
+            });
+
+            var dummy = new DummyViewModel();
+
+            bool firstRuleExecuted = false;
+            bool secondRuleExecuted = false;
+
+            validation.AddRule(nameof(dummy.Foo),
+                () =>
+                {
+                    firstRuleExecuted = true;
+                    return RuleResult.Invalid("Error1");
+                });
+            validation.AddRule(nameof(dummy.Foo),
+                () =>
+                {
+                    secondRuleExecuted = true;
+                    return RuleResult.Invalid("Error2");
+                });
+
+            // ACT
+
+            validation.ValidateAll();
+            
+            // VERIFY
+
+            Assert.True(firstRuleExecuted, "First rule must have been executed");
+            Assert.True(secondRuleExecuted, "Second rule should be executed as well even though the target is already invalid.");
+        }
+
+        [Fact]
+        public void Validate_MultipleRulesForSameTarget_OptionToAllowValidationOnFailedTargetsIsSetForSpecificRule_ThatRuleIsExecuted()
+        {
+            // ARRANGE
+            var validation = new ValidationHelper();
+
+            var dummy = new DummyViewModel();
+
+            bool firstRuleExecuted = false;
+            bool secondRuleExecuted = false;
+            bool thirdRuleExecuted = false;
+
+            validation.AddRule(nameof(dummy.Foo),
+                () =>
+                {
+                    firstRuleExecuted = true;
+                    return RuleResult.Invalid("Error1");
+                });
+            validation.AddRule(nameof(dummy.Foo),
+                () =>
+                {
+                    secondRuleExecuted = true;
+                    return RuleResult.Invalid("Error2");
+                });
+
+            validation.AddRule(nameof(dummy.Foo),
+                () =>
+                {
+                    thirdRuleExecuted = true;
+                    return RuleResult.Invalid("Error3");
+                }).WithSettings(s => s.ExecuteOnAlreadyInvalidTarget = true);
+
+            // ACT
+
+            validation.ValidateAll();
+
+            // VERIFY
+
+            Assert.True(firstRuleExecuted, "First rule must have been executed");
+            Assert.False(secondRuleExecuted, "Second rule should not have been executed because first rule failed.");
+            Assert.True(thirdRuleExecuted, "Third rule should be executed because it is configured to be executed on already invalid target.");
+        }
+
+        [Fact]
         public void Validate_MultipleRulesForSameTarget_ClearsResultsBeforeValidation()
         {
             // ARRANGE

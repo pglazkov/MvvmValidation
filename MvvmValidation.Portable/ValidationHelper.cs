@@ -34,8 +34,20 @@ namespace MvvmValidation
         /// Initializes a new instance of the <see cref="ValidationHelper"/> class.
         /// </summary>
         public ValidationHelper()
+            : this(new ValidationSettings())
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ValidationHelper"/> class.
+        /// </summary>
+        /// <param name="settings">An instance of <see cref="ValidationSettings"/> that control the behavior of this instance of <see cref="ValidationHelper"/>.</param>
+        public ValidationHelper(ValidationSettings settings)
+        {
+            Guard.NotNull(settings, nameof(settings));
+
             ValidationRules = new ValidationRuleCollection();
+            Settings = settings;
         }
 
         #endregion
@@ -43,6 +55,7 @@ namespace MvvmValidation
         #region Properties
 
         private ValidationRuleCollection ValidationRules { get; }
+        private ValidationSettings Settings { get; }
 
         /// <summary>
         /// Indicates whether the validation is currently suspended using the <see cref="SuppressValidation"/> method.
@@ -749,8 +762,8 @@ namespace MvvmValidation
 
             var rule = rulesQueue.Dequeue();
 
-            // Skip rule if the target is already invalid
-            if (failedTargets.Contains(rule.Target))
+            // Skip rule if the target is already invalid and the rule is not configured to execute anyway
+            if (failedTargets.Contains(rule.Target) && !ShouldExecuteOnAlreadyInvalidTarget(rule))
             {
                 // Assume that the rule is valid at this point because we are not interested in this error until
                 // previous rule is fixed.
@@ -774,6 +787,13 @@ namespace MvvmValidation
 
                 return true;
             });
+        }
+
+        private bool ShouldExecuteOnAlreadyInvalidTarget(ValidationRule rule)
+        {
+            var defaultValue = Settings.DefaultRuleSettings?.ExecuteOnAlreadyInvalidTarget ?? false;
+
+            return rule.Settings.ExecuteOnAlreadyInvalidTarget.GetValueOrDefault(defaultValue);
         }
 
         private ReadOnlyCollection<ValidationRule> GetRulesForTarget(object target)
