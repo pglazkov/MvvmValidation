@@ -237,6 +237,28 @@ namespace MvvmValidation.Tests.IntegrationTests
         }
 
         [Fact]
+        public void SyncValidation_CallResultsChangedOnUIThread() {
+            TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) => {
+                var validation = new ValidationHelper();
+
+                validation.AddRule(() => RuleResult.Invalid("error"));
+
+                validation.ResultChanged += (o, e) => {
+                    // VERIFY
+                    if (Thread.CurrentThread.ManagedThreadId != uiThreadDispatcher.Thread.ManagedThreadId) {
+                        Assert.True(false, "ValidationCompleted must be called on the UI thread.");
+                    }
+                   
+
+                    completedAction();
+                };
+
+                // ACT
+                validation.ValidateAll();
+            });
+        }
+
+        [Fact]
         public void AsyncValidation_InvalidValue_CallsValidationRuleInBackgroundThreadAndReportsInvalidOnUIThread()
         {
             TestUtils.ExecuteWithDispatcher((uiThreadDispatcher, completedAction) =>

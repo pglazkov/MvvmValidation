@@ -702,66 +702,26 @@ namespace MvvmValidation
             }
         }
 
-        private Task<ValidationResult> ExecuteValidationRulesAsync(IEnumerable<ValidationRule> rulesToExecute,
-            SynchronizationContext syncContext = null)
+        private async Task<ValidationResult> ExecuteValidationRulesAsync(IEnumerable<ValidationRule> rulesToExecute, SynchronizationContext syncContext = null)
         {
-            var resultTcs = new TaskCompletionSource<ValidationResult>();
             var result = new ValidationResult();
             var failedTargets = new HashSet<object>();
-            var rulesQueue = new Queue<ValidationRule>(rulesToExecute.ToArray());
 
-            Action executeRuleFromQueueRecursive = null;
-
-            executeRuleFromQueueRecursive = () =>
+            foreach (var rule in rulesToExecute.ToArray())
             {
-                try
+                var isValid = await ExecuteRuleAsync(rule, failedTargets, result, syncContext).ConfigureAwait(false);
+
+                if (!isValid)
                 {
-                    ExecuteNextRuleFromQueueAsync(rulesQueue, failedTargets, result, syncContext).ContinueWith(t =>
-                    {
-                        if (t.Exception != null)
-                        {
-                            resultTcs.TrySetException(t.Exception);
-                            return;
-                        }
-
-                        if (t.IsCanceled)
-                        {
-                            resultTcs.TrySetCanceled();
-                            return;
-                        }
-
-                        if (t.Result)
-                        {
-                            executeRuleFromQueueRecursive();
-                            return;
-                        }
-
-                        resultTcs.TrySetResult(result);
-                    });
+                    break;
                 }
-                catch (Exception ex)
-                {
-                    // We need to catch the exception here because overwise it might be left unnoticed when this fuction is executed recursively and rule is synchronous. 
-                    // See MixedValidation_SyncRuleThrowsExceptionAfterSuccesfullAsyncRule_ExceptionIsPropogated test.
-                    resultTcs.TrySetException(ex);
-                }
-            };
-
-            executeRuleFromQueueRecursive();
-
-            return resultTcs.Task;
-        }
-
-        private Task<bool> ExecuteNextRuleFromQueueAsync(Queue<ValidationRule> rulesQueue, ISet<object> failedTargets,
-            ValidationResult validationResultAccumulator, SynchronizationContext syncContext)
-        {
-            if (rulesQueue.Count == 0)
-            {
-                return TaskEx.FromResult(false);
             }
 
-            var rule = rulesQueue.Dequeue();
+            return result;
+        }
 
+        private async Task<bool> ExecuteRuleAsync(ValidationRule rule, ISet<object> failedTargets, ValidationResult validationResultAccumulator, SynchronizationContext syncContext)
+        {
             // Skip rule if the target is already invalid and the rule is not configured to execute anyway
             if (failedTargets.Contains(rule.Target) && !ShouldExecuteOnAlreadyInvalidTarget(rule))
             {
@@ -769,24 +729,23 @@ namespace MvvmValidation
                 // previous rule is fixed.
                 SaveRuleValidationResultAndNotifyIfNeeded(rule, RuleResult.Valid(), syncContext);
 
-                return TaskEx.FromResult(true);
+                return true;
             }
 
-            return ExecuteRuleCoreAsync(rule).ContinueWith(t =>
+            var ruleResult = !rule.SupportsSyncValidation
+                ? await rule.EvaluateAsync().ConfigureAwait(false)
+                : rule.Evaluate();
+
+            SaveRuleValidationResultAndNotifyIfNeeded(rule, ruleResult, syncContext);
+
+            AddErrorsFromRuleResult(validationResultAccumulator, rule, ruleResult);
+
+            if (!ruleResult.IsValid)
             {
-                RuleResult ruleResult = t.Result;
+                failedTargets.Add(rule.Target);
+            }
 
-                SaveRuleValidationResultAndNotifyIfNeeded(rule, ruleResult, syncContext);
-
-                AddErrorsFromRuleResult(validationResultAccumulator, rule, ruleResult);
-
-                if (!ruleResult.IsValid)
-                {
-                    failedTargets.Add(rule.Target);
-                }
-
-                return true;
-            });
+            return true;
         }
 
         private bool ShouldExecuteOnAlreadyInvalidTarget(ValidationRule rule)
@@ -806,28 +765,6 @@ namespace MvvmValidation
 
                 return result;
             }
-        }
-
-        private static Task<RuleResult> ExecuteRuleCoreAsync(ValidationRule rule)
-        {
-            Task<RuleResult> resultTask;
-
-            if (!rule.SupportsSyncValidation)
-            {
-                resultTask = rule.EvaluateAsync();
-            }
-            else
-            {
-                var tcs = new TaskCompletionSource<RuleResult>();
-
-                var result = rule.Evaluate();
-
-                tcs.SetResult(result);
-
-                resultTask = tcs.Task;
-            }
-
-            return resultTask;
         }
 
         private static void AddErrorsFromRuleResult(ValidationResult resultToAddTo, ValidationRule validationRule,

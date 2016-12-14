@@ -13,7 +13,7 @@ namespace MvvmValidation.Internal
 
             Target = target;
             ValidateDelegate = validateDelegate;
-            AsyncValidateAction = asyncValidateAction ?? (() => Task.Factory.StartNew(() => ValidateDelegate()));
+            AsyncValidateAction = asyncValidateAction ?? (() => Task.Run(() => ValidateDelegate()));
             Settings = new ValidationRuleSettings();
         }
 
