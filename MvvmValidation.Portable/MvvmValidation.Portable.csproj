@@ -54,6 +54,7 @@
     </Compile>
     <Compile Include="IAsyncValidationRule.cs" />
     <Compile Include="Internal\Annotations.cs" />
+    <Compile Include="Internal\AutoToggle.cs" />
     <Compile Include="Internal\CallerInfoAttributes.cs" />
     <Compile Include="Internal\CollectionUtils.cs" />
     <Compile Include="Internal\DelegateDisposable.cs" />
