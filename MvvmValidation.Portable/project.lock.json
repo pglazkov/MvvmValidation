@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "targets": {
     ".NETStandard,Version=v1.0": {
       "Microsoft.NETCore.Jit/1.0.2": {
@@ -2036,11 +2036,21 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "C:\\git\\mageos\\MvvmValidation\\MvvmValidation.Portable\\MvvmValidation.Portable.csproj",
+      "projectUniqueName": "C:\\github\\mageos\\MvvmValidation\\MvvmValidation.Portable\\MvvmValidation.Portable.csproj",
       "projectName": "MvvmValidation.Portable",
-      "projectPath": "C:\\git\\mageos\\MvvmValidation\\MvvmValidation.Portable\\MvvmValidation.Portable.csproj",
-      "projectJsonPath": "C:\\git\\mageos\\MvvmValidation\\MvvmValidation.Portable\\project.json",
-      "projectStyle": "ProjectJson"
+      "projectPath": "C:\\github\\mageos\\MvvmValidation\\MvvmValidation.Portable\\MvvmValidation.Portable.csproj",
+      "projectJsonPath": "C:\\github\\mageos\\MvvmValidation\\MvvmValidation.Portable\\project.json",
+      "packagesPath": "C:\\Users\\mageo\\.nuget\\packages\\",
+      "outputPath": "C:\\github\\mageos\\MvvmValidation\\MvvmValidation.Portable\\obj\\",
+      "projectStyle": "ProjectJson",
+      "configFilePaths": [
+        "C:\\Users\\mageo\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      }
     },
     "dependencies": {
       "Microsoft.NETCore.Portable.Compatibility": "1.0.1",

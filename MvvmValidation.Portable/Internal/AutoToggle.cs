@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MvvmValidation.Internal
 {
-    public class AutoToggle
+    internal class AutoToggle
     {
         private readonly bool defaultValue;
         private int refCount = 0;
