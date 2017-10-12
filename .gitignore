@@ -214,3 +214,5 @@ pip-log.txt
 /Output
 /TestReport.html
 /packages
+/.idea
+/.vs

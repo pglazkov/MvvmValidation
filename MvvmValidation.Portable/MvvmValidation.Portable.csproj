@@ -1,107 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6C8F3CB8-EA5F-4E72-B804-A10081DF47E5}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MvvmValidation</RootNamespace>
+    <TargetFramework>netstandard1.0</TargetFramework>
     <AssemblyName>MvvmValidation</AssemblyName>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\Output\lib\netstandard1.0\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\Output\lib\netstandard1.0\MvvmValidation.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\Output\lib\netstandard1.0\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>..\Output\lib\netstandard1.0\MvvmValidation.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup>
+    <PackageId>MvvmValidation.Portable</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.0</NetStandardImplicitPackageVersion>
+    <GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
     <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>..\Key.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>MvvmValidation</RootNamespace>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\Output\lib\</OutputPath>
+    <DocumentationFile>..\Output\lib\netstandard1.0\MvvmValidation.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\Output\lib\</OutputPath>
+    <DocumentationFile>..\Output\lib\netstandard1.0\MvvmValidation.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="..\VersionInfo.cs">
-      <Link>Properties\VersionInfo.cs</Link>
-    </Compile>
-    <Compile Include="IAsyncValidationRule.cs" />
-    <Compile Include="Internal\Annotations.cs" />
-    <Compile Include="Internal\AutoToggle.cs" />
-    <Compile Include="Internal\CallerInfoAttributes.cs" />
-    <Compile Include="Internal\CollectionUtils.cs" />
-    <Compile Include="Internal\DelegateDisposable.cs" />
-    <Compile Include="Internal\ExceptionUtils.cs" />
-    <Compile Include="Internal\GenericValidationTarget.cs" />
-    <Compile Include="Internal\Guard.cs" />
-    <Compile Include="Internal\GuardReSharperTemplates.cs" />
-    <Compile Include="Internal\IValidationTarget.cs" />
-    <Compile Include="Internal\PropertyCollectionValidationTarget.cs" />
-    <Compile Include="Internal\PropertyName.cs" />
-    <Compile Include="Internal\PropertyValidationTarget.cs" />
-    <Compile Include="Internal\TaskEx.cs" />
-    <Compile Include="Internal\UndefinedValidationTarget.cs" />
-    <Compile Include="Internal\ValidationRule.cs" />
-    <Compile Include="Internal\ValidationRuleCollection.cs" />
-    <Compile Include="IValidatable.cs" />
-    <Compile Include="IValidationResultFormatter.cs" />
-    <Compile Include="IValidationRule.cs" />
-    <Compile Include="NotifyDataErrorInfoAdapter.cs" />
-    <Compile Include="NumberedListValidationResultFormatter.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RuleResult.cs" />
-    <Compile Include="RuleResultExtensions.cs" />
-    <Compile Include="ValidationError.cs" />
-    <Compile Include="ValidationErrorCollection.cs" />
-    <Compile Include="ValidationException.cs" />
-    <Compile Include="ValidationHelper.cs" />
-    <Compile Include="ValidationHelperExtensions.cs" />
-    <Compile Include="ValidationResult.cs" />
-    <Compile Include="ValidationResultChangedEventArgs.cs" />
-    <Compile Include="ValidationResultExtensions.cs" />
-    <Compile Include="ValidationRuleSettings.cs" />
-    <Compile Include="ValidationScope.cs" />
-    <Compile Include="ValidationSettings.cs" />
+    <PackageReference Include="Microsoft.NETCore.Portable.Compatibility" Version="1.0.1" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Key.snk">
-      <Link>Key.snk</Link>
-    </None>
-    <None Include="project.json" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>	
-  <Target Name="AfterBuild">
-  </Target>
-	-->
+
 </Project>
