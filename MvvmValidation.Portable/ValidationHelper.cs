@@ -24,6 +24,8 @@ namespace MvvmValidation
         private readonly IDictionary<object, IDictionary<ValidationRule, RuleResult>> ruleValidationResultMap =
             new Dictionary<object, IDictionary<ValidationRule, RuleResult>>();
 
+        private readonly AutoToggle suppressToggle = new AutoToggle(false);
+
         private readonly object syncRoot = new object();
 
         #endregion
@@ -60,7 +62,7 @@ namespace MvvmValidation
         /// <summary>
         /// Indicates whether the validation is currently suspended using the <see cref="SuppressValidation"/> method.
         /// </summary>
-        public bool IsValidationSuspended { get; private set; }
+        public bool IsValidationSuspended => suppressToggle.Value;
 
         #endregion
 
@@ -986,9 +988,7 @@ namespace MvvmValidation
         [NotNull]
         public IDisposable SuppressValidation()
         {
-            IsValidationSuspended = true;
-
-            return new DelegateDisposable(() => { IsValidationSuspended = false; });
+            return suppressToggle.Toggle();
         }
 
         /// <summary>

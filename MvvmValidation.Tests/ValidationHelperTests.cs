@@ -119,6 +119,27 @@ namespace MvvmValidation.Tests
         }
 
         [Fact]
+        public void NestedSuppressValidation_SetInvalidValue_ThereAreNoErrors()
+        {
+            // Arrange
+            var vm = new MockViewModel();
+
+            // Act
+            using (vm.Validation.SuppressValidation())
+            {
+                using (vm.Validation.SuppressValidation())
+                {
+                    vm.RangeStart = 10;
+                }
+                vm.RangeEnd = 1;
+            }
+
+            // Verify
+            Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeStart").Cast<string>().FirstOrDefault()));
+            Assert.True(string.IsNullOrEmpty(vm.GetErrors("RangeEnd").Cast<string>().FirstOrDefault()));
+        }
+
+        [Fact]
         public void CombineRuleResults_ResultContainsErrorsFromAllCombinedResults()
         {
             // Arrange
