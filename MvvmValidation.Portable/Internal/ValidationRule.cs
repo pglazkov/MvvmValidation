@@ -48,11 +48,15 @@ namespace MvvmValidation.Internal
 
         #region Implementation of IValidationRule
 
-        public IValidationRule WithSettings(Action<ValidationRuleSettings> setSettingsDelegate)
+        public IValidationRule WithSettings(Action<ValidationRuleSettingsBuilder> setSettingsDelegate)
         {
             Guard.NotNull(setSettingsDelegate, nameof(setSettingsDelegate));
 
-            setSettingsDelegate(Settings);
+            var builder = new ValidationRuleSettingsBuilder();
+            
+            setSettingsDelegate(builder);
+
+            Settings = builder.Build();
 
             return this;
         }

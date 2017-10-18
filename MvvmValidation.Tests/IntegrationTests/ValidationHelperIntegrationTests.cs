@@ -66,9 +66,6 @@ namespace MvvmValidation.Tests.IntegrationTests
             });
         }
 
-        /// <summary>
-        /// Asyncs the validation_ dependant properties_ if one invalid second is invalid too.
-        /// </summary>
         [Fact]
         public void AsyncValidation_DependantProperties_IfOneInvalidSecondIsInvalidToo()
         {
@@ -814,6 +811,54 @@ namespace MvvmValidation.Tests.IntegrationTests
                     completedAction();
                 });
             });
+        }
+
+        [Fact]
+        public void ConditionalRules_ConditionIsFalse_RuleIsSkipped()
+        {
+            // ARRANGE
+            var validator = new ValidationHelper();
+
+            validator.AddRule(() => RuleResult.Invalid("Should not be executed."))
+                     .WithSettings(s => s.EnabledWhen(() => false));
+            
+            // ACT
+            var result = validator.ValidateAll();
+            
+            // VERIFY
+            Assert.True(result.IsValid);
+        }
+        
+        [Fact]
+        public void ConditionalRules_ConditionIsTrue_RuleIsExecutued()
+        {
+            // ARRANGE
+            var validator = new ValidationHelper();
+
+            validator.AddRule(() => RuleResult.Invalid("Should be executed."))
+                     .WithSettings(s => s.EnabledWhen(() => true));
+            
+            // ACT
+            var result = validator.ValidateAll();
+            
+            // VERIFY
+            Assert.False(result.IsValid);
+        }
+        
+        [Fact]
+        public void ConditionalRules_TwoRules_FirstIsTrue_SecondIsFalse_RuleIsSkipped()
+        {
+            // ARRANGE
+            var validator = new ValidationHelper();
+
+            validator.AddRule(() => RuleResult.Invalid("Should not be executed."))
+                     .WithSettings(s => s.EnabledWhen(() => true).EnabledWhen(() => false));
+            
+            // ACT
+            var result = validator.ValidateAll();
+            
+            // VERIFY
+            Assert.True(result.IsValid);
         }
     }
 

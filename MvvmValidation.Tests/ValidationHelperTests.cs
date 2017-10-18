@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MvvmValidation.Internal;
 using MvvmValidation.Tests.Fakes;
 using Xunit;
 
@@ -373,10 +374,7 @@ namespace MvvmValidation.Tests
             // ARRANGE
             var validation = new ValidationHelper(new ValidationSettings
             {
-                DefaultRuleSettings = new ValidationRuleSettings
-                {
-                    ExecuteOnAlreadyInvalidTarget = true
-                }
+                DefaultRuleSettings = s => s.ExecuteOnAlreadyInvalidTarget(true)
             });
 
             var dummy = new DummyViewModel();
@@ -437,7 +435,7 @@ namespace MvvmValidation.Tests
                 {
                     thirdRuleExecuted = true;
                     return RuleResult.Invalid("Error3");
-                }).WithSettings(s => s.ExecuteOnAlreadyInvalidTarget = true);
+                }).WithSettings(s => s.ExecuteOnAlreadyInvalidTarget(true));
 
             // ACT
 
@@ -647,7 +645,6 @@ namespace MvvmValidation.Tests
             Assert.True(validationResult.IsValid,
                 "Validation should not produce any errors after all rules were removed.");
         }
-
 
         [Fact]
         public void RemoveAllRules_HadTwoNegativeRulesRegistered_ValidationSucceds()

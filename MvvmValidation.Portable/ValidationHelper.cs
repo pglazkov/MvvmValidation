@@ -49,7 +49,12 @@ namespace MvvmValidation
             Guard.NotNull(settings, nameof(settings));
 
             ValidationRules = new ValidationRuleCollection();
-            Settings = settings;
+            
+            var defaultRuleSettingsBuilder = new ValidationRuleSettingsBuilder();
+            
+            settings.DefaultRuleSettings?.Invoke(defaultRuleSettingsBuilder);
+                
+            DefaultRuleSettings = defaultRuleSettingsBuilder.Build();
         }
 
         #endregion
@@ -57,7 +62,7 @@ namespace MvvmValidation
         #region Properties
 
         private ValidationRuleCollection ValidationRules { get; }
-        private ValidationSettings Settings { get; }
+        private ValidationRuleSettings DefaultRuleSettings { get; }
 
         /// <summary>
         /// Indicates whether the validation is currently suspended using the <see cref="SuppressValidation"/> method.
@@ -752,18 +757,22 @@ namespace MvvmValidation
 
         private bool ShouldExecuteOnAlreadyInvalidTarget(ValidationRule rule)
         {
-            var defaultValue = Settings.DefaultRuleSettings?.ExecuteOnAlreadyInvalidTarget ?? false;
+            var defaultValue = DefaultRuleSettings.ExecuteOnAlreadyInvalidTarget ?? false;
 
             return rule.Settings.ExecuteOnAlreadyInvalidTarget.GetValueOrDefault(defaultValue);
         }
 
         private ReadOnlyCollection<ValidationRule> GetRulesForTarget(object target)
         {
+            bool ShouldExecuteRule(ValidationRule rule)
+            {
+                return rule.Settings.Conditions.All(isEnabled => isEnabled()) &&
+                       (target == null || rule.Target.IsMatch(target));
+            }
+            
             lock (syncRoot)
             {
-                Func<ValidationRule, bool> ruleFilter = CreateRuleFilterFor(target);
-
-                var result = new ReadOnlyCollection<ValidationRule>(ValidationRules.Where(ruleFilter).ToList());
+                var result = new ReadOnlyCollection<ValidationRule>(ValidationRules.Where(ShouldExecuteRule).ToList());
 
                 return result;
             }
@@ -784,18 +793,6 @@ namespace MvvmValidation
                     }
                 }
             }
-        }
-
-        private static Func<ValidationRule, bool> CreateRuleFilterFor(object target)
-        {
-            Func<ValidationRule, bool> ruleFilter = r => true;
-
-            if (target != null)
-            {
-                ruleFilter = r => r.Target.IsMatch(target);
-            }
-
-            return ruleFilter;
         }
 
         private void SaveRuleValidationResultAndNotifyIfNeeded(ValidationRule rule, RuleResult ruleResult,
