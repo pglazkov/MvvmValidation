@@ -10,6 +10,6 @@
 
 [assembly: System.Reflection.AssemblyVersion("3.1.0")]
 [assembly: System.Reflection.AssemblyFileVersion("3.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersion("3.1.0-beta2")]
+[assembly: System.Reflection.AssemblyInformationalVersion("3.1.0")]
 
 
