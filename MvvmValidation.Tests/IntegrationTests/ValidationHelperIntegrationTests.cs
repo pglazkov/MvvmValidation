@@ -860,6 +860,32 @@ namespace MvvmValidation.Tests.IntegrationTests
             // VERIFY
             Assert.True(result.IsValid);
         }
+
+        [Fact]
+        public void ConditionalRules_ConditionIsFalse_TargetBecomesValid()
+        {
+            // ARRANGE
+            var validator = new ValidationHelper();
+            var enableRule = true;
+
+            const string ruleTarget = "testTarget";
+
+            validator.AddRule(ruleTarget, () => RuleResult.Invalid("Invalid"))
+                .WithSettings(s => s.EnabledWhen(() => enableRule));
+
+            // ACT
+            validator.Validate(ruleTarget);
+            var resultWithEnabledRule = validator.GetResult(ruleTarget);
+            
+            enableRule = false;
+
+            validator.Validate(ruleTarget);
+            var resultWithDisabledRule = validator.GetResult(ruleTarget);
+
+            // VERIFY
+            Assert.False(resultWithEnabledRule.IsValid);
+            Assert.True(resultWithDisabledRule.IsValid);
+        }
     }
 
     // ReSharper restore InconsistentNaming

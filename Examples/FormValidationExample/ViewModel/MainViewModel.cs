@@ -20,6 +20,7 @@ namespace FormValidationExample.ViewModel
         private string passwordConfirmation;
         private string userName;
         private string validationErrorsString;
+        private bool subscribeToNewsletter;
 
         public MainViewModel(IUserRegistrationService userRegistrationService)
         {
@@ -68,6 +69,17 @@ namespace FormValidationExample.ViewModel
                 nameInfo.LastName = value;
                 RaisePropertyChanged(nameof(LastName));
                 Validator.Validate(nameof(LastName));
+            }
+        }
+
+        public bool SubscribeToNewsletter
+        {
+            get { return subscribeToNewsletter; }
+            set
+            {
+                subscribeToNewsletter = value;
+                RaisePropertyChanged(nameof(SubscribeToNewsletter));
+                Validator.Validate(nameof(SubscribeToNewsletter));
             }
         }
 
@@ -143,7 +155,7 @@ namespace FormValidationExample.ViewModel
 
             Validator.AddRequiredRule(() => LastName, "Last Name is required");
 
-            Validator.AddRequiredRule(() => Email, "Email is required");
+            Validator.AddRequiredRule(() => Email, "Email is required").WithSettings(s => s.EnabledWhen(() => SubscribeToNewsletter));
 
             Validator.AddRule(nameof(Email),
                 () =>
@@ -152,7 +164,7 @@ namespace FormValidationExample.ViewModel
                         @"^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$";
                     return RuleResult.Assert(Regex.IsMatch(Email, regexPattern),
                         "Email must by a valid email address");
-                });
+                }).WithSettings(s => s.EnabledWhen(() => SubscribeToNewsletter));
 
             Validator.AddRequiredRule(() => Password, "Password is required");
 

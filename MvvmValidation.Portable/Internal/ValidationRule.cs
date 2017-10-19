@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MvvmValidation.Internal
@@ -20,6 +22,10 @@ namespace MvvmValidation.Internal
         private Func<Task<RuleResult>> AsyncValidateAction { get; set; }
         private Func<RuleResult> ValidateDelegate { get; set; }
 
+        private bool IsEnabled {
+            get { return Settings.Conditions.All(c => c()); }
+        }
+
         public bool SupportsSyncValidation
         {
             get { return ValidateDelegate != null; }
@@ -36,17 +42,13 @@ namespace MvvmValidation.Internal
                     "Synchronous validation is not supported by this rule. Method EvaluateAsync must be called instead.");
             }
 
-            RuleResult result = ValidateDelegate();
-
-            return result;
+            return !IsEnabled ? RuleResult.Valid() : ValidateDelegate();
         }
 
         public Task<RuleResult> EvaluateAsync()
         {
-            return AsyncValidateAction();
+            return !IsEnabled ? Task.FromResult(RuleResult.Valid()) : AsyncValidateAction();
         }
-
-        #region Implementation of IValidationRule
 
         public IValidationRule WithSettings(Action<ValidationRuleSettingsBuilder> setSettingsDelegate)
         {
@@ -60,7 +62,5 @@ namespace MvvmValidation.Internal
 
             return this;
         }
-
-        #endregion
     }
 }

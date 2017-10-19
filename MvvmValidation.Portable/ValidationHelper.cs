@@ -766,8 +766,7 @@ namespace MvvmValidation
         {
             bool ShouldExecuteRule(ValidationRule rule)
             {
-                return rule.Settings.Conditions.All(isEnabled => isEnabled()) &&
-                       (target == null || rule.Target.IsMatch(target));
+                return target == null || rule.Target.IsMatch(target);
             }
             
             lock (syncRoot)
