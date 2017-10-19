@@ -1,9 +1,12 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/cxp4fdhrhqhrq127?svg=true)](https://ci.appveyor.com/project/pglazkov/mvvmvalidation)
 
 # MVVM Validation Helpers
-MVVM Validation Helpers is a little library that makes it easier for developers to implement validation in MVVM applications. You'll no longer have to implement INotifyDataErrorInfo interface manually in your view models. 
+MVVM Validation Helpers is a lightweight library that makes it easier for developers to implement validation in MVVM applications. You'll no longer have to implement INotifyDataErrorInfo interface manually in your view models. 
 
-With this lightweight library you can define and keep all your validation rules conveniently in one place. It saves you from all the boilerplate of maintaining error list for each of the validation targets (properties). You just define a set of validation rules that need to be checked for each of the targets and later, when appropriate, it is easy to just validate a target and get the validation result back without worrying what rules need to be checked.
+It allows you to:
+* Define and keep all your validation rules conveniently in one place.
+* Reduce boilerplate of maintaining error list for each of the validation targets (properties).
+* Validate a target and get the validation result back without worrying what rules need to be checked.
 
 ## Getting Started
 Install the [NuGet package](https://www.nuget.org/packages/MvvmValidation).
@@ -135,3 +138,30 @@ public class ValidatableViewModelBase : INotifyDataErrorInfo
 **For more examples download the source code and check out the example project.**
 
 ![Sample UI Screenshot](/Examples/screenshot.png)
+
+### Advanced Use Cases
+
+**Execute rules even if the target is already invalid**
+
+By default, if the first rule for the target failed, the remaining rules for that target are skipped. For example, if the "Email" field is required it doesn't make sense to check that the email address is in valid format until user has entered something, so first we execute the "required" rule and only if it succeds we execute the next rule to verify the format of the email. 
+
+This default behavior can be overriden either globally or per rule:
+
+Globally:
+
+```cs
+Validator = new ValidationHelper(new ValidationSettings
+{
+    DefaultRuleSettings = new ValidationRuleSettings
+    {
+        ExecuteOnAlreadyInvalidTarget = true
+    }
+});
+```
+
+Per Rule:
+
+```cs
+Validator.AddAsyncRule(/* Rule */)
+         .WithSettings(s => s.ExecuteOnAlreadyInvalidTarget = false);
+```
