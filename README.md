@@ -1,12 +1,13 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/cxp4fdhrhqhrq127?svg=true)](https://ci.appveyor.com/project/pglazkov/mvvmvalidation)
 
 # MVVM Validation Helpers
-MVVM Validation Helpers is a lightweight library that makes it easier for developers to implement validation in MVVM applications. You'll no longer have to implement INotifyDataErrorInfo interface manually in your view models. 
+MVVM Validation Helpers is a lightweight library that makes it easier for developers to implement validation in MVVM applications. 
 
 It allows you to:
 * Define and keep all your validation rules conveniently in one place.
 * Reduce boilerplate of maintaining error list for each of the validation targets (properties).
 * Validate a target and get the validation result back without worrying what rules need to be checked.
+* Easily implement `INotifyDataErrorInfo` interface in your view models to integrate with XAML binding engine for displaying validation errors in your views (see `NotifyDataErrorAdapter` below).
 
 ## Getting Started
 Install the [NuGet package](https://www.nuget.org/packages/MvvmValidation).
@@ -18,8 +19,8 @@ Download the binaries from [Releases](https://github.com/pglazkov/MvvmValidation
 ## Examples
 **Creating an instance of the helper**
 
-In order to use the library you need to create an instance of the _ValidationHelper_ helper class and store it in an instance field of the class where you want to implement validation. 
-If you do a lot of validation, it is probably the best to do it in your _ViewModelBase_ class.
+In order to use the library you need to create an instance of the `ValidationHelper` helper class and store it in an instance field of the class where you want to implement validation. 
+If you do a lot of validation, it is probably the best to do it in your `ViewModelBase` class.
 ```cs
 public class ViewModelBase
 {
@@ -100,9 +101,9 @@ private void OnValidationResultChanged(object sender, ValidationResultChangedEve
     UpdateValidationSummary(validationResult);
 }
 ```
-**Implement _INotifyDataErrorInfo_ interface**
+**Implement `INotifyDataErrorInfo` interface**
 
-The library includes _NotifyDataErrorAdapter_ class that makes the implementation of _INotifyDataErrorInfo_ interface in your view models trivial.
+The library includes `NotifyDataErrorAdapter` class that makes the implementation of `INotifyDataErrorInfo` interface in your view models trivial.
 
 ```cs
 public class ValidatableViewModelBase : INotifyDataErrorInfo
