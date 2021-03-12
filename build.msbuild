@@ -8,8 +8,8 @@
     <PropertyGroup>
         <Major>3</Major>
         <Minor>1</Minor>
-        <Patch>1</Patch>
-        <PreReleaseString></PreReleaseString>
+        <Patch>2</Patch>
+        <PreReleaseString>Beta1</PreReleaseString>
 
         <VersionInfoString Condition="$(PreReleaseString) != ''">$(Major).$(Minor).$(Patch)-$(PreReleaseString)</VersionInfoString>
         <VersionInfoString Condition="$(PreReleaseString) == ''">$(Major).$(Minor).$(Patch)</VersionInfoString>
