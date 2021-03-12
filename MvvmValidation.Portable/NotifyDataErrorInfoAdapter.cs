@@ -11,15 +11,18 @@ namespace MvvmValidation
     /// <summary>
     /// Adapts an instance of <see cref="ValidationHelper"/> to the <see cref="INotifyDataErrorInfo"/> interface.
     /// </summary>
-    public class NotifyDataErrorInfoAdapter : INotifyDataErrorInfo
+    public class NotifyDataErrorInfoAdapter : INotifyDataErrorInfo, IDisposable
     {
+        private bool isDisposed;
+        private readonly SynchronizationContext errorsChangedNotificationContext;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="NotifyDataErrorInfoAdapter"/> class.
         /// </summary>
         /// <param name="validator">The adaptee.</param>
         public NotifyDataErrorInfoAdapter([NotNull] ValidationHelper validator)
             : this(validator, SynchronizationContext.Current)
-        {
+        {            
         }
 
         /// <summary>
@@ -33,16 +36,17 @@ namespace MvvmValidation
             Guard.NotNull(validator, nameof(validator));
 
             Validator = validator;
-
-            Validator.ResultChanged += (o, e) => OnValidatorResultChanged(o, e, errorsChangedNotificationContext);
+            this.errorsChangedNotificationContext = errorsChangedNotificationContext;
+            Validator.ResultChanged += OnValidatorResultChanged;
         }
 
-        private void OnValidatorResultChanged(object sender, ValidationResultChangedEventArgs e,
-            SynchronizationContext syncContext)
+        private void OnValidatorResultChanged(object sender, ValidationResultChangedEventArgs e)
         {
-            if (syncContext != null)
+            if (errorsChangedNotificationContext != null)
             {
-                syncContext.Post(_ => OnValidatorResultChanged(sender, e, null), null);
+                errorsChangedNotificationContext.Post(_ => {
+                    OnErrorsChanged(e.Target as string);
+                }, null);
 
                 return;
             }
@@ -86,5 +90,29 @@ namespace MvvmValidation
         {
             ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
-    }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        protected virtual void Dispose(bool disposing)
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+        {
+          if (!isDisposed)
+          {
+            if (disposing)
+            {
+                Validator.ResultChanged -= OnValidatorResultChanged;
+            }
+
+            isDisposed = true;
+          }
+        }
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+        public void Dispose()
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+        {
+          // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+          Dispose(disposing: true);
+          GC.SuppressFinalize(this);
+        }
+  }
 }
